@@ -3,76 +3,504 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luong Ngoc Tien</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>CV — LNT</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="icon" href="img/logo.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="icon" href="img/face.jpg" type="image/x-icon">
+<style>
+    /* ── RESET ── */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+        --glass:      rgba(255,255,255,0.11);
+        --glass-h:    rgba(255,255,255,0.18);
+        --border:     rgba(255,255,255,0.18);
+        --border-h:   rgba(255,255,255,0.35);
+        --shadow:     0 8px 32px rgba(0,0,0,0.35);
+        --shadow-h:   0 20px 48px rgba(0,0,0,0.5);
+        --accent:     rgba(180,210,255,0.85);
+        --accent-dim: rgba(160,195,255,0.45);
+        --text:       rgba(255,255,255,0.92);
+        --text-muted: rgba(255,255,255,0.55);
+        --radius:     20px;
+        --radius-sm:  12px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+        min-height: 100vh;  display: flex;
+        flex-direction: column; align-items: center;
+        background: url('https://static.vecteezy.com/system/resources/previews/026/423/787/large_2x/abstract-technology-background-with-circuit-board-and-blue-lights-digital-communication-line-concept-graphic-hardware-computer-tech-integrated-energy-design-information-internet-generative-ai-photo.jpg')
+                    no-repeat center center / cover fixed;
+        color: var(--text); font-family: 'DM Sans', sans-serif;
+        overflow-x: hidden; padding-bottom: 80px;
+    }
+    /* overlay */
+    .bg-overlay {
+        position: fixed; inset: 0; background: rgba(10,18,30,0.42);
+        -webkit-backdrop-filter: blur(8px) saturate(1.2);
+        backdrop-filter: blur(8px) saturate(1.2);
+        z-index: 0;
+    }
+    /* ── GLASS CARD ── */
+    .glass-card {
+        position: relative; z-index: 1; background: var(--glass);
+        -webkit-backdrop-filter: blur(20px) saturate(1.4);
+        backdrop-filter: blur(20px) saturate(1.4);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);  padding: 22px;
+        box-shadow: var(--shadow); margin-bottom: 14px;
+        transition: transform 220ms cubic-bezier(.22,1,.36,1),
+                    box-shadow 220ms ease,
+                    border-color 220ms ease,
+                    background 220ms ease;
+    }
+    .glass-card:hover {
+        transform: translateY(-6px);
+        box-shadow: var(--shadow-h);
+        border-color: var(--border-h);
+        background: var(--glass-h);
+    }
+    .glass-inner {
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: var(--radius-sm); padding: 14px 16px;
+        margin-top: 10px;  transition: background 200ms;
+    }
+    .glass-inner:hover { background: rgba(255,255,255,0.11); }
+    /* ── LAYOUT ── */
+    .container {
+        display: grid; grid-template-columns: minmax(150px,210px) minmax(320px,1fr) minmax(90px,140px);
+        gap: 18px; width: calc(100% - 80px);
+        max-width: 1180px; margin: 40px auto 0;
+        position: relative; z-index: 1;
+    }
+    /* ── CLOCK CARD ── */
+    .clock-card { text-align: center; }
+    .clock-time {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem; font-weight: 400; letter-spacing: 2px;
+        color: #fff; text-shadow: 0 0 18px rgba(160,200,255,.6);
+        line-height: 1.1;
+    }
+    .clock-ampm {
+        font-size: .7rem; letter-spacing: 3px;
+        text-transform: uppercase; color: var(--accent-dim);
+        margin-top: 2px;
+    }
+    .clock-date {
+        font-size: .75rem; letter-spacing: 1.5px;
+        color: var(--text-muted); margin-top: 8px;
+        line-height: 1.5;
+    }
+    .clock-sep { color: var(--accent-dim); margin: 0 1px; }
+    /* divider */
+    .divider {
+        width: 100%; height: 1px;
+        background: linear-gradient(90deg, transparent, var(--border-h), transparent);
+        margin: 14px 0; opacity: .6;
+    }
+
+    /* ── SECTION LABELS ── */
+    .section-label {
+        font-size: .65rem; letter-spacing: 3px;
+        text-transform: uppercase; color: var(--accent-dim);
+        margin-bottom: 10px; display: flex;
+        align-items: center; gap: 8px;
+    }
+    .section-label::after {
+        content: ''; flex: 1; height: 1px;
+        background: linear-gradient(90deg, var(--border), transparent);
+    }
+    /* ── PROJECTS ── */
+    .project-item {
+        display: flex;  align-items: center;
+        gap: 10px; margin-bottom: 10px;
+        font-size: .8rem;  color: var(--text-muted);
+        transition: color 180ms;
+    }
+    .project-item:hover { color: var(--text); }
+    .project-item img {
+        width: 32px; height: 32px;
+        object-fit: cover;  border-radius: 8px;
+        border: 1px solid var(--border);
+        flex-shrink: 0;
+    }
+    .project-dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: var(--accent-dim); flex-shrink: 0;
+    }
+    /* ── PROFILE HEADER ── */
+    .profile-header {
+        display: flex; align-items: center;  gap: 20px;
+    }
+    .avatar-wrap {
+        position: relative; flex-shrink: 0;
+    }
+    .avatar {
+        width: 120px; height: 120px; border-radius: 50%;
+        overflow: hidden; border: 2px solid rgba(255,255,255,.35);
+        box-shadow: 0 0 0 4px rgba(160,200,255,.15), 0 8px 24px rgba(0,0,0,.4);
+    }
+    .avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+    /* status dot */
+    .status-dot {
+        position: absolute; bottom: 6px; right: 6px;
+        width: 14px; height: 14px; border-radius: 50%;
+        background: #4ade80; border: 2px solid rgba(0,0,0,.4);
+        box-shadow: 0 0 8px rgba(74,222,128,.7);
+        animation: statusPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes statusPulse {
+        0%,100% { box-shadow: 0 0 6px rgba(74,222,128,.6); }
+        50%      { box-shadow: 0 0 14px rgba(74,222,128,.9); }
+    }
+    .profile-info { flex: 1; min-width: 0; }
+    .profile-info h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.2rem, 2.5vw, 1.65rem);
+        font-weight: 600; letter-spacing: 1.5px;
+        line-height: 1.2;  color: #fff;
+        overflow: hidden; white-space: nowrap;
+    }
+    /* typing cursor */
+    .cursor {
+        display: inline-block;  width: 2px; height: 1.1em;
+        background: var(--accent); margin-left: 3px;
+        vertical-align: text-bottom;
+        animation: blink .9s step-end infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .profile-role {
+        font-size: .78rem; letter-spacing: 2.5px;
+        text-transform: uppercase;color: var(--accent-dim);
+        margin-top: 5px;
+    }
+    /* ── SOCIAL ICONS ── */
+    .social-icons {
+        display: flex; gap: 10px;
+        margin-top: 14px;  flex-wrap: wrap;
+    }
+    .social-icons a {
+        display: inline-flex; align-items: center;
+        justify-content: center; width: 36px; height: 36px;
+        background: rgba(255,255,255,.07);
+        border: 1px solid var(--border);
+        border-radius: 10px; color: var(--text-muted);
+        text-decoration: none; font-size: .9rem;
+        transition: transform 160ms ease, background 160ms, color 160ms, border-color 160ms, box-shadow 160ms;
+    }
+    .social-icons a:hover {
+        transform: translateY(-4px) scale(1.08);
+        background: rgba(255,255,255,.16);
+        color: #fff; border-color: var(--border-h);
+        box-shadow: 0 6px 18px rgba(0,0,0,.3);
+    }
+    /* ── ABOUT / EXPERIENCE ── */
+    .about-section h3,
+    .experience-section h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1rem; font-weight: 400;
+        letter-spacing: 1px; margin-bottom: 8px;
+        color: #fff;
+    }
+    .about-section p {
+        font-size: .88rem; line-height: 1.7;
+        color: var(--text-muted);
+    }
+    .experience-section { margin-top: 18px; }
+    .exp-grid {
+        display: grid; grid-template-columns: 1fr 1fr;
+        gap: 12px; margin-top: 4px;
+    }
+    .exp-item h4 {
+        font-size: .88rem; font-weight: 500;
+        color: var(--text);  margin-bottom: 4px;
+    }
+    .exp-item .company {
+        font-size: .75rem;  color: var(--text-muted);
+        letter-spacing: .5px;
+    }
+    .exp-item .period {
+        font-size: .7rem; color: var(--accent-dim);
+        margin-top: 4px; letter-spacing: 1px;
+    }
+    /* ── SKILLS TAGS ── */
+    .skills-wrap {
+        display: flex;flex-wrap: wrap;
+        gap: 7px; margin-top: 4px;
+    }
+    .skill-tag {
+        font-size: .72rem; letter-spacing: 1px;
+        text-transform: uppercase;  padding: 4px 10px;
+        border-radius: 20px;  background: rgba(160,200,255,.1);
+        border: 1px solid rgba(160,200,255,.22);
+        color: var(--accent);
+        transition: background 160ms, border-color 160ms;
+    }
+    .skill-tag:hover {
+        background: rgba(160,200,255,.2);
+        border-color: rgba(160,200,255,.45);
+    }
+    /* ── RIGHT SIDEBAR ── */
+    .sidebar-right .glass-card { text-align: center; }
+    .avatar-small {
+        width: 64px; height: 64px;
+        border-radius: 14px;  overflow: hidden;
+        border: 1px solid var(--border);
+        margin: 0 auto 10px;
+        box-shadow: 0 4px 14px rgba(0,0,0,.35);
+    }
+    .avatar-small img { width:100%; height:100%; object-fit:cover; display:block; }
+    .mini-stat {
+        font-size: .7rem;  letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        line-height: 1.8;
+    }
+    .mini-stat strong {
+        display: block;
+        font-size: 1.1rem;
+        font-family: 'Playfair Display', serif;
+        color: #fff;
+        letter-spacing: 0;
+    }
+    /* ── FOOTER ── */
+    footer {
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        z-index: 10;
+        text-align: center;
+        padding: 12px 20px;
+        background: rgba(10,18,30,.6);
+        -webkit-backdrop-filter: blur(16px);
+        backdrop-filter: blur(16px);
+        border-top: 1px solid rgba(255,255,255,.08);
+        font-size: .75rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+    }
+    footer span { color: rgba(255,120,120,.7); }
+    /* ── ENTRANCE ANIMATIONS ── */
+    @keyframes fadeUp {
+        from { opacity:0; transform:translateY(28px) scale(.97); }
+        to   { opacity:1; transform:none; }
+    }
+    .animate { animation: fadeUp .65s cubic-bezier(.22,1,.36,1) both; }
+    .delay-1 { animation-delay: .08s }
+    .delay-2 { animation-delay: .16s }
+    .delay-3 { animation-delay: .24s }
+    .delay-4 { animation-delay: .32s }
+    .delay-5 { animation-delay: .40s }
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1100px) {
+        .container { width: calc(100% - 48px); grid-template-columns: 190px 1fr 120px; }
+        .avatar { width:100px; height:100px; }
+    }
+    @media (max-width: 750px) {
+        .container {
+            grid-template-columns: 1fr;
+            width: calc(100% - 28px);
+            gap: 12px;
+            margin: 16px auto 0;
+        }
+        .sidebar-left, .sidebar-right { display: none; }
+        .glass-card { padding: 16px; border-radius: 16px; }
+        .profile-header { flex-direction: row; gap: 14px; }
+        .avatar { width: 88px; height: 88px; }
+        .exp-grid { grid-template-columns: 1fr; }
+        body { padding-bottom: 60px; }
+    }
+    @media (max-width: 420px) {
+        .profile-info h1 { font-size: 1rem; }
+        .glass-card { padding: 12px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+</style>
 </head>
 <body>
-    <div class="background-overlay"></div>
-    <div class="container">
-        <aside class="sidebar-left">
-            <div class="glass-card clock-card">
-                <div class="date">26/01/2006</div>
-            </div>
-            <div class="glass-card projects-card">
-                <h3>...///</h3>
-                <div class="project-item">
-                    <img src="https://th.bing.com/th/id/R.0893ec0adaf20a5797062224a5b8b5c8?rik=zGJOYii%2fTV926g&riu=http%3a%2f%2fs1.picswalls.com%2fwallpapers%2f2017%2f12%2f10%2ffull-hd-4k-wallpapers_110630476_312.jpg&ehk=kFjT73B98OaJjhl7Ghn5LEOAFk6N2vBvxD6ovUwC2Vo%3d&risl=&pid=ImgRaw&r=0" alt="icon">
-                    <span>...///</span>
-                </div>
-            </div>
-        </aside>
+<div class="bg-overlay"></div>
+<div class="container">
+    <!-- ── LEFT SIDEBAR ── -->
+    <aside class="sidebar-left">
+        <!-- Clock -->
+        <div class="glass-card clock-card animate delay-1">
+            <div class="section-label">Local Time</div>
+            <div class="clock-time" id="clockTime">--:--</div>
+            <div class="clock-ampm" id="clockAmpm">--</div>
+            <div class="clock-date" id="clockDate">---</div>
+        </div>
+        <!-- Projects / Links -->
+        <div class="glass-card animate delay-2">
+            <div class="section-label">Projects</div>
 
-        <main class="main-content">
-            <section class="glass-card profile-header">
-                <div class="avatar-container">
-                    <img src="img/avt.jpg" alt="Avatar" class="avatar">
+            <div class="project-item">
+                <div class="project-dot"></div>
+                <span>Dino World</span>
+            </div>
+            <div class="project-item">
+                <div class="project-dot"></div>
+                <span>Aquarius</span>
+            </div>
+            <div class="project-item">
+                <div class="project-dot"></div>
+                <span>Student Connect</span>
+            </div>
+
+            <div class="divider"></div>
+            <div class="section-label">Status</div>
+            <div style="font-size:.8rem; color: rgba(74,222,128,.8); display:flex; align-items:center; gap:6px;">
+                <span style="width:7px;height:7px;border-radius:50%;background:#4ade80;display:inline-block;box-shadow:0 0 8px #4ade80"></span>
+                Available
+            </div>
+        </div>
+
+    </aside>
+    <!-- ── MAIN ── -->
+    <main class="main-content">
+
+        <!-- Profile header -->
+        <section class="glass-card profile-header animate delay-2">
+            <div class="avatar-wrap">
+                <div class="avatar">
+                    <img src="img/face.jpg" alt="Avatar"
+                         onerror="this.src='https://ui-avatars.com/api/?name=LNT&background=1a2a3a&color=aad4ff&size=150&bold=true'">
                 </div>
-                <div class="profile-info">
-                    <h1>Lường Ngọc Tiến</h1>
-                    <div class="social-icons">
-                        <a class="fas fa-envelope" ></a>
-                        <a class="fab fa-linkedin" ></a>
-                        <a class="fab fa-github" ></a>
-                        <a class="fab fa-facebook" ></a>
+                <div class="status-dot"></div>
+            </div>
+
+            <div class="profile-info">
+                <h1 id="typingName">&nbsp;<span class="cursor"></span></h1>
+                <div class="profile-role">T06</div>
+                <div class="social-icons">
+                    <a href="#" aria-label="Email"    title="Email">    <i class="fas fa-envelope"></i></a>
+                    <a href="#" aria-label="LinkedIn" title="LinkedIn">  <i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" aria-label="GitHub"   title="GitHub">   <i class="fab fa-github"></i></a>
+                    <a href="#" aria-label="Facebook" title="Facebook"> <i class="fab fa-facebook-f"></i></a>
+                </div>
+            </div>
+        </section>
+
+        <!-- About + Experience -->
+        <section class="glass-card animate delay-3">
+
+            <div class="about-section">
+                <div class="section-label">About Me</div>
+                <p>Một sinh viên thích xây dựng những giao diện đẹp 
+                    và trải nghiệm người dùng mượt mà. 
+                    Luôn tìm kiếm cơ hội học hỏi và phát triển bản thân.</p>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="section-label">Skills</div>
+            <div class="skills-wrap">
+                <span class="skill-tag">HTML/CSS/JavaScript</span>
+                <span class="skill-tag">Promt</span>
+                <span class="skill-tag">Design</span>
+                <span class="skill-tag">Github</span>
+                <span class="skill-tag">ChatGPT/Clasude/Gemini</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="experience-section">
+                <div class="section-label">Experience</div>
+                <div class="exp-grid">
+                    <div class="exp-item glass-inner">
+                        <h4>Web Developer</h4>
+                        <p class="company">Personal Projects</p>
+                        <p class="period">2025 — Present</p>
+                    </div>
+                    <div class="exp-item glass-inner">
+                        <h4>Student</h4>
+                        <p class="company">University · T06</p>
+                        <p class="period">2024 — Present</p>
+                    </div>
+                    <div class="exp-item glass-inner">
+                        <h4>UI / UX</h4>
+                        <p class="company">Self-taught</p>
+                        <p class="period">2025 — Present</p>
+                    </div>
+                    <div class="exp-item glass-inner">
+                        <h4>Open Source</h4>
+                        <p class="company">GitHub</p>
+                        <p class="period">2025 — Present</p>
                     </div>
                 </div>
-            </section>
-
-            <section class="glass-card about-experience">
-                <div class="about-section">
-                    <h3>About Me</h3>
-                    <p>...///</p>
-                </div>
-                <hr>
-                <div class="experience-section">
-                    <h3>Experience</h3>
-                    <div class="exp-grid">
-                        <div class="exp-item glass-card-inner">
-                            <h4>...///</h4>
-                            <p class="company">...</p>
-                        </div>
-                        <div class="exp-item glass-card-inner">
-                            <h4>...///</h4>
-                            <p class="company">...</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <aside class="sidebar-right">
-            <div class="glass-card small-widget">
-                <a class="fab fa-instagram"></a>
             </div>
-            <div class="glass-card avatar-small">
-                <img src="https://th.bing.com/th/id/R.0893ec0adaf20a5797062224a5b8b5c8?rik=zGJOYii%2fTV926g&riu=http%3a%2f%2fs1.picswalls.com%2fwallpapers%2f2017%2f12%2f10%2ffull-hd-4k-wallpapers_110630476_312.jpg&ehk=kFjT73B98OaJjhl7Ghn5LEOAFk6N2vBvxD6ovUwC2Vo%3d&risl=&pid=ImgRaw&r=0" >
+        </section>
+    </main>
+    <!-- ── RIGHT SIDEBAR ── -->
+    <aside class="sidebar-right">
+        <div class="glass-card animate delay-3" style="text-align:center">
+            <div class="avatar-small">
+                <img src="img/jo.jpg" alt="Avatar"
+                     onerror="this.src='https://ui-avatars.com/api/?name=LNT&background=1a2a3a&color=aad4ff&size=64&bold=true'">
             </div>
-        </aside>
-    </div>
-    <footer>
-        <p>© 2025 Luong Tien❤️</p>
-    </footer>
+            <div class="mini-stat">
+                <strong>T06</strong>
+                Class
+            </div>
+        </div>
+
+        <div class="glass-card animate delay-4">
+            <div class="section-label" style="font-size:.58rem">Quick</div>
+            <div class="mini-stat" style="text-align:center">
+                <strong id="projectCount">?</strong>
+                Projects
+            </div>
+            <div class="divider" style="margin:10px 0"></div>
+            <div class="mini-stat" style="text-align:center">
+                <strong>?</strong>
+                Years
+            </div>
+        </div>
+
+    </aside>
+</div>
+
+<footer>
+    <span>©</span> <span id="yr"></span>&nbsp; Tien-Turbo &nbsp;<span>♥</span>
+</footer>
+
+    <script>
+        /* ── CLOCK ── */
+        function updateClock() {
+            const now  = new Date();
+            let h      = now.getHours();
+            const m    = String(now.getMinutes()).padStart(2,'0');
+            const s    = String(now.getSeconds()).padStart(2,'0');
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+
+            document.getElementById('clockTime').textContent = `${String(h).padStart(2,'0')}:${m}:${s}`;
+            document.getElementById('clockAmpm').textContent = ampm;
+
+            const days   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            document.getElementById('clockDate').innerHTML =
+                `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}<br>${now.getFullYear()}`;
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        /* ── TYPING EFFECT ── */
+        const FULL_NAME = 'Lường Ngọc Tiến';
+        const nameEl    = document.getElementById('typingName');
+        let idx = 0;
+
+        function type() {
+            if (idx <= FULL_NAME.length) {
+                nameEl.innerHTML = FULL_NAME.slice(0, idx) + '<span class="cursor"></span>';
+                idx++;
+                setTimeout(type, 80 + Math.random() * 40);
+            }
+        }
+        setTimeout(type, 600);
+        /* ── YEAR ── */
+        document.getElementById('yr').textContent = new Date().getFullYear();
+    </script>
 </body>
 </html>
