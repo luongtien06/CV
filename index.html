@@ -878,16 +878,37 @@
     }
 
     @media (max-width: 650px) {
-        body { padding-bottom: 24px; }
-        footer { display: block; padding: 24px 16px 28px; }
-        .footer-inner {
-            flex-direction: column;
-            text-align: center;
-            gap: 12px;
-            justify-content: center;
+        body { padding-bottom: 0 !important; }
+        footer {
+            position: relative !important;
+            bottom: auto !important;
+            left: auto !important;
+            right: auto !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            gap: 12px !important;
+            width: 100% !important;
+            margin-top: 40px !important;
+            padding: 24px 16px calc(110px + env(safe-area-inset-bottom, 0px)) !important;
+            background: rgba(9, 14, 24, 0.75) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+            z-index: 10 !important;
         }
-        .footer-actions {
+        .footer-left {
+            text-align: center;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            width: 100%;
+        }
+        .footer-center { display: none; }
+        .footer-right {
+            display: flex;
             justify-content: center;
+            align-items: center;
+            gap: 10px;
             width: 100%;
         }
         /* Loại bỏ nút PDF ở footer khi thiết bị là mobile */
