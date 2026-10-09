@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <!-- Three.js for 3D Entrance Effect -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link rel="icon" href="img/CV.jpg" type="image/jpeg">
+    <link rel="icon" href="img/cv.jpg" type="image/jpeg">
 <style>
     /* ── RESET & THEME VARIABLES ── */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -878,9 +878,21 @@
     }
 
     @media (max-width: 650px) {
-        body { padding-bottom: 110px; }
-        footer { display: none; }
-        .mobile-nav-bar { display: flex; }
+        body { padding-bottom: 24px; }
+        footer { display: block; padding: 24px 16px 28px; }
+        .footer-inner {
+            flex-direction: column;
+            text-align: center;
+            gap: 12px;
+            justify-content: center;
+        }
+        .footer-actions {
+            justify-content: center;
+            width: 100%;
+        }
+        /* Loại bỏ nút PDF ở footer khi thiết bị là mobile */
+        .download-btn-footer { display: none !important; }
+        .mobile-nav-bar { display: none !important; }
         .container { width: calc(100% - 20px); margin: 12px auto 0; }
         .sidebar-left { flex-direction: column; }
         .projects-grid { grid-template-columns: 1fr; }
@@ -890,14 +902,14 @@
         .social-icons { justify-content: center; }
         .exp-grid { grid-template-columns: 1fr; }
         .audio-player-widget {
-            bottom: 68px; left: 12px; padding: 5px 10px 5px 6px;
+            bottom: 16px; left: 12px; padding: 5px 10px 5px 6px;
             max-width: calc(100vw - 120px);
         }
         .audio-info-box { max-width: 90px; }
         .playlist-modal {
-            bottom: 125px; left: 12px; right: 12px; width: auto; max-width: none;
+            bottom: 74px; left: 12px; right: 12px; width: auto; max-width: none;
         }
-        .claude-mascot-container { bottom: 68px; right: 12px; }
+        .claude-mascot-container { bottom: 16px; right: 12px; }
         .claude-bubble {
             max-width: calc(100vw - 36px); right: 0;
         }
@@ -937,7 +949,7 @@
         <div class="welcome-3d-card" id="welcome3dCard">
             <div class="avatar-3d-glow">
                 <div class="avatar-3d-ring"></div>
-                <img class="welcome-avatar-img" src="./img/CV.jpg" alt="Lường Ngọc Tiến Avatar" onerror="this.src='https://ui-avatars.com/api/?name=Lường+Ngọc+Tiến&background=1a2a3a&color=aad4ff&size=150'">
+                <img class="welcome-avatar-img" src="img/cv.jpg" alt="Lường Ngọc Tiến Avatar" onerror="this.src='https://ui-avatars.com/api/?name=Lường+Ngọc+Tiến&background=1a2a3a&color=aad4ff&size=150'">
             </div>
             <div class="welcome-badge">✦ Interactive 3D Portfolio ✦</div>
             <h1 class="welcome-title-3d">Lường Ngọc Tiến</h1>
@@ -1097,7 +1109,8 @@
         <section class="glass-card profile-header" data-tilt>
             <div class="avatar-wrap">
                 <div class="avatar">
-                    <img id="mainAvatar" src="./img/CV.jpg" alt="Avatar" onerror="this.src='https://ui-avatars.com/api/?name=Luong+Ngoc+Tien&background=1a2a3a&color=aad4ff&size=150'">
+                    <img id="mainAvatar" src="img/cv.jpg" alt="Avatar" 
+                    onerror="this.src='https://ui-avatars.com/api/?name=Luong+Ngoc+Tien&background=1a2a3a&color=aad4ff&size=150'">
                 </div>
                 <div class="status-dot" title="Sẵn sàng nhận cơ hội mới"></div>
             </div>
@@ -1161,25 +1174,6 @@
     </div>
 </footer>
 
-<nav class="mobile-nav-bar">
-    <button class="mobile-nav-item" id="mobNavMusic">
-        <i class="fas fa-music"></i>
-        <span>Nhạc</span>
-    </button>
-    <button class="mobile-nav-item" id="mobNavLang">
-        <i class="fas fa-globe"></i>
-        <span id="mobLangText">EN</span>
-    </button>
-    <button class="mobile-nav-item" id="mobNavClaude">
-        <i class="fas fa-robot" style="color: #e04d36;"></i>
-        <span>Claude</span>
-    </button>
-    <button class="mobile-nav-item" id="mobNavPdf">
-        <i class="fas fa-file-pdf"></i>
-        <span>PDF</span>
-    </button>
-</nav>
-
 <script>
     /* ══════════════════════════════════════════════════════════════
        DATA & CONFIGURATION
@@ -1189,7 +1183,7 @@
     const CONFIG = {
         name: 'Luong Ngoc Tien',
         classCode: 'T06',
-        avatar: 'img/CV.jpg',
+        avatar: 'img/cv.jpg',
         startDate: '2024-09-05',
         social: [
             { icon: 'fa-envelope',      label: 'Email',    href: 'mailto:luongtien26012006@gmail.com' },
@@ -1566,10 +1560,8 @@
         }
     });
 
-    // Nút nhạc trên thanh Mobile Nav
-    document.getElementById('mobNavMusic').addEventListener('click', () => {
-        togglePlaylist();
-    });
+    const mobNavMusic = document.getElementById('mobNavMusic');
+    if (mobNavMusic) mobNavMusic.addEventListener('click', togglePlaylist);
 
     /* ══════════════════════════════════════════════════════════════
        3. LINH VẬT CLAUDE (CHUẨN ẢNH MẪU - CHẠM & TỎ THÁI ĐỘ)
@@ -1825,10 +1817,8 @@
         }
     }, 4500);
 
-    // Mở Claude từ Mobile Bottom Nav
-    document.getElementById('mobNavClaude').addEventListener('click', () => {
-        handleMascotInteract();
-    });
+    const mobNavClaude = document.getElementById('mobNavClaude');
+    if (mobNavClaude) mobNavClaude.addEventListener('click', handleMascotInteract);
 
     /* ══════════════════════════════════════════════════════════════
        4. TÍNH NĂNG ĐẾM LƯỢT GHÉ TRANG (TOÀN DIỆN MỌI HÌNH THỨC)
@@ -2006,16 +1996,20 @@
         });
 
         document.getElementById('langDisplay').textContent = lang === 'en' ? 'VI' : 'EN';
-        document.getElementById('mobLangText').textContent = lang === 'en' ? 'VI' : 'EN';
+        const mobLangEl = document.getElementById('mobLangText');
+        if (mobLangEl) mobLangEl.textContent = lang === 'en' ? 'VI' : 'EN';
         updateClock();
     }
 
     document.getElementById('langSwitchBtn').addEventListener('click', () => {
         updateLanguage(currentLanguage === 'en' ? 'vi' : 'en');
     });
-    document.getElementById('mobNavLang').addEventListener('click', () => {
-        updateLanguage(currentLanguage === 'en' ? 'vi' : 'en');
-    });
+    const mobNavLang = document.getElementById('mobNavLang');
+    if (mobNavLang) {
+        mobNavLang.addEventListener('click', () => {
+            updateLanguage(currentLanguage === 'en' ? 'vi' : 'en');
+        });
+    }
 
     /* ── TYPING NAME EFFECT ── */
     const nameEl = document.getElementById('typingName');
@@ -2101,7 +2095,8 @@
     /* ── XUẤT FILE PDF CV ── */
     function printCV() { window.print(); }
     document.getElementById('downloadCvBtn').addEventListener('click', printCV);
-    document.getElementById('mobNavPdf').addEventListener('click', printCV);
+    const mobNavPdf = document.getElementById('mobNavPdf');
+    if (mobNavPdf) mobNavPdf.addEventListener('click', printCV);
 
     /* ── KHỞI TẠO HỆ THỐNG ── */
     document.getElementById('yr').textContent = new Date().getFullYear();
