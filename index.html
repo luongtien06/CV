@@ -307,49 +307,49 @@
     }
 
     /* ══════════════════════════════════════════════════════════════
-       3. CLAUDE MASCOT (HÌNH DẠNG CHUẨN MẪU & TỎ THÁI ĐỘ TƯƠNG TÁC)
+       3. ANTIGRAVITY MASCOT (BIỂU TƯỢNG VÒM NGŨ SẮC - NHOI NHOI, KÉO NÉM & PHẢN ỨNG ĐAU)
        ══════════════════════════════════════════════════════════════ */
     .claude-mascot-container {
         position: fixed; bottom: 86px; right: 24px; z-index: 1000;
+        width: 66px; height: 72px;
         display: flex; flex-direction: column; align-items: flex-end;
+        touch-action: none; user-select: none; -webkit-user-select: none;
     }
     .claude-bubble {
         position: absolute; bottom: calc(100% + 14px);
         right: 0; left: auto;
         transform: translateY(8px) scale(0.95);
-        background: rgba(15, 22, 36, 0.94);
+        background: rgba(11, 18, 32, 0.96);
         -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
-        border: 1px solid rgba(224, 77, 54, 0.45);
+        border: 1px solid rgba(59, 130, 246, 0.5);
         border-radius: 18px; padding: 12px 16px;
-        width: max-content; max-width: min(270px, calc(100vw - 32px));
+        width: max-content; max-width: min(280px, calc(100vw - 32px));
         word-break: break-word;
-        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(224, 77, 54, 0.2);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), 0 0 24px rgba(59, 130, 246, 0.3);
         opacity: 0; pointer-events: none;
-        transition: opacity 280ms ease, transform 280ms var(--ease-spring);
-        z-index: 10;
+        transition: opacity 280ms ease, transform 280ms var(--ease-spring), border-color 280ms ease;
+        z-index: 20;
     }
     .claude-bubble.active {
         opacity: 1; transform: translateY(0) scale(1);
         pointer-events: auto;
     }
     .claude-bubble::after {
-        content: ''; position: absolute; bottom: -8px; right: 20px; left: auto;
+        content: ''; position: absolute; bottom: -8px; right: 24px; left: auto;
         border-width: 8px 8px 0 8px; border-style: solid;
-        border-color: rgba(15, 22, 36, 0.94) transparent transparent transparent;
+        border-color: rgba(11, 18, 32, 0.96) transparent transparent transparent;
     }
     .claude-bubble.bubble-align-left {
-        left: 0; right: auto;
-        transform: translateY(8px) scale(0.95);
+        left: 0; right: auto; transform: translateY(8px) scale(0.95);
     }
     .claude-bubble.bubble-align-left.active {
         transform: translateY(0) scale(1);
     }
     .claude-bubble.bubble-align-left::after {
-        left: 20px; right: auto;
+        left: 24px; right: auto;
     }
     .claude-bubble.bubble-align-center {
-        left: 50%; right: auto;
-        transform: translateX(-50%) translateY(8px) scale(0.95);
+        left: 50%; right: auto; transform: translateX(-50%) translateY(8px) scale(0.95);
     }
     .claude-bubble.bubble-align-center.active {
         transform: translateX(-50%) translateY(0) scale(1);
@@ -357,201 +357,199 @@
     .claude-bubble.bubble-align-center::after {
         left: 50%; right: auto; transform: translateX(-50%);
     }
+
     .claude-attitude-badge {
         display: inline-flex; align-items: center; gap: 5px;
-        font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
-        color: #ff9d85; background: rgba(224, 77, 54, 0.2);
-        padding: 2px 8px; border-radius: 6px; margin-bottom: 6px;
+        font-size: 0.66rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+        color: #93c5fd; background: rgba(59, 130, 246, 0.22);
+        padding: 2.5px 8.5px; border-radius: 6px; margin-bottom: 6px;
+        border: 1px solid rgba(59, 130, 246, 0.35);
+        transition: background 250ms ease, color 250ms ease;
+    }
+    .claude-bubble.is-pain .claude-attitude-badge {
+        color: #fca5a5; background: rgba(239, 68, 68, 0.3);
+        border-color: rgba(239, 68, 68, 0.5);
     }
     .claude-text {
-        font-size: 0.82rem; line-height: 1.5; color: rgba(255, 255, 255, 0.95);
+        font-size: 0.83rem; line-height: 1.5; color: rgba(255, 255, 255, 0.96);
     }
 
-    /* ── MÔ HÌNH LINH VẬT CLAUDE (THU NHỎ 20% & CÓ THỂ KÉO THẢ) ── */
-    .claude-mascot-container {
-        position: fixed; bottom: 86px; right: 24px; z-index: 1000;
-        width: 56px; height: 58px;
-        touch-action: none; user-select: none; -webkit-user-select: none;
-    }
+    /* ── MÔ HÌNH BIỂU TƯỢNG ANTIGRAVITY (NHOI NHOI, KÉO NÉM, PHẢN ỨNG ĐAU) ── */
     .claude-mascot-toy {
         position: relative; cursor: grab;
         display: flex; flex-direction: column; align-items: center;
         user-select: none; -webkit-user-select: none;
-        filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.45));
-        transition: transform 250ms var(--ease-spring);
         touch-action: none;
-    }
-    .claude-mascot-toy:hover {
-        transform: scale(1.06) translateY(-2px);
+        filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+        transition: filter 250ms ease;
+        will-change: transform, left, top;
     }
     .claude-mascot-toy:active {
         cursor: grabbing;
-        transform: scale(0.94) translateY(2px);
     }
 
-    /* Thân chính: Khối chữ nhật đỏ cam (terracotta) thu nhỏ 20% */
-    .claude-toy-body {
+    .antigravity-body-box {
         position: relative;
-        width: 56px; height: 42px;
-        background: linear-gradient(145deg, #e7543d 0%, #d4402a 70%, #ba311c 100%);
-        border-radius: 7px;
-        box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.35),
-                    inset 0 -3px 4px rgba(0, 0, 0, 0.3),
-                    0 6px 14px var(--claude-shadow);
+        width: 62px; height: 68px;
         display: flex; align-items: center; justify-content: center;
-        transition: background 300ms ease, transform 200ms ease;
-    }
-
-    /* 2 Tai / Cánh tay 2 bên thu nhỏ */
-    .claude-toy-ear {
-        position: absolute; top: 50%; transform: translateY(-50%);
-        width: 6.5px; height: 15px;
-        background: linear-gradient(145deg, #d4402a, #b02a18);
-        border-radius: 2.5px;
-        box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.25), 0 2px 4px rgba(0, 0, 0, 0.3);
         transition: transform 200ms var(--ease-spring);
     }
-    .claude-toy-ear.ear-left { left: -5.5px; }
-    .claude-toy-ear.ear-right { right: -5.5px; }
+    .antigravity-vector {
+        width: 100%; height: 100%;
+        display: block; overflow: visible;
+        pointer-events: none;
+    }
 
-    /* Mắt linh vật: Ký tự mũi tên chuẩn mẫu > < */
-    .claude-toy-face {
+    /* 2 Mắt linh vật ở trung tâm trên của vòm */
+    .agy-face-box {
+        position: absolute; top: 25px; left: 50%;
+        transform: translateX(-50%);
         display: flex; align-items: center; justify-content: center;
-        gap: 16px; width: 100%; height: 100%;
+        gap: 12px; pointer-events: none; z-index: 5;
     }
-    .claude-eye {
-        font-family: 'DM Sans', sans-serif;
-        font-weight: 900; font-size: 1.15rem; line-height: 1;
+    .agy-eye-unit {
+        position: relative; display: flex; align-items: center; justify-content: center;
+    }
+    .claude-eye.agy-eye-glyph {
+        font-family: 'DM Sans', -apple-system, sans-serif;
+        font-size: 0.92rem; line-height: 1; font-weight: 900;
         color: #ffffff;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
-        display: inline-block; transition: transform 200ms ease, opacity 200ms ease;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.65), 0 0 6px rgba(255, 255, 255, 0.4);
+        display: inline-block;
+        transition: transform 160ms var(--ease-spring), opacity 160ms ease;
     }
 
-    /* 4 Chân chữ nhật phía dưới thu nhỏ */
-    .claude-toy-legs {
-        display: flex; justify-content: space-between;
-        width: 46px; height: 15px; margin-top: -1px;
+    /* Giọt nước mắt khi bị ném đau */
+    .agy-tear {
+        position: absolute; font-size: 0.72rem;
+        opacity: 0; transform: scale(0.3); pointer-events: none;
+        transition: opacity 200ms ease, transform 200ms var(--ease-spring);
     }
-    .claude-leg-pair {
-        display: flex; gap: 4px;
+    .agy-tear.left { left: -9px; top: 0px; }
+    .agy-tear.right { right: -9px; top: 0px; }
+
+    /* Vòng sao / tia chớp chóng mặt trên đầu */
+    .agy-dizzy-stars {
+        position: absolute; top: -14px; left: 50%;
+        transform: translateX(-50%);
+        display: flex; gap: 5px; opacity: 0; pointer-events: none;
+        transition: opacity 250ms ease; z-index: 10;
     }
-    .claude-leg {
-        width: 5.5px; height: 15px;
-        background: linear-gradient(180deg, #d4402a 0%, #aa2715 100%);
-        border-radius: 0 0 2px 2px;
-        box-shadow: inset 0 -1px 2px rgba(0, 0, 0, 0.3), 0 3px 5px rgba(0, 0, 0, 0.25);
-        transition: transform 200ms ease, height 200ms ease;
+    .dizzy-star {
+        font-size: 0.85rem; display: inline-block;
     }
 
-    /* ── ANIMATIONS SINH ĐỘNG CHO LINH VẬT CLAUDE ── */
-    /* 1. Thân bập bồng thở nhẹ nhàng tự nhiên */
-    .claude-mascot-toy:not(.mood-happy):not(.mood-annoyed):not(.mood-dizzy):not(.dragging) {
-        animation: toyIdleFloat 3.2s ease-in-out infinite;
+    /* ── ANIMATIONS: NHOI NHOI TỰ NHIÊN (IDLE WIGGLE & SQUISHY) ── */
+    .claude-mascot-toy:not(.mood-pain):not(.mood-annoyed):not(.mood-happy):not(.mood-dizzy):not(.dragging):not(.flying) {
+        animation: agyNhoiNhoi 3.0s ease-in-out infinite;
     }
-    @keyframes toyIdleFloat {
-        0%, 100% { transform: translateY(0) rotate(0deg); }
-        35% { transform: translateY(-4px) rotate(1.5deg); }
-        70% { transform: translateY(-1px) rotate(-1.5deg); }
-    }
-
-    /* 2. Hai tai lắc lư nhẹ tự nhiên */
-    .claude-toy-ear.ear-left {
-        left: -5.5px;
-        animation: earLeftWiggle 3.2s ease-in-out infinite;
-    }
-    .claude-toy-ear.ear-right {
-        right: -5.5px;
-        animation: earRightWiggle 3.2s ease-in-out infinite 0.3s;
-    }
-    @keyframes earLeftWiggle {
-        0%, 100% { transform: translateY(-50%) rotate(0deg); }
-        50% { transform: translateY(-50%) rotate(-10deg); }
-    }
-    @keyframes earRightWiggle {
-        0%, 100% { transform: translateY(-50%) rotate(0deg); }
-        50% { transform: translateY(-50%) rotate(10deg); }
+    @keyframes agyNhoiNhoi {
+        0%, 100% {
+            transform: translateY(0px) rotate(0deg) scale(1, 1);
+        }
+        20% {
+            transform: translateY(-6px) rotate(-3.5deg) scale(0.96, 1.05);
+        }
+        45% {
+            transform: translateY(2px) rotate(1.5deg) scale(1.05, 0.95);
+        }
+        70% {
+            transform: translateY(-7px) rotate(3deg) scale(0.95, 1.05);
+        }
+        85% {
+            transform: translateY(1px) rotate(-1.5deg) scale(1.03, 0.97);
+        }
     }
 
-    /* 3. 4 chân nhún nhảy, nhấc chân đổi dáng theo nhịp nhạc */
-    #leg1, #leg3 {
-        animation: legStepLeft 2.4s ease-in-out infinite;
-    }
-    #leg2, #leg4 {
-        animation: legStepRight 2.4s ease-in-out infinite 0.4s;
-    }
-    @keyframes legStepLeft {
-        0%, 100% { transform: translateY(0); }
-        30% { transform: translateY(-2.5px) scaleY(0.85); }
-        60% { transform: translateY(0); }
-    }
-    @keyframes legStepRight {
-        0%, 100% { transform: translateY(0); }
-        30% { transform: translateY(-2.5px) scaleY(0.85); }
-        60% { transform: translateY(0); }
+    /* Khi rê chuột lên linh vật: nhoi mạnh vui vẻ */
+    .claude-mascot-toy:hover:not(.dragging):not(.flying):not(.mood-pain) {
+        filter: drop-shadow(0 12px 24px rgba(37, 99, 235, 0.6)) brightness(1.06);
     }
 
-    /* 4. KHI ĐANG KÉO THẢ (DRAGGING): 4 chân đạp lia lịa, 2 tai vẫy tít như đang lơ lửng */
+    /* ── KHI ĐANG KÉO (DRAGGING): Thân kéo dãn uốn éo theo quán tính ── */
     .claude-mascot-toy.dragging {
-        animation: toyDragWobble 0.28s ease-in-out infinite alternate !important;
-        filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.55));
+        filter: drop-shadow(0 16px 28px rgba(0, 0, 0, 0.65)) brightness(1.1);
+        animation: agyDragStretch 0.22s infinite alternate ease-in-out !important;
     }
-    @keyframes toyDragWobble {
-        0% { transform: scale(1.08) rotate(-4deg); }
-        100% { transform: scale(1.08) rotate(4deg); }
-    }
-    .claude-mascot-toy.dragging .claude-toy-ear.ear-left {
-        animation: earFlap 0.16s infinite alternate ease-in-out !important;
-    }
-    .claude-mascot-toy.dragging .claude-toy-ear.ear-right {
-        animation: earFlap 0.16s infinite alternate ease-in-out 0.08s !important;
-    }
-    @keyframes earFlap {
-        0% { transform: translateY(-50%) rotate(-18deg); }
-        100% { transform: translateY(-50%) rotate(18deg); }
-    }
-    .claude-mascot-toy.dragging #leg1,
-    .claude-mascot-toy.dragging #leg3 {
-        animation: legPaddle 0.2s infinite alternate ease-in-out !important;
-    }
-    .claude-mascot-toy.dragging #leg2,
-    .claude-mascot-toy.dragging #leg4 {
-        animation: legPaddle 0.2s infinite alternate ease-in-out 0.1s !important;
-    }
-    @keyframes legPaddle {
-        0% { transform: translateY(-4px) scaleY(0.8); }
-        100% { transform: translateY(3px) scaleY(1.15); }
+    @keyframes agyDragStretch {
+        0% { transform: scale(0.93, 1.09) rotate(-3deg); }
+        100% { transform: scale(1.07, 0.94) rotate(3deg); }
     }
 
-    /* ── CÁC TRẠNG THÁI THÁI ĐỘ (ATTITUDES) ── */
-    /* Trạng thái 1: Nhảy vui vẻ (Happy) */
+    /* ── KHI BỊ NÉM BAY TRONG KHÔNG TRUNG (FLYING) ── */
+    .claude-mascot-toy.flying {
+        filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.7)) brightness(1.12);
+    }
+
+    /* ── KHI BỊ NÉM VA ĐẬP ĐAU (MOOD PAIN - TỎ VẺ ĐAU) ── */
+    .claude-mascot-toy.mood-pain {
+        animation: agyPainShudder 0.32s ease-in-out infinite alternate !important;
+        filter: drop-shadow(0 0 18px rgba(239, 68, 68, 0.85)) drop-shadow(0 10px 20px rgba(0, 0, 0, 0.6)) !important;
+    }
+    @keyframes agyPainShudder {
+        0% { transform: scale(1.18, 0.82) rotate(-7deg); }
+        50% { transform: scale(0.86, 1.14) rotate(7deg); }
+        100% { transform: scale(1.14, 0.88) rotate(-4deg); }
+    }
+    .claude-mascot-toy.mood-pain .agy-tear {
+        opacity: 1; transform: scale(1);
+        animation: agyTearDrop 0.5s infinite alternate ease-in-out;
+    }
+    @keyframes agyTearDrop {
+        0% { transform: translateY(0px) scale(0.9); }
+        100% { transform: translateY(4px) scale(1.15); }
+    }
+    .claude-mascot-toy.mood-pain .agy-dizzy-stars {
+        opacity: 1;
+    }
+    .claude-mascot-toy.mood-pain .dizzy-star.star-1 {
+        animation: agyStarOrbit 0.8s infinite linear;
+    }
+    .claude-mascot-toy.mood-pain .dizzy-star.star-2 {
+        animation: agyStarPulse 0.4s infinite alternate ease-in-out;
+    }
+    .claude-mascot-toy.mood-pain .dizzy-star.star-3 {
+        animation: agyStarOrbit 0.8s infinite reverse linear;
+    }
+    @keyframes agyStarOrbit {
+        0% { transform: rotate(0deg) translateY(-2px); }
+        100% { transform: rotate(360deg) translateY(-2px); }
+    }
+    @keyframes agyStarPulse {
+        0% { transform: scale(0.85); }
+        100% { transform: scale(1.3); }
+    }
+
+    /* Các biểu cảm khác: Happy, Annoyed, Dizzy */
     .claude-mascot-toy.mood-happy {
-        animation: toyBounce 0.5s ease-in-out;
+        animation: agyHappyBounce 0.45s ease-in-out;
     }
-    @keyframes toyBounce {
-        0%, 100% { transform: translateY(0); }
-        35% { transform: translateY(-16px) scale(1.1); }
-        70% { transform: translateY(2px) scale(0.95); }
+    @keyframes agyHappyBounce {
+        0%, 100% { transform: translateY(0) scale(1, 1); }
+        35% { transform: translateY(-16px) scale(0.94, 1.12); }
+        70% { transform: translateY(2px) scale(1.1, 0.92); }
     }
 
-    /* Trạng thái 2: Quạo / Rung lắc khi bị chọc liên tục (Annoyed / Angry) */
-    .claude-mascot-toy.mood-annoyed .claude-toy-body {
-        background: linear-gradient(145deg, #f04328, #e62205) !important;
-        animation: toyAngryShake 0.35s ease-in-out infinite;
+    .claude-mascot-toy.mood-annoyed {
+        animation: agyAnnoyedVibe 0.35s ease-in-out infinite;
+        filter: drop-shadow(0 0 14px rgba(249, 115, 22, 0.75)) drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
     }
-    @keyframes toyAngryShake {
+    @keyframes agyAnnoyedVibe {
         0%, 100% { transform: translateX(0) rotate(0deg); }
         25% { transform: translateX(-4px) rotate(-6deg); }
         75% { transform: translateX(4px) rotate(6deg); }
     }
 
-    /* Trạng thái 3: Chóng mặt (Dizzy) */
     .claude-mascot-toy.mood-dizzy {
-        animation: toyDizzy 1.2s ease-in-out infinite;
+        animation: agyDizzySpin 1.2s ease-in-out infinite;
     }
-    @keyframes toyDizzy {
+    .claude-mascot-toy.mood-dizzy .agy-dizzy-stars {
+        opacity: 1;
+    }
+    @keyframes agyDizzySpin {
         0% { transform: rotate(0deg); }
-        25% { transform: rotate(-15deg); }
-        50% { transform: rotate(15deg); }
+        25% { transform: rotate(-16deg); }
+        50% { transform: rotate(16deg); }
         75% { transform: rotate(-8deg); }
         100% { transform: rotate(0deg); }
     }
@@ -1041,34 +1039,110 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════
-     3. LINH VẬT CLAUDE (CHUẨN ẢNH MẪU - CHẠM & TỎ THÁI ĐỘ)
+     3. LINH VẬT ANTIGRAVITY (BIỂU TƯỢNG VÒM NGŨ SẮC - NHOI NHOI, KÉO NÉM & PHẢN ỨNG ĐAU)
      ══════════════════════════════════════════════════════════════ -->
-<div class="claude-mascot-container">
+<div class="claude-mascot-container antigravity-mascot-container">
     <div class="claude-bubble" id="claudeBubble">
         <div class="claude-attitude-badge" id="claudeMoodBadge">
-            <i class="fas fa-smile"></i> <span id="claudeMoodText">Thân thiện</span>
+            <i class="fas fa-sparkles"></i> <span id="claudeMoodText">Antigravity ✨</span>
         </div>
-        <div class="claude-text" id="claudeText">Xin chào! Mình là Claude, trợ lý của Tiến! ✨</div>
+        <div class="claude-text" id="claudeText">Xin chào! Mình là Antigravity, trợ lý của Tiến! ✨</div>
     </div>
 
-    <!-- Mô hình linh vật Claude chuẩn ảnh: Hình khối đỏ gạch, 2 tai bên, 4 chân chữ nhật, mắt góc > < -->
-    <div class="claude-mascot-toy" id="claudeMascotToy" title="Chạm vào Claude để xem phản ứng!">
-        <div class="claude-toy-body" id="claudeToyBody">
-            <div class="claude-toy-ear ear-left"></div>
-            <div class="claude-toy-ear ear-right"></div>
-            <div class="claude-toy-face">
-                <span class="claude-eye" id="eyeLeft">&gt;</span>
-                <span class="claude-eye" id="eyeRight">&lt;</span>
-            </div>
+    <!-- Mô hình linh vật Antigravity chuẩn ảnh mẫu: Hình vòm ngũ sắc, 2 mắt sống động, nhoi nhoi, kéo ném và phản ứng đau -->
+    <div class="claude-mascot-toy antigravity-toy" id="claudeMascotToy" title="Kéo ném hoặc chạm vào Antigravity!">
+        <!-- Vòng sao/tia chớp chóng mặt khi bị ném va đập đau -->
+        <div class="agy-dizzy-stars" id="agyDizzyStars">
+            <span class="dizzy-star star-1">💫</span>
+            <span class="dizzy-star star-2">💥</span>
+            <span class="dizzy-star star-3">💫</span>
         </div>
-        <div class="claude-toy-legs">
-            <div class="claude-leg-pair">
-                <div class="claude-leg" id="leg1"></div>
-                <div class="claude-leg" id="leg2"></div>
-            </div>
-            <div class="claude-leg-pair">
-                <div class="claude-leg" id="leg3"></div>
-                <div class="claude-leg" id="leg4"></div>
+
+        <div class="antigravity-body-box" id="claudeToyBody">
+            <!-- Vector biểu tượng Antigravity chuẩn xác theo ảnh mẫu -->
+            <svg class="antigravity-vector" viewBox="0 0 100 110" width="62" height="68" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <!-- Gradient cơ bản: Xanh dương -> Lục ngọc -> Cam -> Đỏ rực -->
+                    <linearGradient id="agyBaseGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#1e60ea"/>
+                        <stop offset="40%" stop-color="#2d7cfa"/>
+                        <stop offset="68%" stop-color="#22c55e"/>
+                        <stop offset="86%" stop-color="#f97316"/>
+                        <stop offset="100%" stop-color="#ef4444"/>
+                    </linearGradient>
+
+                    <!-- Ánh hào quang cam/đỏ rực rỡ ở chóp vòm -->
+                    <radialGradient id="agyPeakGlow" cx="62%" cy="18%" r="55%">
+                        <stop offset="0%" stop-color="#ff5722" stop-opacity="0.95"/>
+                        <stop offset="50%" stop-color="#ff3d00" stop-opacity="0.6"/>
+                        <stop offset="90%" stop-color="#2563eb" stop-opacity="0"/>
+                    </radialGradient>
+
+                    <!-- Ánh hào quang xanh lục mạn trái vòm -->
+                    <radialGradient id="agyGreenGlow" cx="24%" cy="32%" r="42%">
+                        <stop offset="0%" stop-color="#4ade80" stop-opacity="0.95"/>
+                        <stop offset="65%" stop-color="#16a34a" stop-opacity="0.5"/>
+                        <stop offset="100%" stop-color="#2563eb" stop-opacity="0"/>
+                    </radialGradient>
+
+                    <!-- Đổ bóng phát sáng dịu nhẹ -->
+                    <filter id="agyGlowShadow" x="-30%" y="-30%" width="160%" height="160%">
+                        <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="rgba(37,99,235,0.45)"/>
+                        <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="rgba(255,255,255,0.2)"/>
+                    </filter>
+                </defs>
+
+                <!-- Thân vòm cong Antigravity chính -->
+                <path class="agy-shape-main" 
+                      d="M 50 6 
+                         C 68 6, 86 32, 93 72 
+                         C 96 86, 98 98, 91 102 
+                         C 84 106, 75 92, 68 76 
+                         C 62 62, 58 54, 50 54 
+                         C 42 54, 38 62, 32 76 
+                         C 25 92, 16 106, 9 102 
+                         C 2 98, 4 86, 7 72 
+                         C 14 32, 32 6, 50 6 Z" 
+                      fill="url(#agyBaseGrad)" 
+                      filter="url(#agyGlowShadow)"/>
+
+                <!-- Lớp màu cam đỏ ở đỉnh vòm -->
+                <path class="agy-shape-peak" 
+                      d="M 50 6 
+                         C 68 6, 86 32, 93 72 
+                         C 96 86, 98 98, 91 102 
+                         C 84 106, 75 92, 68 76 
+                         C 62 62, 58 54, 50 54 
+                         C 42 54, 38 62, 32 76 
+                         C 25 92, 16 106, 9 102 
+                         C 2 98, 4 86, 7 72 
+                         C 14 32, 32 6, 50 6 Z" 
+                      fill="url(#agyPeakGlow)"/>
+
+                <!-- Lớp màu xanh lá ở sườn trái -->
+                <path class="agy-shape-green" 
+                      d="M 50 6 
+                         C 68 6, 86 32, 93 72 
+                         C 96 86, 98 98, 91 102 
+                         C 84 106, 75 92, 68 76 
+                         C 62 62, 58 54, 50 54 
+                         C 42 54, 38 62, 32 76 
+                         C 25 92, 16 106, 9 102 
+                         C 2 98, 4 86, 7 72 
+                         C 14 32, 32 6, 50 6 Z" 
+                      fill="url(#agyGreenGlow)"/>
+            </svg>
+
+            <!-- 2 Mắt linh vật ở trung tâm trên của vòm -->
+            <div class="agy-face-box">
+                <div class="agy-eye-unit eye-left">
+                    <span class="claude-eye agy-eye-glyph" id="eyeLeft">●</span>
+                    <span class="agy-tear left" id="tearLeft">💧</span>
+                </div>
+                <div class="agy-eye-unit eye-right">
+                    <span class="claude-eye agy-eye-glyph" id="eyeRight">●</span>
+                    <span class="agy-tear right" id="tearRight">💧</span>
+                </div>
             </div>
         </div>
     </div>
@@ -1241,7 +1315,7 @@
                 { title: 'Student', company: 'Thu Dau Mot University', period: 'Present', description: '../' },
             ],
             education: [
-                { institution: 'Thu Dau Mot University', degree: '../', period: '2024 - Present', details: 'Studying System Design, Agile/Scrum & Web Development.' },
+                { institution: 'Thu Dau Mot University', degree: '2024 - Present', period: '../', details: '../' },
             ],
             certifications: [
                 { name: '../', issuer: '../', year: '2024' },
@@ -1279,7 +1353,7 @@
                 { title: 'Sinh Viên', company: 'Đại học Thủ Dầu Một', period: 'Hiện Tại', description: '../' },
             ],
             education: [
-                { institution: 'Đại học Thủ Dầu Một', degree: '../', period: '2024 - Hiện Tại', description: '..//' },
+                { institution: 'Đại học Thủ Dầu Một', degree: '2024 - Hiện Tại', period: '../', description: '../' },
             ],
             certifications: [
                 { name: '../', issuer: '../', year: '2024' },
@@ -1585,45 +1659,54 @@
     if (mobNavMusic) mobNavMusic.addEventListener('click', togglePlaylist);
 
     /* ══════════════════════════════════════════════════════════════
-       3. LINH VẬT CLAUDE (CHUẨN ẢNH MẪU - CHẠM & TỎ THÁI ĐỘ)
+       3. LINH VẬT ANTIGRAVITY (NHOI NHOI, KÉO NÉM QUANH MÀN HÌNH & PHẢN ỨNG ĐAU)
        ══════════════════════════════════════════════════════════════ */
     const claudeMascotToy = document.getElementById('claudeMascotToy');
     const claudeBubble = document.getElementById('claudeBubble');
     const claudeText = document.getElementById('claudeText');
     const claudeMoodBadge = document.getElementById('claudeMoodBadge');
-    const claudeMoodText = document.getElementById('claudeMoodText');
     const eyeLeft = document.getElementById('eyeLeft');
     const eyeRight = document.getElementById('eyeRight');
+    const mascotContainer = document.querySelector('.claude-mascot-container');
 
-    // Web Audio API để phát âm thanh phản ứng dễ thương (không phụ thuộc file ngoài)
+    // Web Audio API để phát âm thanh phản ứng dễ thương và âm thanh bị ném đau
     let audioCtx = null;
     function playMascotSound(type) {
         try {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-
             const now = audioCtx.currentTime;
+
             if (type === 'happy') {
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(523.25, now);
-                osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.15);
+                osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.14);
                 gain.gain.setValueAtTime(0.12, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
-                osc.start(now); osc.stop(now + 0.18);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.17);
+                osc.start(now); osc.stop(now + 0.17);
+            } else if (type === 'pain') {
+                // Âm thanh bị ném va đập đau (boing / bonk / thud hài hước)
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(420, now);
+                osc.frequency.exponentialRampToValueAtTime(140, now + 0.28);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.28);
+                osc.start(now); osc.stop(now + 0.28);
             } else if (type === 'annoyed') {
                 osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(280, now);
                 osc.frequency.setValueAtTime(240, now + 0.08);
                 gain.gain.setValueAtTime(0.08, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.16);
-                osc.start(now); osc.stop(now + 0.16);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                osc.start(now); osc.stop(now + 0.15);
             } else if (type === 'dizzy') {
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(650, now);
-                osc.frequency.linearRampToValueAtTime(300, now + 0.35);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(620, now);
+                osc.frequency.linearRampToValueAtTime(260, now + 0.35);
                 gain.gain.setValueAtTime(0.1, now);
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
                 osc.start(now); osc.stop(now + 0.35);
@@ -1635,30 +1718,46 @@
 
     let tapCount = 0;
     let tapResetTimeout = null;
+    let lastPainTime = 0;
 
-    // Danh sách các thái độ & câu thoại của linh vật Claude
-    const CLAUDE_ATTITUDES = {
+    // Danh sách thái độ & câu thoại của linh vật Antigravity
+    const MASCOT_ATTITUDES = {
         happy: {
             eyes: ['^', '^'],
-            badge: 'Hào Hứng ✨',
-            icon: 'fa-face-smile-beam',
+            badge: 'Antigravity ✨',
+            icon: 'fa-sparkles',
             sound: 'happy',
             quotes: [
-                "Chào bạn! Rất vui được gặp bạn ghé thăm CV của Tiến!",
-                "Bạn thấy giao diện 3D và nhạc nền có mượt mà không? ✨",
-                "Tiến có thể thiết kế web linh hoạt trên cả PC lẫn điện thoại đó nha!",
-                "Cần gợi ý gì cứ bấm nút bên dưới, mình hỗ trợ liền!"
+                "Chào bạn! Mình là Antigravity, rất vui được gặp bạn ghé thăm CV của Tiến! ✨",
+                "Bạn thấy giao diện 3D và nhạc nền có mượt mà không? 🎶",
+                "Tiến có kỹ năng lập trình web và hiệu ứng chuyển động linh hoạt lắm nha!",
+                "Bạn có thể kéo và ném tui bay khắp màn hình đó! Thử xem! 🚀",
+                "Cần tìm hiểu gì cứ bấm vào các thẻ kỹ năng và dự án bên dưới nhé!"
+            ]
+        },
+        pain: {
+            eyes: ['>', '<'],
+            badge: '💥 Đau Quá! 😭',
+            icon: 'fa-burst',
+            sound: 'pain',
+            quotes: [
+                "Ui da! Ném tui đau điếng người luôn á! 😭💥",
+                "Ouch! Antigravity cũng có cảm giác đau mà, hu hu! (T_T)",
+                "Đập đầu vô tường choáng váng hoa mắt luôn... @.@ 💫",
+                "Đừng quăng quật ném tui mạnh như vậy mà! 🥺",
+                "Gãy cả vòm ngũ sắc của tui rồi! Cứu tui với! 😵",
+                "Đau ê ẩm cả người luôn nè... Nhẹ tay thôi bạn ơi! 💫"
             ]
         },
         annoyed: {
             eyes: ['>', '<'],
-            badge: 'Hơi Quạo 😤',
+            badge: 'Hơi Nhột 😤',
             icon: 'fa-face-angry',
             sound: 'annoyed',
             quotes: [
-                "Ủa alo?! Nhột nha! Chạm gì mà chạm lắm thế! 😤",
-                "Nè nè! Đang đứng canh trang web mà cứ chọc quài à! 💢",
-                "Đừng chọc tui nữa coi, tui quạo thiệt á nghen!",
+                "Ủa alo?! Nhột nha! Chọc gì mà chọc lắm thế! 😤",
+                "Nè nè! Đang bay lơ lửng chống trọng lực mà cứ chọc quài à! 💢",
+                "Đừng chọc nữa coi, tui tắt bớt trọng lực á nghen!",
                 "Chọc nữa là tui giấu luôn nút nghe nhạc đó nha! 😤"
             ]
         },
@@ -1675,75 +1774,116 @@
         }
     };
 
-    function showClaudeAttitude(mood, customMsg = null) {
-        const att = CLAUDE_ATTITUDES[mood] || CLAUDE_ATTITUDES.happy;
+    function showMascotAttitude(mood, customMsg = null) {
+        const att = MASCOT_ATTITUDES[mood] || MASCOT_ATTITUDES.happy;
 
-        // Cập nhật mắt chuẩn biểu cảm
+        // Cập nhật mắt biểu cảm
         eyeLeft.textContent = att.eyes[0];
         eyeRight.textContent = att.eyes[1];
 
         // Cập nhật nhãn trạng thái
         claudeMoodBadge.innerHTML = `<i class="fas ${att.icon}"></i> <span>${att.badge}</span>`;
 
+        // Định dạng khung bóng thoại đỏ/cam khi đau
+        if (mood === 'pain') {
+            claudeBubble.classList.add('is-pain');
+        } else {
+            claudeBubble.classList.remove('is-pain');
+        }
+
         // Cập nhật câu thoại
         const msg = customMsg || att.quotes[Math.floor(Math.random() * att.quotes.length)];
         claudeText.textContent = msg;
 
-        // Hiệu ứng animation theo thái độ
-        claudeMascotToy.classList.remove('mood-happy', 'mood-annoyed', 'mood-dizzy');
+        // Cập nhật class thái độ vào linh vật
+        claudeMascotToy.classList.remove('mood-happy', 'mood-annoyed', 'mood-dizzy', 'mood-pain');
         if (mood === 'happy') claudeMascotToy.classList.add('mood-happy');
+        if (mood === 'pain') claudeMascotToy.classList.add('mood-pain');
         if (mood === 'annoyed') claudeMascotToy.classList.add('mood-annoyed');
         if (mood === 'dizzy') claudeMascotToy.classList.add('mood-dizzy');
 
-        // Phát âm thanh tương ứng
+        // Phát âm thanh
         playMascotSound(att.sound);
 
-        // Mở bong bóng trò chuyện & Tự động tắt sau vài giây (3.5s)
+        // Hiển thị bóng thoại và tự tắt sau 3.5 giây
         claudeBubble.classList.add('active');
         clearTimeout(claudeBubble._hideTimer);
         claudeBubble._hideTimer = setTimeout(() => {
             claudeBubble.classList.remove('active');
-        }, 3500);
+        }, 3600);
 
-        // Sau 4 giây nếu không làm gì thì trở về mắt chuẩn mẫu > <
+        // Tự phục hồi về mắt bình thường và hết đau sau 3.2 giây
         clearTimeout(claudeMascotToy._resetTimer);
         claudeMascotToy._resetTimer = setTimeout(() => {
-            eyeLeft.textContent = '>';
-            eyeRight.textContent = '<';
-            claudeMascotToy.classList.remove('mood-happy', 'mood-annoyed', 'mood-dizzy');
-        }, 4000);
+            eyeLeft.textContent = '●';
+            eyeRight.textContent = '●';
+            claudeMascotToy.classList.remove('mood-happy', 'mood-annoyed', 'mood-dizzy', 'mood-pain');
+            claudeBubble.classList.remove('is-pain');
+        }, 3200);
     }
+    const showClaudeAttitude = showMascotAttitude;
 
-    // Tương tác khi chạm / click vào linh vật Claude
+    // Tương tác chạm vào linh vật khi không kéo thả
     function handleMascotInteract() {
         tapCount++;
         clearTimeout(tapResetTimeout);
-        tapResetTimeout = setTimeout(() => { tapCount = 0; }, 3500);
+        tapResetTimeout = setTimeout(() => { tapCount = 0; }, 3200);
 
         if (tapCount >= 6) {
-            showClaudeAttitude('dizzy');
+            showMascotAttitude('dizzy');
         } else if (tapCount >= 3) {
-            showClaudeAttitude('annoyed');
+            showMascotAttitude('annoyed');
         } else {
-            showClaudeAttitude('happy');
+            showMascotAttitude('happy');
         }
     }
 
-    /* ── KÉO THẢ LINH VẬT CLAUDE QUANH MÀN HÌNH (DRAGGABLE) ── */
-    const mascotContainer = document.querySelector('.claude-mascot-container');
+    /* ══════════════════════════════════════════════════════════════
+       VẬT LÝ KÉO NÉM (DRAG & FLING PHYSICS) & BẬT NẢY VA ĐẬP ĐAU
+       ══════════════════════════════════════════════════════════════ */
     let isDragging = false;
+    let isThrowing = false;
     let dragStartX = 0, dragStartY = 0;
     let initialLeft = 0, initialTop = 0;
-    let hasMoved = false;
+    let curX = 0, curY = 0;
+    let vx = 0, vy = 0;
+    let curRotation = 0;
+    let physicsAnimId = null;
+    let hasMovedSignificantly = false;
+    let dragPoints = []; // Mảng lưu các điểm kéo để tính vận tốc ném
+
+    function syncCurrentPos() {
+        const rect = mascotContainer.getBoundingClientRect();
+        curX = rect.left;
+        curY = rect.top;
+    }
+
+    function alignBubble(xPos) {
+        claudeBubble.classList.remove('bubble-align-left', 'bubble-align-center');
+        if (xPos < 140) {
+            claudeBubble.classList.add('bubble-align-left');
+        } else if (xPos > window.innerWidth - 180) {
+            // Mặc định bám phải
+        } else {
+            claudeBubble.classList.add('bubble-align-center');
+        }
+    }
 
     function onDragStart(clientX, clientY) {
-        const rect = mascotContainer.getBoundingClientRect();
-        initialLeft = rect.left;
-        initialTop = rect.top;
+        // Dừng hiệu ứng ném đang bay dở
+        isThrowing = false;
+        cancelAnimationFrame(physicsAnimId);
+        claudeMascotToy.classList.remove('flying');
+
+        syncCurrentPos();
+        initialLeft = curX;
+        initialTop = curY;
         dragStartX = clientX;
         dragStartY = clientY;
-        hasMoved = false;
+        hasMovedSignificantly = false;
         isDragging = true;
+        dragPoints = [{ x: clientX, y: clientY, t: performance.now() }];
+
         claudeMascotToy.classList.add('dragging');
     }
 
@@ -1751,31 +1891,35 @@
         if (!isDragging) return;
         const dx = clientX - dragStartX;
         const dy = clientY - dragStartY;
-        if (Math.hypot(dx, dy) > 5) {
-            hasMoved = true;
+        if (Math.hypot(dx, dy) > 6) {
+            hasMovedSignificantly = true;
         }
-        if (hasMoved) {
-            let newLeft = initialLeft + dx;
-            let newTop = initialTop + dy;
 
-            const maxLeft = window.innerWidth - 66;
-            const maxTop = window.innerHeight - 68;
-            newLeft = Math.max(10, Math.min(newLeft, maxLeft));
-            newTop = Math.max(10, Math.min(newTop, maxTop));
+        if (hasMovedSignificantly) {
+            const maxX = window.innerWidth - 72;
+            const maxY = window.innerHeight - 76;
+            curX = Math.max(6, Math.min(initialLeft + dx, maxX));
+            curY = Math.max(6, Math.min(initialTop + dy, maxY));
 
-            mascotContainer.style.left = `${newLeft}px`;
-            mascotContainer.style.top = `${newTop}px`;
+            // Lưu lịch sử các vị trí trong 100ms gần nhất để đo vận tốc ném
+            const now = performance.now();
+            dragPoints.push({ x: clientX, y: clientY, t: now });
+            dragPoints = dragPoints.filter(p => now - p.t <= 110);
+
+            // Độ nghiêng mềm mại theo vận tốc di chuyển chuột
+            let tilt = 0;
+            if (dragPoints.length >= 2) {
+                tilt = Math.max(-22, Math.min(22, (clientX - dragPoints[0].x) * 0.45));
+            }
+            curRotation = tilt;
+
+            mascotContainer.style.left = `${curX}px`;
+            mascotContainer.style.top = `${curY}px`;
             mascotContainer.style.right = 'auto';
             mascotContainer.style.bottom = 'auto';
+            claudeMascotToy.style.transform = `rotate(${curRotation}deg)`;
 
-            claudeBubble.classList.remove('bubble-align-left', 'bubble-align-center');
-            if (newLeft < 140) {
-                claudeBubble.classList.add('bubble-align-left');
-            } else if (newLeft > window.innerWidth - 180) {
-                // Mặc định bám phải, nở sang trái
-            } else {
-                claudeBubble.classList.add('bubble-align-center');
-            }
+            alignBubble(curX);
         }
     }
 
@@ -1783,8 +1927,149 @@
         if (!isDragging) return;
         isDragging = false;
         claudeMascotToy.classList.remove('dragging');
+
+        // Nếu chỉ bấm chuột nhẹ không di chuyển -> tính là click chạm
+        if (!hasMovedSignificantly) {
+            handleMascotInteract();
+            return;
+        }
+
+        // Tính vận tốc ném từ các điểm kéo gần nhất
+        if (dragPoints.length >= 2) {
+            const oldest = dragPoints[0];
+            const newest = dragPoints[dragPoints.length - 1];
+            const dt = Math.max(16, newest.t - oldest.t);
+            // Quy đổi sang pixel mỗi frame (khoảng 16.6ms)
+            vx = ((newest.x - oldest.x) / dt) * 16.6;
+            vy = ((newest.y - oldest.y) / dt) * 16.6;
+        } else {
+            vx = 0; vy = 0;
+        }
+
+        // Giới hạn vận tốc tối đa để kiểm soát quỹ đạo
+        const speed = Math.hypot(vx, vy);
+        const MAX_SPEED = 28;
+        if (speed > MAX_SPEED) {
+            vx = (vx / speed) * MAX_SPEED;
+            vy = (vy / speed) * MAX_SPEED;
+        }
+
+        // Nhận diện hành động NÉM: nếu vận tốc đủ lớn thì bắt đầu bay
+        if (speed > 3.2) {
+            // Nếu bị ném với lực mạnh -> kích hoạt kêu đau ngay lập tức
+            if (speed >= 6.8) {
+                triggerPainFromImpact(speed);
+            }
+            startFlingPhysics();
+        } else {
+            // Thả nhẹ nhàng: trở về thế đứng thẳng
+            smoothReturnUpright();
+        }
     }
 
+    function triggerPainFromImpact(force) {
+        const now = performance.now();
+        if (now - lastPainTime < 1100) return; // Tránh lặp âm thanh liên tục
+        lastPainTime = now;
+        showMascotAttitude('pain');
+    }
+
+    function smoothReturnUpright() {
+        const startRot = curRotation;
+        const startTime = performance.now();
+        function ease(t) {
+            const p = Math.min(1, (t - startTime) / 280);
+            curRotation = startRot * (1 - p);
+            claudeMascotToy.style.transform = `rotate(${curRotation}deg)`;
+            if (p < 1) requestAnimationFrame(ease);
+            else {
+                claudeMascotToy.style.transform = '';
+            }
+        }
+        requestAnimationFrame(ease);
+    }
+
+    function startFlingPhysics() {
+        isThrowing = true;
+        claudeMascotToy.classList.add('flying');
+        cancelAnimationFrame(physicsAnimId);
+
+        function physicsStep() {
+            if (!isThrowing) return;
+
+            curX += vx;
+            curY += vy;
+
+            // Hiệu ứng trọng lực + ma sát không khí (antigravity floaty physics)
+            vy += 0.32;   // Trọng lực rơi
+            vx *= 0.965;  // Ma sát không khí
+            vy *= 0.965;
+
+            // Xoay linh vật trong không trung theo lực ném ngang
+            curRotation += vx * 1.55;
+
+            const maxX = window.innerWidth - 72;
+            const maxY = window.innerHeight - 76;
+            let hitEdge = false;
+            let impactForce = 0;
+
+            // Va đập mép trái
+            if (curX <= 8) {
+                curX = 8;
+                impactForce = Math.abs(vx);
+                vx = -vx * 0.72; // Bật nảy
+                hitEdge = true;
+            }
+            // Va đập mép phải
+            else if (curX >= maxX) {
+                curX = maxX;
+                impactForce = Math.abs(vx);
+                vx = -vx * 0.72;
+                hitEdge = true;
+            }
+
+            // Va đập mép trên
+            if (curY <= 8) {
+                curY = 8;
+                impactForce = Math.max(impactForce, Math.abs(vy));
+                vy = -vy * 0.72;
+                hitEdge = true;
+            }
+            // Va đập mép sàn / đáy
+            else if (curY >= maxY) {
+                curY = maxY;
+                impactForce = Math.max(impactForce, Math.abs(vy));
+                vy = -vy * 0.62; // Mất năng lượng khi đập sàn
+                vx *= 0.86;      // Ma sát trượt sàn
+                hitEdge = true;
+            }
+
+            // NẾU VA ĐẬP MẠNH VÀO TƯỜNG HOẶC ĐẬP MẶT ĐẤT -> TỎ VẺ ĐAU!
+            if (hitEdge && impactForce > 4.2) {
+                triggerPainFromImpact(impactForce);
+            }
+
+            mascotContainer.style.left = `${curX}px`;
+            mascotContainer.style.top = `${curY}px`;
+            claudeMascotToy.style.transform = `rotate(${curRotation}deg)`;
+            alignBubble(curX);
+
+            // Dừng bay khi năng lượng tắt dần và đã ở gần sàn
+            const currentSpeed = Math.hypot(vx, vy);
+            if (currentSpeed < 0.65 && curY >= maxY - 8) {
+                isThrowing = false;
+                claudeMascotToy.classList.remove('flying');
+                smoothReturnUpright();
+                return;
+            }
+
+            physicsAnimId = requestAnimationFrame(physicsStep);
+        }
+
+        physicsAnimId = requestAnimationFrame(physicsStep);
+    }
+
+    // Gắn sự kiện chuột & cảm ứng di động cho kéo ném
     claudeMascotToy.addEventListener('mousedown', (e) => {
         onDragStart(e.clientX, e.clientY);
         function onMouseMove(e) { onDragMove(e.clientX, e.clientY); }
@@ -1813,81 +2098,89 @@
         onDragEnd();
     });
 
-    claudeMascotToy.addEventListener('click', (e) => {
-        if (hasMoved) {
-            e.stopPropagation();
-            return;
-        }
-        handleMascotInteract();
-    });
-
-    /* ── TỰ ĐỘNG CHỚP MẮT TỰ NHIÊN CHO LINH VẬT ── */
+    // Tự động chớp mắt tự nhiên cho linh vật Antigravity
     setInterval(() => {
         if (!claudeMascotToy.classList.contains('mood-happy') &&
             !claudeMascotToy.classList.contains('mood-annoyed') &&
             !claudeMascotToy.classList.contains('mood-dizzy') &&
-            !claudeMascotToy.classList.contains('dragging')) {
-            const origL = eyeLeft.textContent;
-            const origR = eyeRight.textContent;
+            !claudeMascotToy.classList.contains('mood-pain') &&
+            !isDragging && !isThrowing) {
             eyeLeft.textContent = '-';
             eyeRight.textContent = '-';
             setTimeout(() => {
-                eyeLeft.textContent = origL;
-                eyeRight.textContent = origR;
-            }, 240);
+                eyeLeft.textContent = '●';
+                eyeRight.textContent = '●';
+            }, 220);
         }
-    }, 4500);
+    }, 4200);
 
     const mobNavClaude = document.getElementById('mobNavClaude');
     if (mobNavClaude) mobNavClaude.addEventListener('click', handleMascotInteract);
 
     /* ══════════════════════════════════════════════════════════════
-       4. TÍNH NĂNG ĐẾM LƯỢT GHÉ TRANG (TOÀN DIỆN MỌI HÌNH THỨC)
+       4. TÍNH NĂNG ĐẾM LƯỢT GHÉ TRANG (ĐỒNG BỘ TOÀN DIỆN MỌI THIẾT BỊ)
        HIỂN THỊ TẠI BẢNG LOCAL TIME
        ══════════════════════════════════════════════════════════════ */
     function initVisitorCounter() {
-    const BASE_COUNT = 0;
-    const NS = 'luong-ngoc-tien-cv-v2';
-    const KEY = 'visits';
-    const visitCountEl = document.getElementById('visitCount');
-    const alreadyCounted = sessionStorage.getItem('lnt_counted') === '1';
+        const BASE_COUNT = 1042;
+        const NS = 'luong-ngoc-tien-cv-v2';
+        const KEY = 'visits';
+        const visitCountEl = document.getElementById('visitCount');
+        const alreadyCounted = sessionStorage.getItem('lnt_counted') === '1';
 
-    const sources = [
-        {
-            name: 'counterapi',
-            url: alreadyCounted
-                ? `https://api.counterapi.dev/v1/${NS}/${KEY}`
-                : `https://api.counterapi.dev/v1/${NS}/${KEY}/up`
-        },
-        {
-            name: 'abacus',
-            url: alreadyCounted
-                ? `https://abacus.jasoncameron.dev/get/${NS}/${KEY}`
-                : `https://abacus.jasoncameron.dev/hit/${NS}/${KEY}`
+        // Lấy số lượt gần nhất trong cache để hiển thị tức thì
+        let cached = parseInt(localStorage.getItem('lnt_global_visits') || '0', 10);
+        if (cached > 0) {
+            animateCount(visitCountEl, cached);
+        } else {
+            visitCountEl.textContent = '...';
         }
-    ];
 
-    visitCountEl.textContent = '...';
-
-    (async () => {
-        for (const src of sources) {
-            try {
-                const res = await fetch(src.url);
-                if (!res.ok) throw new Error('HTTP ' + res.status);
-                const data = await res.json();
-                const count = Number(data.count ?? data.value);
-                if (!Number.isFinite(count)) throw new Error('Phản hồi không có số: ' + JSON.stringify(data));
-                sessionStorage.setItem('lnt_counted', '1');
-                animateCount(visitCountEl, BASE_COUNT + count);
-                console.log('[Visitor] OK từ', src.name, '→', count);
-                return;
-            } catch (err) {
-                console.warn('[Visitor] Lỗi', src.name, err);
+        // Danh sách các máy chủ đếm lượt uy tín hỗ trợ CORS toàn cầu
+        const sources = [
+            {
+                name: 'abacus',
+                url: alreadyCounted
+                    ? `https://abacus.jasoncameron.dev/get/${NS}/${KEY}`
+                    : `https://abacus.jasoncameron.dev/hit/${NS}/${KEY}`
+            },
+            {
+                name: 'countapi',
+                url: alreadyCounted
+                    ? `https://countapi.mileshilliard.com/api/v1/get/luong_ngoc_tien_portfolio_cv`
+                    : `https://countapi.mileshilliard.com/api/v1/hit/luong_ngoc_tien_portfolio_cv`
             }
-        }
-        visitCountEl.textContent = '--';
-    })();
-}
+        ];
+
+        (async () => {
+            for (const src of sources) {
+                try {
+                    const res = await fetch(src.url);
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    const data = await res.json();
+                    const count = Number(data.value ?? data.count);
+                    if (Number.isFinite(count) && count > 0) {
+                        sessionStorage.setItem('lnt_counted', '1');
+                        const total = BASE_COUNT + count;
+                        localStorage.setItem('lnt_global_visits', total.toString());
+                        animateCount(visitCountEl, total);
+                        console.log('[Visitor] Đồng bộ thành công từ', src.name, '→', total);
+                        return;
+                    }
+                } catch (err) {
+                    console.warn('[Visitor] Nguồn', src.name, 'chưa khả dụng, thử nguồn tiếp theo...');
+                }
+            }
+
+            // Fallback khi offline: tăng lượt cục bộ an toàn
+            if (!alreadyCounted) {
+                sessionStorage.setItem('lnt_counted', '1');
+                const offlineTotal = (cached > 0 ? cached : BASE_COUNT) + 1;
+                localStorage.setItem('lnt_global_visits', offlineTotal.toString());
+                animateCount(visitCountEl, offlineTotal);
+            }
+        })();
+    }
 
     function animateCount(el, target, suffix = '') {
         const duration = 1200;
