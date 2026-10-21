@@ -282,14 +282,45 @@
         opacity: 0;
         transform: scaleX(1.6) rotate(6deg);
     }
+    .cinematic-radial-rays {
+        position: absolute;
+        width: 140vmax; height: 140vmax;
+        border-radius: 50%;
+        background: repeating-conic-gradient(from 0deg,
+            rgba(56, 189, 248, 0.2) 0deg 8deg,
+            transparent 8deg 24deg,
+            rgba(125, 211, 252, 0.28) 24deg 32deg,
+            transparent 32deg 48deg
+        );
+        -webkit-mask-image: radial-gradient(circle at center, black 12%, transparent 72%);
+        mask-image: radial-gradient(circle at center, black 12%, transparent 72%);
+        opacity: 0;
+        transform: scale(0.35) rotate(0deg);
+        will-change: transform, opacity;
+        transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+    }
+    .cinematic-transition-overlay.stage-buildup .cinematic-radial-rays {
+        opacity: 0.65;
+        transform: scale(0.7) rotate(22deg);
+    }
+    .cinematic-transition-overlay.stage-bloom .cinematic-radial-rays {
+        opacity: 1;
+        transform: scale(1.6) rotate(55deg);
+        filter: blur(3px);
+    }
+    .cinematic-transition-overlay.stage-dissolve .cinematic-radial-rays {
+        opacity: 0;
+        transform: scale(2.2) rotate(85deg);
+        filter: blur(12px);
+    }
     .cinematic-ambient-wash {
         position: absolute; inset: 0;
-        background: radial-gradient(circle at center, rgba(14, 165, 233, 0.28) 0%, rgba(10, 20, 38, 0.75) 60%, rgba(6, 9, 19, 0.95) 100%);
+        background: radial-gradient(circle at center, rgba(224, 242, 254, 0.92) 0%, rgba(56, 189, 248, 0.72) 32%, rgba(14, 116, 144, 0.55) 60%, rgba(6, 9, 19, 0.95) 100%);
         opacity: 0;
         transition: opacity 0.75s ease;
     }
     .cinematic-transition-overlay.stage-bloom .cinematic-ambient-wash {
-        opacity: 0.85;
+        opacity: 0.92;
     }
     .cinematic-transition-overlay.stage-dissolve .cinematic-ambient-wash {
         opacity: 0;
@@ -1531,6 +1562,7 @@
 <!-- Lớp phủ chuyển cảnh điện ảnh quang học cao cấp (Cinematic Optical Flare & Light Transition) -->
 <div class="cinematic-transition-overlay" id="cinematicTransitionOverlay" aria-hidden="true">
     <div class="cinematic-ambient-wash"></div>
+    <div class="cinematic-radial-rays"></div>
     <div class="cinematic-bloom-corona"></div>
     <div class="cinematic-anamorphic-streak"></div>
     <div class="cinematic-core-flare"></div>
@@ -2248,56 +2280,102 @@
                     camera.position.y = currentCamY;
                     camera.lookAt(0, 0, 0);
                 } else {
-                    // ── HIỆU ỨNG CHUYỂN CẢNH CINEMATIC THREE.JS ĐA TẦNG ──
+                    // ── HIỆU ỨNG CHUYỂN CẢNH CINEMATIC THREE.JS: XOAY NHANH DẦN + PHÓNG TO TIẾN SÁT CAMERA ──
                     const timeInWarp = now - warpStartTime;
 
                     if (warpPhase === 1) {
-                        // Giai đoạn 1: Tích tụ ánh sáng (0 -> 380ms)
-                        const p = Math.min(1, timeInWarp / 380);
-                        const easeProg = p * p;
+                        // Giai đoạn 1: Tích tụ năng lượng & bắt đầu xoay nhanh dần + phóng to (0 -> 420ms)
+                        const p1 = Math.min(1, timeInWarp / 420);
+                        const ease1 = p1 * p1; // quadratic ease in
 
+                        // Phóng to chủ thể 3D tiến dần về phía trước
+                        const scale1 = 1.0 + ease1 * 0.95; // 1.0 -> 1.95
+                        techCoreGroup.scale.set(scale1, scale1, scale1);
+
+                        // Gia tốc xoay nhanh dần
+                        const spin1 = 0.0018 + ease1 * 0.026;
+                        techCoreGroup.rotation.y += spin1;
+                        techCoreGroup.rotation.z += ease1 * 0.015;
+                        techCoreGroup.rotation.x += ease1 * 0.008;
+
+                        ring1.rotation.z += 0.003 + ease1 * 0.035;
+                        ring2.rotation.z -= 0.003 + ease1 * 0.03;
+                        ring3.rotation.z += 0.002 + ease1 * 0.025;
+
+                        // Ánh sáng phát sáng mạnh dần
                         if (innerEnergySphere && innerEnergySphere.material) {
-                            innerEnergySphere.material.emissiveIntensity = 0.85 + easeProg * 2.4;
+                            innerEnergySphere.material.emissiveIntensity = 0.85 + ease1 * 2.8;
                         }
                         if (coreLight) {
-                            coreLight.intensity = 3.8 + easeProg * 5.0;
+                            coreLight.intensity = 3.8 + ease1 * 6.5;
+                        }
+                        if (rimLight) {
+                            rimLight.intensity = 2.5 + ease1 * 4.0;
+                        }
+                        if (blueAccentLight) {
+                            blueAccentLight.intensity = 2.0 + ease1 * 3.5;
                         }
 
-                        techCoreGroup.rotation.y += 0.002 + easeProg * 0.008;
-                        techCoreGroup.rotation.z += easeProg * 0.005;
-                        ring1.rotation.z += 0.003 + easeProg * 0.01;
-                        ring2.rotation.z -= 0.003 + easeProg * 0.01;
-                        ring3.rotation.z += 0.002 + easeProg * 0.008;
-
-                        const pulse = 1.0 + Math.sin(timeInWarp * 0.02) * (0.04 + easeProg * 0.06);
+                        const pulse = 1.0 + Math.sin(timeInWarp * 0.025) * (0.04 + ease1 * 0.07);
                         innerEnergySphere.scale.set(pulse, pulse, pulse);
-                        spaceDustPoints.rotation.y += 0.0008 + easeProg * 0.003;
+
+                        // Các hạt sao bắt đầu co nhẹ rồi dịch chuyển
+                        spaceDustPoints.rotation.y += 0.0008 + ease1 * 0.004;
 
                     } else if (warpPhase === 2) {
-                        // Giai đoạn 2: Bùng sáng mềm mại & Camera Warp Dive xuyên tâm (380ms -> 750ms)
-                        const diveTime = Math.min(1, (timeInWarp - 380) / 370);
-                        const easeDive = diveTime * diveTime * (3 - 2 * diveTime); // smoothstep
+                        // Giai đoạn 2: Tăng tốc cực đại, phóng to tiến sát camera, lao xuyên không gian (420ms -> 850ms)
+                        const p2 = Math.min(1, (timeInWarp - 420) / 430);
+                        const ease2 = p2 * p2 * (3 - 2 * p2); // smoothstep
+                        const accel2 = Math.pow(p2, 2.2);
 
-                        camera.position.z = 24 - easeDive * 38; // 24 -> -14
-                        camera.fov = 60 + easeDive * 18;
+                        // Phóng to chủ thể 3D cực đại tiến sát camera (1.95 -> 6.2)
+                        const scale2 = 1.95 + ease2 * 4.25;
+                        techCoreGroup.scale.set(scale2, scale2, scale2);
+
+                        // Camera lướt tiến sát xuyên tâm chủ thể
+                        camera.position.z = 24 - ease2 * 36; // từ 24 tới -12
+                        camera.fov = 60 + ease2 * 22; // góc nhìn mở rộng tạo cảm giác tốc độ ánh sáng
                         camera.updateProjectionMatrix();
 
-                        techCoreGroup.rotation.z += 0.035;
-                        techCoreGroup.rotation.y += 0.025;
-                        ring1.rotation.z += 0.04;
-                        ring2.rotation.z -= 0.035;
+                        // Xoay nhanh dần cực đại (hyper-drive vortex)
+                        const spin2 = 0.028 + accel2 * 0.12;
+                        techCoreGroup.rotation.y += spin2;
+                        techCoreGroup.rotation.z += 0.015 + accel2 * 0.06;
+                        techCoreGroup.rotation.x += 0.008 + accel2 * 0.035;
 
+                        ring1.rotation.z += 0.038 + accel2 * 0.15;
+                        ring2.rotation.z -= 0.033 + accel2 * 0.13;
+                        ring3.rotation.z += 0.027 + accel2 * 0.11;
+
+                        // Ánh sáng bùng phát cực đại đồng bộ
+                        if (innerEnergySphere && innerEnergySphere.material) {
+                            innerEnergySphere.material.emissiveIntensity = 3.65 + ease2 * 2.8;
+                        }
+                        if (coreLight) {
+                            coreLight.intensity = 10.3 + ease2 * 7.5;
+                        }
+
+                        // Các hạt sáng lan tỏa mạnh mẽ ra xung quanh và lao về phía trước
                         const positions = spaceDustPoints.geometry.attributes.position.array;
-                        for (let i = 2; i < positions.length; i += 3) {
-                            positions[i] += 3.2;
-                            if (positions[i] > 30) positions[i] = -90;
+                        const expandFactor = 1.0 + accel2 * 0.025;
+                        const rushSpeed = 3.6 + accel2 * 12.0;
+
+                        for (let i = 0; i < positions.length; i += 3) {
+                            positions[i] *= expandFactor;
+                            positions[i + 1] *= expandFactor;
+                            positions[i + 2] += rushSpeed;
+                            if (positions[i + 2] > 28) {
+                                positions[i] = (Math.random() - 0.5) * 80;
+                                positions[i + 1] = (Math.random() - 0.5) * 80;
+                                positions[i + 2] = -90;
+                            }
                         }
                         spaceDustPoints.geometry.attributes.position.needsUpdate = true;
 
                     } else if (warpPhase === 3) {
-                        // Giai đoạn 3: Giảm tốc & chuẩn bị kết thúc
-                        camera.position.z -= 0.4;
-                        techCoreGroup.rotation.z += 0.015;
+                        // Giai đoạn 3: Giảm tốc sau khi đã lướt qua & chuẩn bị giải phóng
+                        camera.position.z -= 0.3;
+                        techCoreGroup.rotation.y += 0.01;
                     }
                 }
 
@@ -2328,13 +2406,13 @@
         warpPhase = 1;
 
         const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const totalDuration = isReducedMotion ? 500 : 1600;
+        const totalDuration = isReducedMotion ? 500 : 1650;
 
         // Bắt đầu phát nhạc ngay khi người dùng tương tác
         playTrack(currentTrackIdx);
         resetScrollToTop();
 
-        // 1. GIAI ĐOẠN 1: TÍCH TỤ ÁNH SÁNG (0ms)
+        // 1. GIAI ĐOẠN 1: TÍCH TỤ ÁNH SÁNG & BẮT ĐẦU XOAY NHANH DẦN + PHÓNG TO (0ms)
         if (cinematicOverlay) {
             cinematicOverlay.style.display = 'flex';
             cinematicOverlay.className = 'cinematic-transition-overlay stage-buildup';
@@ -2343,7 +2421,7 @@
             welcomeScreen.classList.add('energy-buildup');
         }
 
-        // 2. GIAI ĐOẠN 2: BÙNG SÁNG MỀM MẠI & CAMERA DIVE (sau ~380ms)
+        // 2. GIAI ĐOẠN 2: BÙNG SÁNG MỀM MẠI, XOAY CỰC ĐẠI & PHÓNG TO TIẾN SÁT CAMERA (sau ~420ms)
         setTimeout(() => {
             warpPhase = 2;
             if (cinematicOverlay) {
@@ -2353,9 +2431,9 @@
                 welcomeScreen.classList.remove('energy-buildup');
                 welcomeScreen.classList.add('warping');
             }
-        }, isReducedMotion ? 100 : 380);
+        }, isReducedMotion ? 100 : 420);
 
-        // 3. GIAI ĐOẠN 3: CHUYỂN HÓA CẢNH, ẨN INTRO & BẮT ĐẦU REVEAL CV (sau ~750ms)
+        // 3. GIAI ĐOẠN 3: BÙNG LÓE PHỦ TOÀN MÀN HÌNH, ẨN INTRO & KÍCH HOẠT REVEAL CV (sau ~820ms)
         setTimeout(() => {
             warpPhase = 3;
             if (welcomeScreen) {
@@ -2363,16 +2441,16 @@
             }
             resetScrollToTop();
             triggerCvStaggerReveal();
-        }, isReducedMotion ? 250 : 750);
+        }, isReducedMotion ? 250 : 820);
 
-        // 4. GIAI ĐOẠN 4: ÁNH SÁNG TẢN DẦN, CV LỘ DIỆN TỰ NHIÊN (sau ~960ms)
+        // 4. GIAI ĐOẠN 4: ÁNH SÁNG TẢN DẦN, NỘI DUNG CV XUẤT HIỆN MƯỢT MÀ & SẮC NÉT (sau ~1020ms)
         setTimeout(() => {
             if (cinematicOverlay) {
                 cinematicOverlay.className = 'cinematic-transition-overlay stage-dissolve';
             }
-        }, isReducedMotion ? 350 : 960);
+        }, isReducedMotion ? 350 : 1020);
 
-        // 5. GIAI ĐOẠN 5: HOÀN TẤT, SẮC NÉT & GIẢI PHÓNG TÀI NGUYÊN (sau ~1550ms)
+        // 5. GIAI ĐOẠN 5: HOÀN TẤT, SẮC NÉT & GIẢI PHÓNG TÀI NGUYÊN (sau ~1600ms)
         setTimeout(() => {
             completeIntroTransition();
             resetScrollToTop();
@@ -2424,6 +2502,10 @@
     function completeIntroTransition() {
         isIntroActive = false;
         resetScrollToTop();
+        if (welcomeScreen) {
+            welcomeScreen.classList.add('hidden');
+            welcomeScreen.style.display = 'none';
+        }
         if (introAnimId) {
             cancelAnimationFrame(introAnimId);
             introAnimId = null;
