@@ -2222,38 +2222,48 @@
     }
 
     // Nhấn chuột hoặc chạm vào bất kỳ đâu trên màn hình xuất hiện để vào xem thông tin
-    let pointerStartX = 0, pointerStartY = 0;
-    let isPointerDown = false;
-    let hasMovedSignificantly = false;
+    let welcomeStartX = 0, welcomeStartY = 0;
+    let welcomeIsDown = false;
+    let welcomeHasMoved = false;
 
     if (welcomeScreen) {
         welcomeScreen.addEventListener('pointerdown', (e) => {
-            isPointerDown = true;
-            hasMovedSignificantly = false;
-            pointerStartX = e.clientX;
-            pointerStartY = e.clientY;
+            welcomeIsDown = true;
+            welcomeHasMoved = false;
+            welcomeStartX = e.clientX;
+            welcomeStartY = e.clientY;
         });
 
         welcomeScreen.addEventListener('pointermove', (e) => {
-            if (!isPointerDown) return;
-            if (Math.hypot(e.clientX - pointerStartX, e.clientY - pointerStartY) > 10) {
-                hasMovedSignificantly = true;
+            if (!welcomeIsDown) return;
+            if (Math.hypot(e.clientX - welcomeStartX, e.clientY - welcomeStartY) > 10) {
+                welcomeHasMoved = true;
             }
         });
 
         welcomeScreen.addEventListener('pointerup', (e) => {
-            if (isPointerDown && !hasMovedSignificantly && isIntroActive && !isWarping) {
+            if (welcomeIsDown && !welcomeHasMoved && isIntroActive && !isWarping) {
                 startEnterExperience();
             }
-            isPointerDown = false;
+            welcomeIsDown = false;
         });
 
         welcomeScreen.addEventListener('click', (e) => {
-            if (isIntroActive && !isWarping && !hasMovedSignificantly) {
+            if (isIntroActive && !isWarping && !welcomeHasMoved) {
                 startEnterExperience();
             }
-            hasMovedSignificantly = false;
-            isPointerDown = false;
+            welcomeHasMoved = false;
+            welcomeIsDown = false;
+        });
+    }
+
+    const welcomeHintBtn = document.getElementById('welcomeHint');
+    if (welcomeHintBtn) {
+        welcomeHintBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isIntroActive && !isWarping) {
+                startEnterExperience();
+            }
         });
     }
 
