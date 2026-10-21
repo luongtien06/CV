@@ -70,13 +70,24 @@
         background-image: radial-gradient(circle at center, #0a1426 0%, #060913 100%);
         overflow: hidden;
         cursor: pointer;
-        transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), filter 0.75s ease;
+        transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.85s cubic-bezier(0.16, 1, 0.3, 1);
         will-change: opacity, transform, filter;
+    }
+    .welcome-screen-3d.energy-buildup #welcome3dCard {
+        transform: perspective(1000px) scale(0.96);
+        filter: brightness(1.2);
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+    }
+    .welcome-screen-3d.warping #welcome3dCard {
+        transform: perspective(1000px) scale(1.08) translateY(-12px);
+        opacity: 0;
+        filter: blur(14px) brightness(1.4);
+        transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease, filter 0.6s ease;
     }
     .welcome-screen-3d.hidden {
         opacity: 0; visibility: hidden; pointer-events: none;
-        transform: scale(1.12);
-        filter: blur(12px);
+        transform: scale(1.15);
+        filter: blur(16px);
     }
     #threeWelcomeCanvas {
         position: absolute; inset: 0; width: 100%; height: 100%;
@@ -183,28 +194,147 @@
         50% { transform: translateY(-3px); opacity: 1; }
     }
 
-    /* ── LỚP PHỦ CHUYỂN CẢNH ĐIỆN ẢNH (CINEMATIC TRANSITION OVERLAY) ── */
+    /* ── LỚP PHỦ CHUYỂN CẢNH ĐIỆN ẢNH (CINEMATIC OPTICAL FLARE & BLOOM) ── */
     .cinematic-transition-overlay {
-        position: fixed; inset: 0; z-index: 99998;
+        position: fixed; inset: 0; z-index: 100000;
         pointer-events: none; opacity: 0;
-        background: radial-gradient(circle at center, rgba(165, 200, 255, 0.5) 0%, rgba(37, 99, 235, 0.35) 45%, rgba(6, 11, 20, 0.98) 95%);
-        transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex; align-items: center; justify-content: center;
+        overflow: hidden;
+        transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1);
         will-change: opacity;
     }
-    .cinematic-transition-overlay.active {
+    .cinematic-transition-overlay.stage-buildup {
+        opacity: 0.45;
+    }
+    .cinematic-transition-overlay.stage-bloom {
         opacity: 1;
+    }
+    .cinematic-transition-overlay.stage-dissolve {
+        opacity: 0;
+        transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .cinematic-core-flare {
+        position: absolute;
+        width: 380px; height: 380px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.98) 0%, rgba(224, 242, 254, 0.92) 16%, rgba(56, 189, 248, 0.65) 42%, rgba(2, 132, 199, 0.25) 65%, transparent 75%);
+        transform: scale(0.3);
+        opacity: 0;
+        filter: blur(4px);
+        will-change: transform, opacity;
+        transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease;
+    }
+    .cinematic-transition-overlay.stage-buildup .cinematic-core-flare {
+        opacity: 0.75;
+        transform: scale(0.75);
+    }
+    .cinematic-transition-overlay.stage-bloom .cinematic-core-flare {
+        opacity: 1;
+        transform: scale(3.2);
+        filter: blur(12px);
+    }
+    .cinematic-transition-overlay.stage-dissolve .cinematic-core-flare {
+        opacity: 0;
+        transform: scale(4.5);
+        filter: blur(24px);
+    }
+    .cinematic-bloom-corona {
+        position: absolute;
+        width: 140vmax; height: 140vmax;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(56, 189, 248, 0.5) 0%, rgba(37, 99, 235, 0.38) 32%, rgba(14, 165, 233, 0.18) 55%, transparent 75%);
+        transform: scale(0.2);
+        opacity: 0;
+        will-change: transform, opacity;
+        transition: transform 0.95s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.65s ease;
+    }
+    .cinematic-transition-overlay.stage-buildup .cinematic-bloom-corona {
+        opacity: 0.4;
+        transform: scale(0.5);
+    }
+    .cinematic-transition-overlay.stage-bloom .cinematic-bloom-corona {
+        opacity: 0.92;
+        transform: scale(1.35);
+    }
+    .cinematic-transition-overlay.stage-dissolve .cinematic-bloom-corona {
+        opacity: 0;
+        transform: scale(1.8);
+    }
+    .cinematic-anamorphic-streak {
+        position: absolute;
+        width: 220%; height: 3px;
+        background: linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.4) 20%, rgba(255, 255, 255, 0.95) 50%, rgba(56, 189, 248, 0.4) 80%, transparent 100%);
+        box-shadow: 0 0 24px 6px rgba(125, 211, 252, 0.85), 0 0 60px 18px rgba(37, 99, 235, 0.5);
+        transform: scaleX(0.1) rotate(-8deg);
+        opacity: 0;
+        will-change: transform, opacity;
+        transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.55s ease;
+    }
+    .cinematic-transition-overlay.stage-buildup .cinematic-anamorphic-streak {
+        opacity: 0.6;
+        transform: scaleX(0.5) rotate(-6deg);
+    }
+    .cinematic-transition-overlay.stage-bloom .cinematic-anamorphic-streak {
+        opacity: 1;
+        transform: scaleX(1.1) rotate(0deg);
+    }
+    .cinematic-transition-overlay.stage-dissolve .cinematic-anamorphic-streak {
+        opacity: 0;
+        transform: scaleX(1.6) rotate(6deg);
+    }
+    .cinematic-ambient-wash {
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at center, rgba(14, 165, 233, 0.28) 0%, rgba(10, 20, 38, 0.75) 60%, rgba(6, 9, 19, 0.95) 100%);
+        opacity: 0;
+        transition: opacity 0.75s ease;
+    }
+    .cinematic-transition-overlay.stage-bloom .cinematic-ambient-wash {
+        opacity: 0.85;
+    }
+    .cinematic-transition-overlay.stage-dissolve .cinematic-ambient-wash {
+        opacity: 0;
     }
 
     /* ── CASCADE STAGGER REVEAL CHO CV CARDS ── */
     .cv-stagger-item {
         opacity: 0;
-        transform: translateY(24px);
-        transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
-        will-change: opacity, transform;
+        transform: translateY(30px) scale(0.985);
+        filter: blur(8px);
+        transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+                    filter 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: opacity, transform, filter;
     }
     .cv-stagger-item.revealed {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+    .cv-stagger-item.settled {
+        filter: none !important;
+        transform: none !important;
+        will-change: auto;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .cinematic-core-flare,
+        .cinematic-bloom-corona,
+        .cinematic-anamorphic-streak {
+            display: none !important;
+        }
+        .cinematic-ambient-wash {
+            opacity: 0.9 !important;
+        }
+        .cv-stagger-item {
+            transform: none !important;
+            filter: none !important;
+            transition: opacity 0.35s ease !important;
+        }
+        .welcome-screen-3d {
+            transform: none !important;
+            filter: none !important;
+            transition: opacity 0.35s ease !important;
+        }
     }
 
     /* ══════════════════════════════════════════════════════════════
@@ -1398,8 +1528,13 @@
     </div>
 </div>
 
-<!-- Lớp phủ chuyển cảnh điện ảnh -->
-<div class="cinematic-transition-overlay" id="cinematicTransitionOverlay"></div>
+<!-- Lớp phủ chuyển cảnh điện ảnh quang học cao cấp (Cinematic Optical Flare & Light Transition) -->
+<div class="cinematic-transition-overlay" id="cinematicTransitionOverlay" aria-hidden="true">
+    <div class="cinematic-ambient-wash"></div>
+    <div class="cinematic-bloom-corona"></div>
+    <div class="cinematic-anamorphic-streak"></div>
+    <div class="cinematic-core-flare"></div>
+</div>
 
 <!-- ══════════════════════════════════════════════════════════════
      2. AUDIO BACKGROUND & MUSIC CONTROLLER (ĐỔI BÀI TÙY Ý)
@@ -2063,12 +2198,16 @@
                 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth <= 768 ? 1.5 : 2));
             });
 
-            // Vòng lặp render hiệu quả
+            // Vòng lặp render Three.js chuyển động điện ảnh
+            let warpPhase = 0; // 0 = idle, 1 = buildup (tích tụ), 2 = bloom & warp dive, 3 = dissolve
+            let warpStartTime = 0;
+
             function animateThree() {
                 if (!isIntroActive) return;
                 introAnimId = requestAnimationFrame(animateThree);
 
-                const elapsed = threeClock ? threeClock.getElapsedTime() : performance.now() * 0.001;
+                const now = performance.now();
+                const elapsed = threeClock ? threeClock.getElapsedTime() : now * 0.001;
 
                 if (!isWarping) {
                     // Tốc độ xoay chậm rãi, êm dịu, mượt mà theo yêu cầu
@@ -2109,19 +2248,57 @@
                     camera.position.y = currentCamY;
                     camera.lookAt(0, 0, 0);
                 } else {
-                    warpVelocity = Math.min(3.2, warpVelocity * 1.12 + 0.14);
-                    camera.position.z -= warpVelocity;
+                    // ── HIỆU ỨNG CHUYỂN CẢNH CINEMATIC THREE.JS ĐA TẦNG ──
+                    const timeInWarp = now - warpStartTime;
 
-                    techCoreGroup.rotation.z += 0.05;
-                    techCoreGroup.rotation.y += 0.04;
-                    spaceDustPoints.rotation.z += 0.035;
+                    if (warpPhase === 1) {
+                        // Giai đoạn 1: Tích tụ ánh sáng (0 -> 380ms)
+                        const p = Math.min(1, timeInWarp / 380);
+                        const easeProg = p * p;
 
-                    const positions = spaceDustPoints.geometry.attributes.position.array;
-                    for (let i = 2; i < positions.length; i += 3) {
-                        positions[i] += warpVelocity * 1.6;
-                        if (positions[i] > 30) positions[i] = -90;
+                        if (innerEnergySphere && innerEnergySphere.material) {
+                            innerEnergySphere.material.emissiveIntensity = 0.85 + easeProg * 2.4;
+                        }
+                        if (coreLight) {
+                            coreLight.intensity = 3.8 + easeProg * 5.0;
+                        }
+
+                        techCoreGroup.rotation.y += 0.002 + easeProg * 0.008;
+                        techCoreGroup.rotation.z += easeProg * 0.005;
+                        ring1.rotation.z += 0.003 + easeProg * 0.01;
+                        ring2.rotation.z -= 0.003 + easeProg * 0.01;
+                        ring3.rotation.z += 0.002 + easeProg * 0.008;
+
+                        const pulse = 1.0 + Math.sin(timeInWarp * 0.02) * (0.04 + easeProg * 0.06);
+                        innerEnergySphere.scale.set(pulse, pulse, pulse);
+                        spaceDustPoints.rotation.y += 0.0008 + easeProg * 0.003;
+
+                    } else if (warpPhase === 2) {
+                        // Giai đoạn 2: Bùng sáng mềm mại & Camera Warp Dive xuyên tâm (380ms -> 750ms)
+                        const diveTime = Math.min(1, (timeInWarp - 380) / 370);
+                        const easeDive = diveTime * diveTime * (3 - 2 * diveTime); // smoothstep
+
+                        camera.position.z = 24 - easeDive * 38; // 24 -> -14
+                        camera.fov = 60 + easeDive * 18;
+                        camera.updateProjectionMatrix();
+
+                        techCoreGroup.rotation.z += 0.035;
+                        techCoreGroup.rotation.y += 0.025;
+                        ring1.rotation.z += 0.04;
+                        ring2.rotation.z -= 0.035;
+
+                        const positions = spaceDustPoints.geometry.attributes.position.array;
+                        for (let i = 2; i < positions.length; i += 3) {
+                            positions[i] += 3.2;
+                            if (positions[i] > 30) positions[i] = -90;
+                        }
+                        spaceDustPoints.geometry.attributes.position.needsUpdate = true;
+
+                    } else if (warpPhase === 3) {
+                        // Giai đoạn 3: Giảm tốc & chuẩn bị kết thúc
+                        camera.position.z -= 0.4;
+                        techCoreGroup.rotation.z += 0.015;
                     }
-                    spaceDustPoints.geometry.attributes.position.needsUpdate = true;
                 }
 
                 renderer.render(scene, camera);
@@ -2134,7 +2311,7 @@
         }
     }
 
-    // ── XỬ LÝ CHUYỂN CẢNH TỪ 3D SANG CV (CINEMATIC TRANSITION) ──
+    // ── XỬ LÝ CHUYỂN CẢNH CINEMATIC TỪ 3D SANG GIAO DIỆN CHÍNH ──
     const welcomeScreen = document.getElementById('welcomeScreen');
     const cinematicOverlay = document.getElementById('cinematicTransitionOverlay');
 
@@ -2147,26 +2324,64 @@
     function startEnterExperience() {
         if (!isIntroActive || isWarping) return;
         isWarping = true;
+        warpStartTime = performance.now();
+        warpPhase = 1;
 
-        // Mặc định cuộn về đầu trang ngay khi bắt đầu chuyển cảnh
+        const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const totalDuration = isReducedMotion ? 500 : 1600;
+
+        // Bắt đầu phát nhạc ngay khi người dùng tương tác
+        playTrack(currentTrackIdx);
         resetScrollToTop();
 
-        if (cinematicOverlay) cinematicOverlay.classList.add('active');
-        playTrack(currentTrackIdx);
+        // 1. GIAI ĐOẠN 1: TÍCH TỤ ÁNH SÁNG (0ms)
+        if (cinematicOverlay) {
+            cinematicOverlay.style.display = 'flex';
+            cinematicOverlay.className = 'cinematic-transition-overlay stage-buildup';
+        }
+        if (welcomeScreen) {
+            welcomeScreen.classList.add('energy-buildup');
+        }
 
+        // 2. GIAI ĐOẠN 2: BÙNG SÁNG MỀM MẠI & CAMERA DIVE (sau ~380ms)
         setTimeout(() => {
-            if (welcomeScreen) welcomeScreen.classList.add('hidden');
-            resetScrollToTop();
-        }, 550);
+            warpPhase = 2;
+            if (cinematicOverlay) {
+                cinematicOverlay.className = 'cinematic-transition-overlay stage-bloom';
+            }
+            if (welcomeScreen) {
+                welcomeScreen.classList.remove('energy-buildup');
+                welcomeScreen.classList.add('warping');
+            }
+        }, isReducedMotion ? 100 : 380);
 
+        // 3. GIAI ĐOẠN 3: CHUYỂN HÓA CẢNH, ẨN INTRO & BẮT ĐẦU REVEAL CV (sau ~750ms)
+        setTimeout(() => {
+            warpPhase = 3;
+            if (welcomeScreen) {
+                welcomeScreen.classList.add('hidden');
+            }
+            resetScrollToTop();
+            triggerCvStaggerReveal();
+        }, isReducedMotion ? 250 : 750);
+
+        // 4. GIAI ĐOẠN 4: ÁNH SÁNG TẢN DẦN, CV LỘ DIỆN TỰ NHIÊN (sau ~960ms)
+        setTimeout(() => {
+            if (cinematicOverlay) {
+                cinematicOverlay.className = 'cinematic-transition-overlay stage-dissolve';
+            }
+        }, isReducedMotion ? 350 : 960);
+
+        // 5. GIAI ĐOẠN 5: HOÀN TẤT, SẮC NÉT & GIẢI PHÓNG TÀI NGUYÊN (sau ~1550ms)
         setTimeout(() => {
             completeIntroTransition();
             resetScrollToTop();
-        }, 850);
+        }, totalDuration);
 
+        // Lời chào mừng linh vật sau khi CV ổn định hoàn toàn
         setTimeout(() => {
             showClaudeAttitude('happy', "Chào mừng bạn đã đến với CV của Tiến! Chúc bạn có trải nghiệm tuyệt vời! 🎶✨");
-        }, 1300);
+        }, totalDuration + 350);
     }
 
     function skipToCV(immediate = false) {
@@ -2178,18 +2393,28 @@
                 welcomeScreen.classList.add('hidden');
                 welcomeScreen.style.display = 'none';
             }
+            if (cinematicOverlay) cinematicOverlay.style.display = 'none';
             completeIntroTransition();
-            resetScrollToTop();
             return;
         }
 
+        // Bỏ qua với chuyển cảnh rút gọn mềm mại (420ms)
+        if (cinematicOverlay) {
+            cinematicOverlay.style.display = 'flex';
+            cinematicOverlay.className = 'cinematic-transition-overlay stage-bloom';
+        }
         if (welcomeScreen) welcomeScreen.classList.add('hidden');
         playTrack(currentTrackIdx);
 
         setTimeout(() => {
+            if (cinematicOverlay) cinematicOverlay.className = 'cinematic-transition-overlay stage-dissolve';
+            triggerCvStaggerReveal();
+        }, 180);
+
+        setTimeout(() => {
             completeIntroTransition();
             resetScrollToTop();
-        }, 350);
+        }, 420);
 
         setTimeout(() => {
             showClaudeAttitude('happy', "Chào mừng bạn đã đến với CV của Tiến! ✨");
@@ -2204,12 +2429,14 @@
             introAnimId = null;
         }
         if (cinematicOverlay) {
-            cinematicOverlay.classList.remove('active');
-            setTimeout(() => {
-                if (cinematicOverlay && cinematicOverlay.parentNode) cinematicOverlay.style.display = 'none';
-            }, 550);
+            cinematicOverlay.className = 'cinematic-transition-overlay';
+            cinematicOverlay.style.display = 'none';
         }
-        triggerCvStaggerReveal();
+        // Đảm bảo toàn bộ các thẻ CV trở về trạng thái sắc nét tuyệt đối, không lưu lại filter/transform
+        document.querySelectorAll('.cv-stagger-item').forEach(card => {
+            card.classList.add('revealed');
+            card.classList.add('settled');
+        });
     }
 
     function triggerCvStaggerReveal() {
@@ -2217,6 +2444,9 @@
         staggerCards.forEach((card, idx) => {
             setTimeout(() => {
                 card.classList.add('revealed');
+                setTimeout(() => {
+                    card.classList.add('settled');
+                }, 750);
             }, idx * 75);
         });
     }
