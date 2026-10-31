@@ -76,13 +76,13 @@
     .welcome-screen-3d.energy-buildup #welcome3dCard {
         transform: perspective(1000px) scale(0.96);
         filter: brightness(1.25);
-        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+        transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), filter 0.55s ease;
     }
     .welcome-screen-3d.warping #welcome3dCard {
         transform: perspective(1000px) scale(2.8) translateY(-20px);
         opacity: 0;
         filter: blur(14px) brightness(2.0);
-        transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease, filter 0.4s ease;
+        transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.7s ease, filter 0.75s ease;
     }
     .welcome-screen-3d.hidden {
         opacity: 0; visibility: hidden; pointer-events: none;
@@ -200,7 +200,7 @@
         pointer-events: none; opacity: 0;
         display: flex; align-items: center; justify-content: center;
         overflow: hidden;
-        transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1);
         will-change: opacity;
     }
     .cinematic-transition-overlay.stage-buildup {
@@ -208,11 +208,11 @@
     }
     .cinematic-transition-overlay.stage-bloom {
         opacity: 1;
-        transition: opacity 0.3s ease-out;
+        transition: opacity 0.5s ease-out;
     }
     .cinematic-transition-overlay.stage-dissolve {
         opacity: 0;
-        transition: opacity 0.62s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: opacity 0.95s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .cinematic-core-flare {
         position: absolute;
@@ -223,7 +223,7 @@
         opacity: 0;
         filter: blur(4px);
         will-change: transform, opacity;
-        transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+        transition: transform 1.1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.55s ease;
     }
     .cinematic-transition-overlay.stage-buildup .cinematic-core-flare {
         opacity: 0.75;
@@ -238,7 +238,7 @@
         opacity: 0;
         transform: scale(4.8);
         filter: blur(28px);
-        transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.55s ease, filter 0.6s ease;
+        transition: transform 1.0s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.85s ease, filter 0.95s ease;
     }
     .cinematic-bloom-corona {
         position: absolute;
@@ -248,7 +248,7 @@
         transform: scale(0.2);
         opacity: 0;
         will-change: transform, opacity;
-        transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease;
+        transition: transform 1.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.65s ease;
     }
     .cinematic-transition-overlay.stage-buildup .cinematic-bloom-corona {
         opacity: 0.4;
@@ -261,7 +261,7 @@
     .cinematic-transition-overlay.stage-dissolve .cinematic-bloom-corona {
         opacity: 0;
         transform: scale(1.9);
-        transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.55s ease;
+        transition: transform 1.0s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.85s ease;
     }
     .cinematic-anamorphic-streak {
         position: absolute;
@@ -271,7 +271,7 @@
         transform: scaleX(0.1) rotate(-8deg);
         opacity: 0;
         will-change: transform, opacity;
-        transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease;
+        transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.65s ease;
     }
     .cinematic-transition-overlay.stage-buildup .cinematic-anamorphic-streak {
         opacity: 0.6;
@@ -284,7 +284,7 @@
     .cinematic-transition-overlay.stage-dissolve .cinematic-anamorphic-streak {
         opacity: 0;
         transform: scaleX(1.7) rotate(6deg);
-        transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.55s ease;
+        transition: transform 1.0s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.85s ease;
     }
     .cinematic-radial-rays {
         position: absolute;
@@ -301,7 +301,7 @@
         opacity: 0;
         transform: scale(0.35) rotate(0deg);
         will-change: transform, opacity;
-        transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease;
+        transition: transform 1.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.65s ease;
     }
     .cinematic-transition-overlay.stage-buildup .cinematic-radial-rays {
         opacity: 0.65;
@@ -316,21 +316,21 @@
         opacity: 0;
         transform: scale(2.4) rotate(90deg);
         filter: blur(14px);
-        transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.55s ease;
+        transition: transform 1.0s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.85s ease;
     }
     .cinematic-ambient-wash {
         position: absolute; inset: 0;
         background: radial-gradient(circle at center, rgba(224, 242, 254, 0.95) 0%, rgba(56, 189, 248, 0.78) 32%, rgba(14, 116, 144, 0.58) 60%, rgba(6, 9, 19, 0.95) 100%);
         opacity: 0;
-        transition: opacity 0.55s ease;
+        transition: opacity 0.75s ease;
     }
     .cinematic-transition-overlay.stage-bloom .cinematic-ambient-wash {
         opacity: 0.96;
-        transition: opacity 0.3s ease-out;
+        transition: opacity 0.45s ease-out;
     }
     .cinematic-transition-overlay.stage-dissolve .cinematic-ambient-wash {
         opacity: 0;
-        transition: opacity 0.62s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: opacity 0.95s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     /* ── CASCADE STAGGER REVEAL CHO CV CARDS ── */
@@ -338,9 +338,9 @@
         opacity: 0;
         transform: translateY(30px) scale(0.985);
         filter: blur(8px);
-        transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
-                    transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
-                    filter 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: opacity 0.95s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.95s cubic-bezier(0.16, 1, 0.3, 1),
+                    filter 0.85s cubic-bezier(0.16, 1, 0.3, 1);
         will-change: opacity, transform, filter;
     }
     .cv-stagger-item.revealed {
@@ -1880,15 +1880,15 @@
 
     /* Playlist nhạc có sẵn trong thư mục music/ */
     const PLAYLIST = [
-        { title: 'Tìm em', artist: 'Hngle ft Bảo Anh', src: 'music/Tìm em.mp3' },
+        // { title: 'Tìm em', artist: 'Hngle ft Bảo Anh', src: 'music/Tìm em.mp3' },
         { title: 'Dusk till dawn', artist: 'ZAYN & Sia', src: 'music/Dusk till dawn.mp3' },
         { title: 'Trap queen', artist: 'Adriana Gomez', src: 'music/Trap queen.mp3' },
         { title: 'Snowfall', artist: 'Oneheart', src: 'music/Snowfall.mp3' },
         { title: 'Hope to see you again', artist: 'antent', src: 'music/Hope to see you again.mp3' },
         { title: 'Lanters', artist: 'Xomu', src: 'music/Lanters.mp3' },
-        { title: 'Tera', artist: 'Xomu', src: 'music/Tera.mp3' },
-        { title: 'Pagoda', artist: 'Xomu', src: 'music/Pagoda.mp3' },
-        // { title: 'Daylight', artist: 'Seredis', src: 'music/Daylight seredis.mp3' },
+        // { title: 'Tera', artist: 'Xomu', src: 'music/Tera.mp3' },
+        // { title: 'Pagoda', artist: 'Xomu', src: 'music/Pagoda.mp3' },
+        { title: 'Daylight', artist: 'Seredis', src: 'music/Daylight seredis.mp3' },
         // { title: 'Lightning Moment', artist: 'Original', src: 'music/Lightning moment.mp3' },
         // { title: 'Lightning Moment (Beat)', artist: 'Beat', src: 'music/Lightning moment beat.mp3' },
         // { title: 'Lightning Moment (Remix)', artist: 'Remix', src: 'music/Lightning moment remix.mp3' },
@@ -2290,130 +2290,130 @@
                     const timeInWarp = now - warpStartTime;
 
                     if (warpPhase === 1) {
-                        // Giai đoạn 1: Tích tụ năng lượng, bắt đầu xoay nhanh dần đa trục & bắt đầu thu hẹp quỹ đạo (0 -> 300ms)
-                        const p1 = Math.min(1, timeInWarp / 300);
+                        // Giai đoạn 1: Tích tụ năng lượng, bắt đầu xoay êm dịu đa trục & bắt đầu thu hẹp quỹ đạo (0 -> 550ms)
+                        const p1 = Math.min(1, timeInWarp / 550);
                         const ease1 = p1 * p1; // quadratic ease in
 
                         // 1. Zoom toàn cảnh: Cụm 3D trung tâm bắt đầu tiến nhẹ về phía camera
-                        const scale1 = 1.0 + ease1 * 0.55; // 1.0 -> 1.55
+                        const scale1 = 1.0 + ease1 * 0.45; // 1.0 -> 1.45
                         techCoreGroup.scale.set(scale1, scale1, scale1);
-                        camera.position.z = 24 - ease1 * 4.0; // 24 -> 20
+                        camera.position.z = 24 - ease1 * 3.5; // 24 -> 20.5
 
                         // Gia tốc xoay của techCoreGroup
-                        const spin1 = 0.002 + ease1 * 0.028;
+                        const spin1 = 0.0015 + ease1 * 0.016;
                         techCoreGroup.rotation.y += spin1;
-                        techCoreGroup.rotation.z += ease1 * 0.016;
-                        techCoreGroup.rotation.x += ease1 * 0.010;
+                        techCoreGroup.rotation.z += ease1 * 0.009;
+                        techCoreGroup.rotation.x += ease1 * 0.006;
 
                         // 2. VÒNG TRÒN QUỸ ĐẠO: Xoay rõ rệt trên nhiều trục (X, Y, Z) tạo cảm giác không gian 3D
-                        ring1.rotation.x += 0.006 + ease1 * 0.045;
-                        ring1.rotation.y += 0.005 + ease1 * 0.038;
-                        ring1.rotation.z += 0.008 + ease1 * 0.065;
+                        ring1.rotation.x += 0.003 + ease1 * 0.025;
+                        ring1.rotation.y += 0.0025 + ease1 * 0.022;
+                        ring1.rotation.z += 0.004 + ease1 * 0.038;
 
-                        ring2.rotation.x -= 0.005 + ease1 * 0.042;
-                        ring2.rotation.y += 0.007 + ease1 * 0.048;
-                        ring2.rotation.z -= 0.006 + ease1 * 0.055;
+                        ring2.rotation.x -= 0.003 + ease1 * 0.024;
+                        ring2.rotation.y += 0.0035 + ease1 * 0.028;
+                        ring2.rotation.z -= 0.0035 + ease1 * 0.032;
 
-                        ring3.rotation.x += 0.007 + ease1 * 0.040;
-                        ring3.rotation.y -= 0.005 + ease1 * 0.045;
-                        ring3.rotation.z += 0.006 + ease1 * 0.050;
+                        ring3.rotation.x += 0.0035 + ease1 * 0.022;
+                        ring3.rotation.y -= 0.0025 + ease1 * 0.026;
+                        ring3.rotation.z += 0.003 + ease1 * 0.028;
 
                         // 3. THU HẸP QUỸ ĐẠO: Vòng và các vệ tinh bắt đầu co dần về tâm màn hình
-                        const ringContract1 = 1.0 - ease1 * 0.35; // 1.0 -> 0.65
+                        const ringContract1 = 1.0 - ease1 * 0.30; // 1.0 -> 0.70
                         ring1.scale.set(ringContract1, ringContract1, ringContract1);
                         ring2.scale.set(ringContract1, ringContract1, ringContract1);
                         ring3.scale.set(ringContract1, ringContract1, ringContract1);
 
                         // Vệ tinh quay nhanh dần trên quỹ đạo
-                        const satT1 = elapsed * 0.8 + timeInWarp * 0.006;
+                        const satT1 = elapsed * 0.6 + timeInWarp * 0.0035;
                         sat1.position.set(Math.cos(satT1 * 2) * 8.2, Math.sin(satT1 * 2) * 8.2, 0);
                         sat2.position.set(Math.cos(-satT1 * 2.2) * 10.2, Math.sin(-satT1 * 2.2) * 10.2, 0);
                         sat3.position.set(Math.cos(satT1 * 2.5) * 12.2, Math.sin(satT1 * 2.5) * 12.2, 0);
 
                         // Tăng độ phát sáng của các vòng và lõi
-                        if (ring1.material) ring1.material.emissiveIntensity = 0.7 + ease1 * 1.8;
-                        if (ring2.material) ring2.material.emissiveIntensity = 0.65 + ease1 * 1.8;
-                        if (ring3.material) ring3.material.emissiveIntensity = 0.6 + ease1 * 1.8;
+                        if (ring1.material) ring1.material.emissiveIntensity = 0.7 + ease1 * 1.5;
+                        if (ring2.material) ring2.material.emissiveIntensity = 0.65 + ease1 * 1.5;
+                        if (ring3.material) ring3.material.emissiveIntensity = 0.6 + ease1 * 1.5;
 
                         if (innerEnergySphere && innerEnergySphere.material) {
-                            innerEnergySphere.material.emissiveIntensity = 0.85 + ease1 * 3.2;
+                            innerEnergySphere.material.emissiveIntensity = 0.85 + ease1 * 2.5;
                         }
                         if (coreLight) {
-                            coreLight.intensity = 3.8 + ease1 * 8.0;
+                            coreLight.intensity = 3.8 + ease1 * 6.0;
                         }
                         if (rimLight) {
-                            rimLight.intensity = 2.5 + ease1 * 4.5;
+                            rimLight.intensity = 2.5 + ease1 * 3.5;
                         }
                         if (blueAccentLight) {
-                            blueAccentLight.intensity = 2.0 + ease1 * 4.0;
+                            blueAccentLight.intensity = 2.0 + ease1 * 3.0;
                         }
 
-                        const pulse = 1.0 + Math.sin(timeInWarp * 0.03) * (0.04 + ease1 * 0.08);
+                        const pulse = 1.0 + Math.sin(timeInWarp * 0.02) * (0.04 + ease1 * 0.06);
                         innerEnergySphere.scale.set(pulse, pulse, pulse);
 
-                        spaceDustPoints.rotation.y += 0.001 + ease1 * 0.006;
+                        spaceDustPoints.rotation.y += 0.0008 + ease1 * 0.004;
 
                     } else if (warpPhase === 2) {
-                        // Giai đoạn 2: Tăng tốc cực đại, xoay đa trục dữ dội, quỹ đạo thu hẹp lao nhanh về tâm & zoom toàn cảnh xuyên không (300ms -> 720ms)
-                        const p2 = Math.min(1, (timeInWarp - 300) / 420);
+                        // Giai đoạn 2: Tăng tốc cực đại, xoay đa trục dữ dội, quỹ đạo thu hẹp lao nhanh về tâm & zoom toàn cảnh xuyên không (550ms -> 1350ms, 800ms)
+                        const p2 = Math.min(1, (timeInWarp - 550) / 800);
                         const ease2 = p2 * p2 * (3 - 2 * p2); // smoothstep
-                        const accel2 = Math.pow(p2, 2.2);
+                        const accel2 = Math.pow(p2, 1.8);
 
                         // 1. ZOOM TOÀN CẢNH: Camera lao xuyên tâm & cụm 3D trung tâm phóng to cực đại
-                        const scale2 = 1.55 + ease2 * 4.85; // 1.55 -> 6.4
+                        const scale2 = 1.45 + ease2 * 4.95; // 1.45 -> 6.4
                         techCoreGroup.scale.set(scale2, scale2, scale2);
 
-                        camera.position.z = 20 - ease2 * 34; // từ 20 tới -14 (lao xuyên qua tâm)
+                        camera.position.z = 20.5 - ease2 * 34.5; // từ 20.5 tới -14 (lao xuyên qua tâm)
                         camera.fov = 60 + ease2 * 24; // góc nhìn mở rộng 60 -> 84
                         camera.updateProjectionMatrix();
 
                         // TechCoreGroup xoáy lốc
-                        const spin2 = 0.032 + accel2 * 0.14;
+                        const spin2 = 0.018 + accel2 * 0.085;
                         techCoreGroup.rotation.y += spin2;
-                        techCoreGroup.rotation.z += 0.018 + accel2 * 0.07;
-                        techCoreGroup.rotation.x += 0.012 + accel2 * 0.045;
+                        techCoreGroup.rotation.z += 0.010 + accel2 * 0.045;
+                        techCoreGroup.rotation.x += 0.007 + accel2 * 0.030;
 
                         // 2. VÒNG TRÒN QUỸ ĐẠO: Xoay đa trục cực nhanh (3D gyroscopic vortex)
-                        ring1.rotation.x += 0.05 + accel2 * 0.18;
-                        ring1.rotation.y += 0.042 + accel2 * 0.16;
-                        ring1.rotation.z += 0.07 + accel2 * 0.24;
+                        ring1.rotation.x += 0.028 + accel2 * 0.11;
+                        ring1.rotation.y += 0.024 + accel2 * 0.095;
+                        ring1.rotation.z += 0.042 + accel2 * 0.15;
 
-                        ring2.rotation.x -= 0.046 + accel2 * 0.17;
-                        ring2.rotation.y += 0.052 + accel2 * 0.20;
-                        ring2.rotation.z -= 0.062 + accel2 * 0.22;
+                        ring2.rotation.x -= 0.026 + accel2 * 0.105;
+                        ring2.rotation.y += 0.028 + accel2 * 0.12;
+                        ring2.rotation.z -= 0.036 + accel2 * 0.135;
 
-                        ring3.rotation.x += 0.044 + accel2 * 0.16;
-                        ring3.rotation.y -= 0.048 + accel2 * 0.19;
-                        ring3.rotation.z += 0.056 + accel2 * 0.21;
+                        ring3.rotation.x += 0.025 + accel2 * 0.10;
+                        ring3.rotation.y -= 0.027 + accel2 * 0.115;
+                        ring3.rotation.z += 0.032 + accel2 * 0.125;
 
                         // 3. THU HẸP QUỸ ĐẠO & LAO NHANH VỀ TÂM: Các vòng co lại sát tâm điểm (singularity collapse)
-                        const ringContract2 = Math.max(0.04, 0.65 - ease2 * 0.61); // 0.65 -> 0.04
+                        const ringContract2 = Math.max(0.04, 0.70 - ease2 * 0.66); // 0.70 -> 0.04
                         ring1.scale.set(ringContract2, ringContract2, ringContract2);
                         ring2.scale.set(ringContract2, ringContract2, ringContract2);
                         ring3.scale.set(ringContract2, ringContract2, ringContract2);
 
                         // Vệ tinh xoay cuồng nhiệt trên quỹ đạo đang thu hẹp về tâm
-                        const satT2 = elapsed * 1.5 + timeInWarp * 0.02;
-                        sat1.position.set(Math.cos(satT2 * 3.5) * 8.2, Math.sin(satT2 * 3.5) * 8.2, 0);
-                        sat2.position.set(Math.cos(-satT2 * 4.0) * 10.2, Math.sin(-satT2 * 4.0) * 10.2, 0);
-                        sat3.position.set(Math.cos(satT2 * 4.5) * 12.2, Math.sin(satT2 * 4.5) * 12.2, 0);
+                        const satT2 = elapsed * 1.0 + timeInWarp * 0.012;
+                        sat1.position.set(Math.cos(satT2 * 2.8) * 8.2, Math.sin(satT2 * 2.8) * 8.2, 0);
+                        sat2.position.set(Math.cos(-satT2 * 3.2) * 10.2, Math.sin(-satT2 * 3.2) * 10.2, 0);
+                        sat3.position.set(Math.cos(satT2 * 3.6) * 12.2, Math.sin(satT2 * 3.6) * 12.2, 0);
 
                         // Rực sáng điện ảnh cực đại ở tâm điểm
-                        if (ring1.material) ring1.material.emissiveIntensity = 2.5 + ease2 * 4.5;
-                        if (ring2.material) ring2.material.emissiveIntensity = 2.45 + ease2 * 4.5;
-                        if (ring3.material) ring3.material.emissiveIntensity = 2.4 + ease2 * 4.5;
+                        if (ring1.material) ring1.material.emissiveIntensity = 2.2 + ease2 * 4.8;
+                        if (ring2.material) ring2.material.emissiveIntensity = 2.15 + ease2 * 4.8;
+                        if (ring3.material) ring3.material.emissiveIntensity = 2.1 + ease2 * 4.8;
 
                         if (innerEnergySphere && innerEnergySphere.material) {
-                            innerEnergySphere.material.emissiveIntensity = 4.05 + ease2 * 4.8;
+                            innerEnergySphere.material.emissiveIntensity = 3.35 + ease2 * 5.2;
                         }
                         if (coreLight) {
-                            coreLight.intensity = 11.8 + ease2 * 14.5;
+                            coreLight.intensity = 9.8 + ease2 * 16.5;
                         }
 
                         // Các hạt sáng lao nhanh về phía trước thành vệt sao tốc độ ánh sáng
                         const positions = spaceDustPoints.geometry.attributes.position.array;
-                        const expandFactor = 1.0 + accel2 * 0.03;
-                        const rushSpeed = 4.5 + accel2 * 16.0;
+                        const expandFactor = 1.0 + accel2 * 0.02;
+                        const rushSpeed = 2.8 + accel2 * 10.5;
 
                         for (let i = 0; i < positions.length; i += 3) {
                             positions[i] *= expandFactor;
@@ -2428,9 +2428,9 @@
                         spaceDustPoints.geometry.attributes.position.needsUpdate = true;
 
                     } else if (warpPhase === 3) {
-                        // Giai đoạn 3: Giảm tốc sau khi đã lướt qua & chuẩn bị giải phóng
-                        camera.position.z -= 0.2;
-                        techCoreGroup.rotation.y += 0.008;
+                        // Giai đoạn 3: Duy trì độ sáng điện ảnh và lướt êm dịu khi chuyển giao sang CV
+                        camera.position.z -= 0.08;
+                        techCoreGroup.rotation.y += 0.004;
                     }
                 }
 
@@ -2461,13 +2461,13 @@
         warpPhase = 1;
 
         const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const totalDuration = isReducedMotion ? 450 : 1400;
+        const totalDuration = isReducedMotion ? 750 : 2450;
 
         // Bắt đầu phát nhạc ngay khi người dùng tương tác
         playTrack(currentTrackIdx);
         resetScrollToTop();
 
-        // 1. GIAI ĐOẠN 1: TÍCH TỤ NĂNG LƯỢNG, BẮT ĐẦU XOAY ĐA TRỤC & THU HẸP QUỸ ĐẠO (0ms)
+        // 1. GIAI ĐOẠN 1: TÍCH TỤ NĂNG LƯỢNG, BẮT ĐẦU XOAY ĐA TRỤC & THU HẸP QUỸ ĐẠO (0 -> 550ms)
         if (cinematicOverlay) {
             cinematicOverlay.style.display = 'flex';
             cinematicOverlay.className = 'cinematic-transition-overlay stage-buildup';
@@ -2476,7 +2476,7 @@
             welcomeScreen.classList.add('energy-buildup');
         }
 
-        // 2. GIAI ĐOẠN 2: BÙNG NỔ TỐC ĐỘ, XOAY ĐA TRỤC CỰC ĐẠI, QUỸ ĐẠO HÚT VÀO TÂM & ZOOM TOÀN CẢNH (sau ~300ms)
+        // 2. GIAI ĐOẠN 2: BÙNG NỔ TỐC ĐỘ, XOAY ĐA TRỤC CỰC ĐẠI, QUỸ ĐẠO HÚT VÀO TÂM & ZOOM TOÀN CẢNH (sau ~550ms)
         setTimeout(() => {
             warpPhase = 2;
             if (cinematicOverlay) {
@@ -2486,9 +2486,9 @@
                 welcomeScreen.classList.remove('energy-buildup');
                 welcomeScreen.classList.add('warping');
             }
-        }, isReducedMotion ? 80 : 300);
+        }, isReducedMotion ? 120 : 550);
 
-        // 3. GIAI ĐOẠN 3: ĐỈNH LÓE SÁNG HOÀN HẢO, ẨN INTRO & KÍCH HOẠT REVEAL CV (sau ~720ms)
+        // 3. GIAI ĐOẠN 3: ĐỈNH LÓE SÁNG HOÀN HẢO & GIỮ KHOẢNH KHẮC ĐIỆN ẢNH (sau ~1350ms)
         setTimeout(() => {
             warpPhase = 3;
             if (welcomeScreen) {
@@ -2496,17 +2496,17 @@
                 welcomeScreen.style.display = 'none';
             }
             resetScrollToTop();
-            triggerCvStaggerReveal();
-        }, isReducedMotion ? 200 : 720);
+        }, isReducedMotion ? 350 : 1350);
 
-        // 4. GIAI ĐOẠN 4: ÁNH SÁNG TẢN DẦN MỀM MẠI, GIAO DIỆN CV HIỆN SẮC NÉT (sau ~760ms)
+        // 4. GIAI ĐOẠN 4: ÁNH SÁNG TẢN DẦN MỀM MẠI, GIAO DIỆN CV HIỆN SẮC NÉT (sau ~1650ms)
         setTimeout(() => {
             if (cinematicOverlay) {
                 cinematicOverlay.className = 'cinematic-transition-overlay stage-dissolve';
             }
-        }, isReducedMotion ? 240 : 760);
+            triggerCvStaggerReveal();
+        }, isReducedMotion ? 420 : 1650);
 
-        // 5. GIAI ĐOẠN 5: HOÀN TẤT, SẮC NÉT TUYỆT ĐỐI & GIẢI PHÓNG TÀI NGUYÊN (sau ~1400ms)
+        // 5. GIAI ĐOẠN 5: HOÀN TẤT, SẮC NÉT TUYỆT ĐỐI & GIẢI PHÓNG TÀI NGUYÊN (sau ~2450ms)
         setTimeout(() => {
             completeIntroTransition();
             resetScrollToTop();
@@ -2515,7 +2515,7 @@
         // Lời chào mừng linh vật sau khi CV ổn định hoàn toàn
         setTimeout(() => {
             showClaudeAttitude('happy', "Chào mừng bạn đã đến với CV của Tiến! Chúc bạn có trải nghiệm tuyệt vời! 🎶✨");
-        }, totalDuration + 250);
+        }, totalDuration + 300);
     }
 
     function skipToCV(immediate = false) {
@@ -2535,7 +2535,7 @@
             return;
         }
 
-        // Bỏ qua với chuyển cảnh rút gọn mềm mại (360ms)
+        // Bỏ qua với chuyển cảnh rút gọn mềm mại (550ms)
         if (cinematicOverlay) {
             cinematicOverlay.style.display = 'flex';
             cinematicOverlay.className = 'cinematic-transition-overlay stage-bloom';
@@ -2549,16 +2549,16 @@
         setTimeout(() => {
             if (cinematicOverlay) cinematicOverlay.className = 'cinematic-transition-overlay stage-dissolve';
             triggerCvStaggerReveal();
-        }, 150);
+        }, 220);
 
         setTimeout(() => {
             completeIntroTransition();
             resetScrollToTop();
-        }, 360);
+        }, 550);
 
         setTimeout(() => {
             showClaudeAttitude('happy', "Chào mừng bạn đã đến với CV của Tiến! ✨");
-        }, 700);
+        }, 900);
     }
 
     function completeIntroTransition() {
@@ -2590,8 +2590,8 @@
                 card.classList.add('revealed');
                 setTimeout(() => {
                     card.classList.add('settled');
-                }, 750);
-            }, idx * 75);
+                }, 950);
+            }, idx * 95);
         });
     }
 
@@ -2649,12 +2649,15 @@
         }
     });
 
-    // An toàn tuyệt đối: sau 1.5s luôn kích hoạt hiện đầy đủ các card CV
+    // An toàn tuyệt đối: dự phòng trường hợp thiết bị không hỗ trợ WebGL hoặc bỏ qua intro
     setTimeout(() => {
-        document.querySelectorAll('.cv-stagger-item:not(.revealed)').forEach(card => {
-            card.classList.add('revealed');
-        });
-    }, 1500);
+        if (!isIntroActive) {
+            document.querySelectorAll('.cv-stagger-item:not(.revealed)').forEach(card => {
+                card.classList.add('revealed');
+                card.classList.add('settled');
+            });
+        }
+    }, 3000);
 
     /* ══════════════════════════════════════════════════════════════
        2. HỆ THỐNG ÂM NHẠC & BỘ ĐỔI BÀI HÁT TÙY Ý (MUSIC PLAYER)
