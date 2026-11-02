@@ -66,13 +66,14 @@
     .welcome-screen-3d {
         position: fixed; inset: 0; z-index: 99999;
         display: flex; align-items: center; justify-content: center;
-        background-color: #020612;
+        background-color: #020510;
         background-image: 
-            radial-gradient(ellipse 65% 50% at 50% 50%, rgba(0, 120, 255, 0.22) 0%, rgba(0, 45, 110, 0.12) 55%, transparent 80%),
-            radial-gradient(circle at 18% 28%, rgba(0, 180, 255, 0.16) 0%, transparent 45%),
-            radial-gradient(circle at 82% 72%, rgba(0, 140, 255, 0.15) 0%, transparent 45%),
-            radial-gradient(circle at 75% 25%, rgba(0, 100, 220, 0.13) 0%, transparent 40%),
-            radial-gradient(circle at 22% 78%, rgba(0, 80, 190, 0.11) 0%, transparent 40%);
+            radial-gradient(ellipse 70% 55% at 50% 50%, rgba(0, 130, 255, 0.26) 0%, rgba(0, 55, 130, 0.15) 45%, transparent 75%),
+            radial-gradient(ellipse 50% 35% at 20% 30%, rgba(0, 190, 255, 0.20) 0%, rgba(0, 100, 220, 0.10) 50%, transparent 80%),
+            radial-gradient(ellipse 45% 40% at 80% 70%, rgba(0, 150, 255, 0.22) 0%, rgba(0, 60, 160, 0.12) 50%, transparent 80%),
+            radial-gradient(ellipse 40% 30% at 75% 25%, rgba(0, 120, 240, 0.18) 0%, transparent 65%),
+            radial-gradient(ellipse 35% 35% at 22% 75%, rgba(0, 100, 210, 0.16) 0%, transparent 65%),
+            radial-gradient(circle at 50% 50%, rgba(0, 229, 255, 0.12) 0%, transparent 50%);
         overflow: hidden;
         cursor: pointer;
         transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
@@ -129,24 +130,29 @@
         transition: transform 0.3s ease;
         animation: cardFloatIn 1.1s var(--ease-spring);
         cursor: pointer;
+        position: relative;
+        max-width: 680px;
+        width: 100%;
+        user-select: none;
     }
     @keyframes cardFloatIn {
         0% { opacity: 0; transform: perspective(1000px) translateY(24px) scale(0.92); }
         100% { opacity: 1; transform: perspective(1000px) translateY(0) scale(1); }
     }
     .avatar-3d-glow {
-        position: relative; width: 122px; height: 122px;
+        position: relative; width: 108px; height: 108px;
+        margin-bottom: 16px;
     }
     .welcome-avatar-img {
         width: 100%; height: 100%; border-radius: 50%;
         object-fit: cover; border: 2.5px solid #00E5FF;
-        box-shadow: 0 0 25px rgba(0, 229, 255, 0.85), 0 0 55px rgba(0, 123, 255, 0.55), inset 0 0 15px rgba(0, 229, 255, 0.40);
+        box-shadow: 0 0 22px rgba(0, 229, 255, 0.82), 0 0 45px rgba(0, 123, 255, 0.50), inset 0 0 14px rgba(0, 229, 255, 0.40);
         display: block;
     }
     .avatar-3d-ring {
         position: absolute; inset: -9px; border-radius: 50%;
-        border: 2px solid rgba(0, 229, 255, 0.75);
-        box-shadow: 0 0 18px rgba(0, 229, 255, 0.55), inset 0 0 12px rgba(0, 229, 255, 0.25);
+        border: 1.5px solid rgba(0, 229, 255, 0.75);
+        box-shadow: 0 0 16px rgba(0, 229, 255, 0.55), inset 0 0 10px rgba(0, 229, 255, 0.25);
         animation: spinRing 24s linear infinite;
         pointer-events: none;
     }
@@ -157,20 +163,157 @@
         box-shadow: 0 0 10px #00E5FF, 0 0 18px #00E5FF;
     }
     .avatar-3d-core-pulse {
-        position: absolute; inset: -20px; border-radius: 50%;
+        position: absolute; inset: -18px; border-radius: 50%;
         background: radial-gradient(circle, rgba(0, 229, 255, 0.35) 0%, rgba(0, 123, 255, 0.18) 50%, transparent 72%);
-        animation: pulseCore 3.2s ease-in-out infinite alternate;
+        animation: pulseCore 3.8s ease-in-out infinite alternate;
         pointer-events: none;
     }
     @keyframes pulseCore {
-        0% { transform: scale(0.85); opacity: 0.45; }
-        100% { transform: scale(1.15); opacity: 0.95; }
+        0% { transform: scale(0.96); opacity: 0.55; }
+        100% { transform: scale(1.04); opacity: 0.88; }
     }
     @keyframes spinRing {
         100% { transform: rotate(360deg); }
     }
-    .welcome-badge, .welcome-title-3d, .welcome-subtitle-3d, .welcome-3d-hint {
-        display: none !important;
+
+    /* Tia quét sáng điện ảnh nằm ngang (Horizontal Anamorphic Lens Flare Beam) */
+    .welcome-anamorphic-streak {
+        position: absolute;
+        top: 55%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100vw;
+        max-width: 1200px;
+        height: 2px;
+        pointer-events: none;
+        z-index: 0;
+    }
+    .anamorphic-line {
+        width: 100%; height: 100%;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            rgba(0, 191, 255, 0.05) 15%, 
+            rgba(0, 229, 255, 0.70) 38%, 
+            #ffffff 50%, 
+            rgba(0, 229, 255, 0.70) 62%, 
+            rgba(0, 191, 255, 0.05) 85%, 
+            transparent 100%
+        );
+        box-shadow: 0 0 14px rgba(0, 229, 255, 0.95), 0 0 35px rgba(0, 191, 255, 0.70), 0 0 75px rgba(0, 123, 255, 0.50);
+    }
+    .anamorphic-glow-center {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 340px; height: 65px;
+        background: radial-gradient(ellipse at center, rgba(0, 229, 255, 0.52) 0%, rgba(0, 123, 255, 0.22) 45%, transparent 75%);
+        filter: blur(8px);
+        pointer-events: none;
+    }
+
+    /* Huy hiệu định danh công nghệ (Tech Capsule Badge) */
+    .welcome-badge-capsule {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(4, 24, 46, 0.68);
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 229, 255, 0.45);
+        border-radius: 999px;
+        padding: 5px 20px;
+        margin-bottom: 10px;
+        box-shadow: 0 0 18px rgba(0, 229, 255, 0.25), inset 0 0 10px rgba(0, 229, 255, 0.12);
+        z-index: 2;
+    }
+    .badge-star {
+        color: #BFFFFF;
+        font-size: 0.8rem;
+        text-shadow: 0 0 8px #00E5FF;
+    }
+    .badge-text {
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 2.2px;
+        color: #7FE7FF;
+        text-transform: uppercase;
+    }
+
+    /* Họ tên chủ sở hữu nghệ thuật phát sáng (Luminous Serif Title) */
+    .welcome-name-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: clamp(2.3rem, 5.2vw, 3.3rem);
+        font-weight: 700;
+        color: #FFFFFF;
+        letter-spacing: 0.5px;
+        line-height: 1.15;
+        margin: 2px 0 8px 0;
+        text-shadow: 
+            0 0 18px rgba(0, 229, 255, 0.90), 
+            0 0 38px rgba(0, 140, 255, 0.60), 
+            0 2px 6px rgba(0, 0, 0, 0.90);
+        z-index: 2;
+    }
+
+    /* Chức danh năng lượng dịu mát (Crisp Subtitle) */
+    .welcome-role-subtitle {
+        font-family: 'DM Sans', sans-serif;
+        font-size: clamp(0.85rem, 2.2vw, 1.05rem);
+        font-weight: 400;
+        color: #B2E8FF;
+        letter-spacing: 0.8px;
+        margin: 0 0 22px 0;
+        text-shadow: 0 0 12px rgba(0, 229, 255, 0.45);
+        z-index: 2;
+    }
+
+    /* Nút kích hoạt xem CV dạng viên nang phát sáng (Interactive CTA Pill) */
+    .welcome-action-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: rgba(6, 26, 50, 0.78);
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+        border: 1.3px solid rgba(0, 229, 255, 0.65);
+        border-radius: 999px;
+        padding: 10px 24px;
+        color: #E6F8FF;
+        font-size: clamp(0.78rem, 1.9vw, 0.86rem);
+        font-weight: 500;
+        box-shadow: 0 0 22px rgba(0, 229, 255, 0.35), inset 0 0 14px rgba(0, 229, 255, 0.18);
+        transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        animation: pillPulseGlow 3.2s ease-in-out infinite alternate;
+        z-index: 2;
+    }
+    .welcome-action-pill:hover {
+        transform: scale(1.03);
+        border-color: #00E5FF;
+        box-shadow: 0 0 32px rgba(0, 229, 255, 0.60), inset 0 0 18px rgba(0, 229, 255, 0.28);
+    }
+    @keyframes pillPulseGlow {
+        0% { box-shadow: 0 0 18px rgba(0, 229, 255, 0.30), inset 0 0 10px rgba(0, 229, 255, 0.15); }
+        100% { box-shadow: 0 0 28px rgba(0, 229, 255, 0.50), inset 0 0 16px rgba(0, 229, 255, 0.24); }
+    }
+    .pill-icon-hand {
+        font-size: 0.95rem;
+    }
+    .pill-icon-sparkle {
+        font-size: 0.85rem;
+        color: #BFFFFF;
+        filter: drop-shadow(0 0 6px #00E5FF);
+    }
+    .pill-text {
+        letter-spacing: 0.3px;
+    }
+
+    @media (max-width: 600px) {
+        .avatar-3d-glow { width: 92px; height: 92px; margin-bottom: 14px; }
+        .welcome-badge-capsule { padding: 4px 14px; gap: 6px; }
+        .badge-text { font-size: 0.68rem; letter-spacing: 1.5px; }
+        .welcome-action-pill { padding: 8px 18px; gap: 6px; }
+        .welcome-role-subtitle { margin-bottom: 18px; }
     }
 
     /* ── LỚP PHỦ CHUYỂN CẢNH ĐIỆN ẢNH (CINEMATIC OPTICAL FLARE & BLOOM - GPU ACCELERATED) ── */
@@ -1527,10 +1670,37 @@
 
     <div class="welcome-3d-overlay">
         <div class="welcome-3d-card" id="welcome3dCard">
+            <!-- 1. Ảnh đại diện trong khung năng lượng tròn -->
             <div class="avatar-3d-glow">
                 <div class="avatar-3d-ring"></div>
                 <div class="avatar-3d-core-pulse"></div>
-                <img class="welcome-avatar-img" src="img/cv.jpg" alt="Lường Ngọc Tiến Avatar" onerror="this.src='https://ui-avatars.com/api/?name=Lường+Ngọc+Tiến&background=030814&color=00e5ff&size=150'">
+                <img class="welcome-avatar-img" src="img/cv.jpg" alt="Lương Ngọc Tiến Avatar" onerror="this.src='https://ui-avatars.com/api/?name=Lương+Ngọc+Tiến&background=030814&color=00e5ff&size=150'">
+            </div>
+
+            <!-- 2. Tia sáng điện ảnh nằm ngang xuyên tâm (Horizontal Anamorphic Flare) -->
+            <div class="welcome-anamorphic-streak" aria-hidden="true">
+                <div class="anamorphic-line"></div>
+                <div class="anamorphic-glow-center"></div>
+            </div>
+
+            <!-- 3. Huy hiệu định danh công nghệ cao (Tech Capsule Badge) -->
+            <div class="welcome-badge-capsule">
+                <span class="badge-star">✦</span>
+                <span class="badge-text">HỒ SƠ LẬP TRÌNH VIÊN SÁNG TẠO</span>
+                <span class="badge-star">✦</span>
+            </div>
+
+            <!-- 4. Họ tên nghệ thuật phát sáng (Luminous Serif Title) -->
+            <h1 class="welcome-name-title">Lương Ngọc Tiến</h1>
+
+            <!-- 5. Chức danh năng lượng dịu mát (Crisp Subtitle) -->
+            <p class="welcome-role-subtitle">Nhà Phát Triển Sáng Tạo &amp; Kỹ Sư Phần Mềm</p>
+
+            <!-- 6. Nút kích hoạt xem CV dạng viên nang phát sáng (Interactive CTA Pill) -->
+            <div class="welcome-action-pill">
+                <span class="pill-icon-hand">👆</span>
+                <span class="pill-icon-sparkle">✨</span>
+                <span class="pill-text">Chạm hoặc nhấp chuột vào bất kỳ đâu để vào xem CV</span>
             </div>
         </div>
     </div>
@@ -1851,8 +2021,8 @@
     /* Playlist nhạc có sẵn trong thư mục music/ */
     const PLAYLIST = [
         // { title: 'Tìm em', artist: 'Hngle ft Bảo Anh', src: 'music/Tìm em.mp3' },
-        { title: 'Dusk till dawn', artist: 'ZAYN & Sia', src: 'music/Dusk till dawn.mp3' },
-        { title: 'Trap queen', artist: 'Adriana Gomez', src: 'music/Trap queen.mp3' },
+        // { title: 'Dusk till dawn', artist: 'ZAYN & Sia', src: 'music/Dusk till dawn.mp3' },
+        // { title: 'Trap queen', artist: 'Adriana Gomez', src: 'music/Trap queen.mp3' },
         { title: 'Snowfall', artist: 'Oneheart', src: 'music/Snowfall.mp3' },
         { title: 'Hope to see you again', artist: 'antent', src: 'music/Hope to see you again.mp3' },
         { title: 'Lanters', artist: 'Xomu', src: 'music/Lanters.mp3' },
@@ -1863,8 +2033,8 @@
         // { title: 'Lightning Moment (Beat)', artist: 'Beat', src: 'music/Lightning moment beat.mp3' },
         // { title: 'Lightning Moment (Remix)', artist: 'Remix', src: 'music/Lightning moment remix.mp3' },
         // { title: 'Struct', artist: 'Synth Melody', src: 'music/Struct.mp3' },
-        { title: 'I want you to known', artist: 'Zedd', src: 'music/I want you to known.mp3' },
-        { title: 'So far away', artist: 'David & Martin', src: 'music/So far away.mp3' }
+        // { title: 'I want you to known', artist: 'Zedd', src: 'music/I want you to known.mp3' },
+        // { title: 'So far away', artist: 'David & Martin', src: 'music/So far away.mp3' }
     ];
     if ('scrollRestoration' in history) {
         history.scrollRestoration = 'manual';
@@ -1962,19 +2132,20 @@
     let orbMesh, orbMaterial;
     let orbCoronaMesh, orbCoronaMaterial;
     let orbInnerMesh, orbInnerMaterial;
-    let thickRing1, thickRing1Core;
-    let thickRing1B, thickRing1BCore;
-    let thickRing2Group, thickRing2Core;
-    let thickRing3, thickRing3Core;
-    let thickRing4, thickRing4Core;
-    let baseCradleMesh, upperCrownMesh, techGyroRing;
+    let thickRing1, thickRing1Mat, thickRing1Core;
+    let thickRing2Group, thickRing2Mat, thickRing2Core;
+    let thickRing3, thickRing3Mat, thickRing3Core;
+    let baseCradleMesh, baseCradleMat, techGyroRing;
+    let thickRing1B = null, thickRing4 = null, upperCrownMesh = null; // Tương thích ngược
     let anamorphicFlareMesh, anamorphicFlareMaterial;
     let anamorphicGlowMesh, anamorphicGlowMaterial;
     let volumetricRaysMesh, volumetricRaysMaterial;
     let starFlares = [];
     let bgStarSprites = [];
-    let beaconNodes = [], orbitParticles1 = [], orbitParticles2 = [];
-    let spaceDustPoints;
+    let cradleSparkSprites = [];
+    let orbitalEnergyNodes = [];
+    let spaceFarStars, spaceMidStars, spaceNearDust;
+    let orbitParticles1 = null, orbitParticles2 = null, spaceDustPoints = null; // Tương thích ngược
     let coreLight, rimLight1, rimLight2, flareLightLeft, flareLightRight;
     let introAnimId = null;
     let isIntroActive = true;
@@ -2054,11 +2225,11 @@
             techCoreGroup = new THREE.Group();
             scene.add(techCoreGroup);
 
-            // Bố cục cân đối với kích thước vành đai mở rộng uy nghi
-            baseFrameScale = isSmallMobile ? 0.38 : (isMobile ? 0.52 : 0.74);
+            // Bố cục cân đối bao trọn thẻ nội dung nghệ thuật theo đúng chuẩn Mockup
+            baseFrameScale = isSmallMobile ? 0.44 : (isMobile ? 0.58 : 0.80);
             techCoreGroup.scale.set(baseFrameScale, baseFrameScale, baseFrameScale);
 
-            // ── 1. QUẢ CẦU NĂNG LƯỢNG 3D TRUNG TÂM (ELECTRIC BLUE PLASMA NOISE SHADER) ──
+            // ── 1. QUẢ CẦU NĂNG LƯỢNG 3D TRUNG TÂM (ORGANIC PLASMA FLUID & DOMAIN WARPING SHADER) ──
             const orbVertexShader = `
                 varying vec3 vNormal;
                 varying vec3 vPosition;
@@ -2069,13 +2240,21 @@
                 void main() {
                     vUv = uv;
                     vNormal = normalize(normalMatrix * normal);
-                    vPosition = position;
                     
-                    // Nhấp nhô sóng bề mặt plasma hữu cơ vi mô
+                    // Biến thiên hữu cơ thể tích - organic plasma surface undulation
                     vec3 p = position;
-                    float wave = sin(uTime * 2.2 + position.y * 2.4) * cos(uTime * 1.8 + position.x * 2.4) * 0.05;
-                    p += normal * wave;
+                    float undulation = (sin(p.y * 0.45 + uTime * 1.1) * cos(p.x * 0.45 - uTime * 0.85)
+                                     + sin(p.z * 0.65 + uTime * 1.3) * 0.5) * 0.14;
+                    // Nhịp thở năng lượng hữu cơ bất đối xứng
+                    float breathe = sin(uTime * 1.2) * 0.07 + cos(uTime * 1.9) * 0.035;
                     
+                    // Giữ phần khẩu độ avatar ở tâm phía trước phẳng và ổn định tuyệt đối
+                    float centerDist = length(position.xy);
+                    float faceProtect = smoothstep(2.0, 3.6, centerDist);
+                    
+                    p += normal * (undulation + breathe) * faceProtect;
+                    vPosition = p;
+
                     vec4 worldPos = modelMatrix * vec4(p, 1.0);
                     vWorldPosition = worldPos.xyz;
                     gl_Position = projectionMatrix * viewMatrix * worldPos;
@@ -2084,11 +2263,12 @@
 
             const orbFragmentShader = `
                 uniform float uTime;
-                uniform vec3 uColorDeep;     // #007BFF (0.0, 0.48, 1.0)
-                uniform vec3 uColorElectric; // #00BFFF (0.0, 0.75, 1.0)
-                uniform vec3 uColorNeon;     // #00E5FF (0.0, 0.90, 1.0)
-                uniform vec3 uColorIce;      // #BFFFFF (0.75, 1.0, 1.0)
+                uniform vec3 uColorDeep;     // Deep Sapphire Midnight Blue
+                uniform vec3 uColorElectric; // Electric Royal Blue
+                uniform vec3 uColorNeon;     // Neon Cyan
+                uniform vec3 uColorIce;      // Pure Diamond White
                 uniform float uIntensity;
+                uniform float uCoreEnergy;
 
                 varying vec3 vNormal;
                 varying vec3 vPosition;
@@ -2157,40 +2337,45 @@
 
                 void main() {
                     vec3 viewDir = normalize(cameraPosition - vWorldPosition);
-                    float NdotV = dot(normalize(vNormal), viewDir);
+                    vec3 norm = normalize(vNormal);
+                    float NdotV = dot(norm, viewDir);
                     float fresnel = 1.0 - clamp(abs(NdotV), 0.0, 1.0);
                     float rimGlow = pow(fresnel, 2.2);
 
-                    // 1. Dòng xoáy plasma nền
-                    vec3 p = vPosition * 0.25;
+                    // 1. DOMAIN WARPING: DÒNG XOÁY PLASMA HỮU CƠ CUỘN CHẢY TỰ NHIÊN
+                    vec3 p = vPosition * 0.28;
                     vec3 q = vec3(
-                        fbm(p + vec3(0.0, -uTime * 0.20, uTime * 0.14)),
-                        fbm(p + vec3(5.2, uTime * 0.16, -uTime * 0.18)),
-                        fbm(p + vec3(-3.1, -uTime * 0.12, uTime * 0.10))
+                        fbm(p + vec3(0.0, -uTime * 0.18, uTime * 0.12)),
+                        fbm(p + vec3(4.3, uTime * 0.15, -uTime * 0.16)),
+                        fbm(p + vec3(-2.8, -uTime * 0.11, uTime * 0.10))
                     );
-                    float plasma = clamp(fbm(p + 1.5 * q) * 0.70 + 0.35, 0.0, 1.0);
+                    vec3 r = vec3(
+                        fbm(p + 1.8 * q + vec3(1.7, 9.2, -uTime * 0.22)),
+                        fbm(p + 1.8 * q + vec3(8.3, 2.8, uTime * 0.19)),
+                        fbm(p + 1.8 * q + vec3(-5.1, -3.4, uTime * 0.14))
+                    );
+                    float plasma = clamp(fbm(p + 2.2 * r) * 0.85 + 0.35, 0.0, 1.0);
 
-                    // 2. Mạng lưới tia sét điện tử phân nhánh sắc nét (Ridged Lightning Veins)
-                    vec3 lp1 = vPosition * 0.40 + vec3(uTime * 0.08, -uTime * 0.10, uTime * 0.06);
-                    float ridge1 = pow(clamp(1.0 - abs(snoise(lp1)), 0.0, 1.0), 5.5);
+                    // 2. TIA SÉT NĂNG LƯỢNG UỐN LƯỢN THEO DÒNG PLASMA (Warped Lightning Veins)
+                    vec3 lp1 = (p + 1.2 * q) * 1.8 + vec3(uTime * 0.08, -uTime * 0.10, uTime * 0.07);
+                    float ridge1 = pow(clamp(1.0 - abs(snoise(lp1)), 0.0, 1.0), 5.2);
 
-                    vec3 lp2 = vPosition * 0.85 + vec3(-uTime * 0.10, uTime * 0.11, -uTime * 0.08);
-                    float ridge2 = pow(clamp(1.0 - abs(snoise(lp2)), 0.0, 1.0), 6.5);
+                    vec3 lp2 = (p + 1.5 * r) * 3.2 + vec3(-uTime * 0.11, uTime * 0.13, -uTime * 0.09);
+                    float ridge2 = pow(clamp(1.0 - abs(snoise(lp2)), 0.0, 1.0), 6.0);
 
-                    vec3 lp3 = vPosition * 1.6 + vec3(uTime * 0.12, uTime * 0.14, uTime * 0.10);
-                    float ridge3 = pow(clamp(1.0 - abs(snoise(lp3)), 0.0, 1.0), 7.5);
+                    float lightning = ridge1 * 0.65 + ridge2 * 0.50;
 
-                    float lightning = ridge1 * 0.65 + ridge2 * 0.50 + ridge3 * 0.30;
+                    // 3. NHỊP DAO ĐỘNG HỮU CƠ TƯƠNG TÁC (Coupled Energy Breath)
+                    float coreBreath = (0.90 + 0.18 * sin(uTime * 1.6) + 0.08 * cos(uTime * 2.7)) * uCoreEnergy;
 
-                    // 3. Phối hợp dải màu Electric Blue chuẩn xác: Nền xanh sẫm Sapphire sâu thẳm + tia sét Neon Cyan
-                    vec3 col = mix(uColorDeep, uColorElectric, clamp(plasma * 0.7, 0.0, 1.0));
-                    col = mix(col, uColorNeon, smoothstep(0.18, 0.75, lightning));
-                    col += uColorIce * pow(clamp(lightning, 0.0, 1.0), 3.2) * 1.3;  // Điểm phóng điện trắng cực nhọn
-                    col += uColorNeon * pow(rimGlow, 2.2) * 1.1;                    // Viền khí quyển Neon Cyan
-                    col += uColorIce * pow(fresnel, 4.8) * 0.9;                     // Điểm sáng mép ngoài
+                    // 4. PHỐI MÀU ELECTRIC BLUE ĐIỆN ẢNH VỚI ĐỘ TƯƠNG PHẢN CAO
+                    vec3 col = mix(uColorDeep, uColorElectric, clamp(plasma * 0.75, 0.0, 1.0));
+                    col = mix(col, uColorNeon, smoothstep(0.18, 0.70, lightning) * coreBreath);
+                    col += uColorIce * pow(clamp(lightning, 0.0, 1.0), 3.0) * 1.35 * coreBreath; // Điểm phóng điện trắng
+                    col += uColorNeon * pow(rimGlow, 2.0) * 1.25;                               // Hào quang viền khí quyển
+                    col += uColorIce * pow(fresnel, 4.5) * 0.90;                                // Tia sáng mép ngoài
 
-                    // 4. Khẩu độ trong suốt ở tâm phía trước để ảnh chân dung sắc nét và nổi bật
-                    // Sử dụng vWorldPosition.xy để khẩu độ luôn cố định tuyệt đối tại tâm màn hình, không bị xoay theo cầu
+                    // 5. KHẨU ĐỘ TRONG SUỐT BẢO VỆ TUYỆT ĐỐI ẢNH CHÂN DUNG TẠI TÂM
                     float centerRadius = length(vWorldPosition.xy);
                     float faceAperture = smoothstep(1.9, 2.9, centerRadius);
 
@@ -2200,7 +2385,7 @@
                         col *= mix(0.10, 1.0, faceAperture);
                     }
 
-                    gl_FragColor = vec4(col, clamp(alpha * uIntensity, 0.0, 1.0));
+                    gl_FragColor = vec4(col * (0.95 + coreBreath * 0.20), clamp(alpha * uIntensity, 0.0, 1.0));
                 }
             `;
 
@@ -2213,7 +2398,8 @@
                     uColorElectric: { value: new THREE.Color(0x0033aa) }, // Electric Royal Blue
                     uColorNeon: { value: new THREE.Color(0x00e5ff) },     // Neon Cyan
                     uColorIce: { value: new THREE.Color(0xffffff) },      // Pure Diamond White
-                    uIntensity: { value: 1.0 }
+                    uIntensity: { value: 1.0 },
+                    uCoreEnergy: { value: 1.0 }
                 },
                 transparent: true,
                 blending: THREE.NormalBlending,
@@ -2375,66 +2561,127 @@
             anamorphicGlowMesh.position.set(0, 0, 0.04);
             techCoreGroup.add(anamorphicGlowMesh);
 
-            const ringRadialSegs = 18;
-            const ringTubularSegs = isMobile ? 64 : 88;
+            const ringRadialSegs = 20;
+            const ringTubularSegs = isMobile ? 64 : 96;
 
-            // Vật liệu Vành đai Electric Blue / Neon Cyan phát sáng quang học
-            const electricMat = new THREE.MeshBasicMaterial({
-                color: 0x00e5ff,
-                transparent: true,
-                opacity: 0.94,
-                blending: THREE.AdditiveBlending
-            });
-
-            const deepBlueRingMat = new THREE.MeshBasicMaterial({
-                color: 0x0088ff,
-                transparent: true,
-                opacity: 0.88,
-                blending: THREE.AdditiveBlending
-            });
-
+            // Vật liệu Laser Hot Core phát sáng trắng tinh khiết ở tâm lòng ống
             const coreHotWireMat = new THREE.MeshBasicMaterial({
                 color: 0xffffff,
                 transparent: true,
-                opacity: 0.98,
+                opacity: 0.96,
                 blending: THREE.AdditiveBlending
             });
 
-            // ── HỆ THỐNG VÀNH ĐAI NĂNG LƯỢNG MỞ RỘNG (7 TECH RINGS & ARCS) ──
+            // Shader vành đai hữu cơ – Luồng sóng năng lượng chuyển động chạy dọc chu vi (Fluid Ring Shader)
+            function createRingShaderMaterial(params) {
+                return new THREE.ShaderMaterial({
+                    uniforms: {
+                        uTime: { value: 0 },
+                        uColorBase: { value: new THREE.Color(params.colorBase) },
+                        uColorGlow: { value: new THREE.Color(params.colorGlow) },
+                        uColorHot: { value: new THREE.Color(params.colorHot || 0xffffff) },
+                        uSpeed: { value: params.speed || 1.0 },
+                        uPhase: { value: params.phase || 0.0 },
+                        uCoreEnergy: { value: 1.0 },
+                        uWarpIntensity: { value: 1.0 }
+                    },
+                    vertexShader: `
+                        varying vec2 vUv;
+                        varying vec3 vNormal;
+                        varying vec3 vWorldPosition;
+                        void main() {
+                            vUv = uv;
+                            vNormal = normalize(normalMatrix * normal);
+                            vec4 worldPos = modelMatrix * vec4(position, 1.0);
+                            vWorldPosition = worldPos.xyz;
+                            gl_Position = projectionMatrix * viewMatrix * worldPos;
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform float uTime;
+                        uniform vec3 uColorBase;
+                        uniform vec3 uColorGlow;
+                        uniform vec3 uColorHot;
+                        uniform float uSpeed;
+                        uniform float uPhase;
+                        uniform float uCoreEnergy;
+                        uniform float uWarpIntensity;
+                        varying vec2 vUv;
+                        varying vec3 vNormal;
+                        varying vec3 vWorldPosition;
 
-            // Vành đai 1: Vành chính elip xích đạo nằm ngang lớn (Equatorial Primary Ellipse - R = 10.0, tube = 0.16)
+                        void main() {
+                            float t = uTime * uSpeed + uPhase;
+                            
+                            // 1. Luồng sóng năng lượng chuyển động chạy dọc vành đai (Primary flowing beam)
+                            float wave1 = sin(vUv.x * 6.28318 * 2.0 - t * 1.8);
+                            wave1 = pow(clamp(wave1 * 0.5 + 0.5, 0.0, 1.0), 3.2);
+
+                            // 2. Luồng sóng thứ 2 ngược pha tạo xung nhịp giao thoa hữu cơ
+                            float wave2 = sin(vUv.x * 6.28318 * 3.0 + t * 1.2 + 2.1);
+                            wave2 = pow(clamp(wave2 * 0.5 + 0.5, 0.0, 1.0), 4.0);
+
+                            // 3. Phân cực độ sáng mặt cắt ống: Lõi sáng rực ở tâm, mờ dịu ra viền
+                            float tubeEdge = abs(vUv.y - 0.5) * 2.0;
+                            float tubeCenter = pow(clamp(1.0 - tubeEdge, 0.0, 1.0), 3.8);
+                            float tubeHalo = pow(clamp(1.0 - tubeEdge, 0.0, 1.0), 1.5);
+
+                            // 4. Liên kết hữu cơ với xung năng lượng của lõi plasma (Energy Coupling)
+                            float energyBreath = (0.85 + 0.25 * sin(uTime * 1.6 + uPhase)) * uCoreEnergy;
+
+                            // 5. Phối màu phát sáng Electric Blue -> Neon Cyan -> Pure White Hot Core
+                            vec3 col = uColorBase;
+                            float glowStrength = (0.75 + wave1 * 0.65 + wave2 * 0.40) * energyBreath;
+                            col = mix(col, uColorGlow, clamp(tubeHalo * glowStrength, 0.0, 1.0));
+                            col = mix(col, uColorHot, clamp(tubeCenter * (0.85 + wave1 * 0.90) * energyBreath, 0.0, 1.0));
+
+                            float alpha = (tubeHalo * 0.82 + tubeCenter * 0.45) * energyBreath * uWarpIntensity;
+                            gl_FragColor = vec4(col * (1.15 + wave1 * 0.70) * uWarpIntensity, clamp(alpha, 0.0, 1.0));
+                        }
+                    `,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false,
+                    side: THREE.DoubleSide
+                });
+            }
+
+            // ── HỆ THỐNG 3 VÀNH ĐAI NĂNG LƯỢNG CHÍNH ĐỘC LẬP & LIÊN KẾT HỮU CƠ ──
+
+            // Vành đai 1: Vành xích đạo chính nằm ngang (Equatorial Primary Ellipse - R = 10.6, tube = 0.16)
             thickRing1 = new THREE.Group();
-            const ring1Geo = new THREE.TorusGeometry(10.0, 0.16, ringRadialSegs, ringTubularSegs);
-            const ring1Mesh = new THREE.Mesh(ring1Geo, electricMat);
+            thickRing1Mat = createRingShaderMaterial({
+                colorBase: 0x0055dd,
+                colorGlow: 0x00e5ff,
+                colorHot: 0xffffff,
+                speed: 1.0,
+                phase: 0.0
+            });
+            const ring1Geo = new THREE.TorusGeometry(10.6, 0.16, ringRadialSegs, ringTubularSegs);
+            const ring1Mesh = new THREE.Mesh(ring1Geo, thickRing1Mat);
             thickRing1.add(ring1Mesh);
 
-            const ring1CoreGeo = new THREE.TorusGeometry(10.0, 0.055, 8, ringTubularSegs);
+            const ring1CoreGeo = new THREE.TorusGeometry(10.6, 0.052, 8, ringTubularSegs);
             thickRing1Core = new THREE.Mesh(ring1CoreGeo, coreHotWireMat);
             thickRing1.add(thickRing1Core);
 
-            thickRing1.rotation.x = Math.PI * 0.46; // Nhìn xiên elip nằm ngang ôm sát xích đạo
+            thickRing1.rotation.x = Math.PI * 0.46;
             techCoreGroup.add(thickRing1);
 
-            // Vành đai 1B: Vành xích đạo đồng tâm mở rộng (Equatorial Concentric Outer Horizon Ring - R = 12.4, tube = 0.12)
-            thickRing1B = new THREE.Group();
-            const ring1BGeo = new THREE.TorusGeometry(12.4, 0.12, ringRadialSegs, ringTubularSegs);
-            const ring1BMesh = new THREE.Mesh(ring1BGeo, deepBlueRingMat);
-            thickRing1B.add(ring1BMesh);
-
-            const ring1BCoreGeo = new THREE.TorusGeometry(12.4, 0.042, 8, ringTubularSegs);
-            thickRing1BCore = new THREE.Mesh(ring1BCoreGeo, coreHotWireMat);
-            thickRing1B.add(thickRing1BCore);
-
-            thickRing1B.rotation.x = Math.PI * 0.46;
-            techCoreGroup.add(thickRing1B);
-
-            // Vành đai 2: Vành quỹ đạo chéo Alpha (Polar / Diagonal Ring Alpha - R = 10.8, tube = 0.15)
+            // Vành đai 2: Vành quỹ đạo chéo Alpha (Polar / Diagonal Ring Alpha - R = 11.4, tube = 0.15)
             thickRing2Group = new THREE.Group();
-            const ring2Geo = new THREE.TorusGeometry(10.8, 0.15, ringRadialSegs, ringTubularSegs);
-            const ring2Mesh = new THREE.Mesh(ring2Geo, electricMat);
+            thickRing2Mat = createRingShaderMaterial({
+                colorBase: 0x0044bb,
+                colorGlow: 0x00e5ff,
+                colorHot: 0xffffff,
+                speed: -0.85,
+                phase: 1.6
+            });
+            const ring2Geo = new THREE.TorusGeometry(11.4, 0.15, ringRadialSegs, ringTubularSegs);
+            const ring2Mesh = new THREE.Mesh(ring2Geo, thickRing2Mat);
             thickRing2Group.add(ring2Mesh);
 
-            const ring2CoreGeo = new THREE.TorusGeometry(10.8, 0.050, 8, ringTubularSegs);
+            const ring2CoreGeo = new THREE.TorusGeometry(11.4, 0.048, 8, ringTubularSegs);
             thickRing2Core = new THREE.Mesh(ring2CoreGeo, coreHotWireMat);
             thickRing2Group.add(thickRing2Core);
 
@@ -2443,13 +2690,20 @@
             thickRing2Group.rotation.z = -0.26;
             techCoreGroup.add(thickRing2Group);
 
-            // Vành đai 3: Vành quỹ đạo chéo Beta đối lập (Crossing Diagonal Ring Beta - R = 11.5, tube = 0.14)
+            // Vành đai 3: Vành quỹ đạo chéo Beta đối lập (Crossing Diagonal Ring Beta - R = 12.0, tube = 0.14)
             thickRing3 = new THREE.Group();
-            const ring3Geo = new THREE.TorusGeometry(11.5, 0.14, ringRadialSegs, ringTubularSegs);
-            const ring3Mesh = new THREE.Mesh(ring3Geo, deepBlueRingMat);
+            thickRing3Mat = createRingShaderMaterial({
+                colorBase: 0x0066ee,
+                colorGlow: 0x70e5ff,
+                colorHot: 0xffffff,
+                speed: 0.72,
+                phase: 3.2
+            });
+            const ring3Geo = new THREE.TorusGeometry(12.0, 0.14, ringRadialSegs, ringTubularSegs);
+            const ring3Mesh = new THREE.Mesh(ring3Geo, thickRing3Mat);
             thickRing3.add(ring3Mesh);
 
-            const ring3CoreGeo = new THREE.TorusGeometry(11.5, 0.048, 8, ringTubularSegs);
+            const ring3CoreGeo = new THREE.TorusGeometry(12.0, 0.045, 8, ringTubularSegs);
             thickRing3Core = new THREE.Mesh(ring3CoreGeo, coreHotWireMat);
             thickRing3.add(thickRing3Core);
 
@@ -2458,42 +2712,52 @@
             thickRing3.rotation.z = 0.30;
             techCoreGroup.add(thickRing3);
 
-            // Vành đai 4: Vành quỹ đạo cực / Meridian Gamma (Polar Meridian Ring Gamma - R = 12.2, tube = 0.12)
-            thickRing4 = new THREE.Group();
-            const ring4Geo = new THREE.TorusGeometry(12.2, 0.12, ringRadialSegs, ringTubularSegs);
-            const ring4Mesh = new THREE.Mesh(ring4Geo, electricMat);
-            thickRing4.add(ring4Mesh);
-
-            const ring4CoreGeo = new THREE.TorusGeometry(12.2, 0.040, 8, ringTubularSegs);
-            thickRing4Core = new THREE.Mesh(ring4CoreGeo, coreHotWireMat);
-            thickRing4.add(thickRing4Core);
-
-            thickRing4.rotation.x = 1.15;
-            thickRing4.rotation.y = 0.18;
-            thickRing4.rotation.z = 0.45;
-            techCoreGroup.add(thickRing4);
-
-            // Vành đai 5: Vành vòm chân đế năng lượng phía dưới quả cầu (Base Energy Cradle Arc - R = 8.6, tube = 0.13)
-            const cradleGeo = new THREE.TorusGeometry(8.6, 0.13, ringRadialSegs, 48, Math.PI * 0.78);
-            baseCradleMesh = new THREE.Mesh(cradleGeo, electricMat);
-            baseCradleMesh.position.set(0, -2.6, 0.6);
+            // Vòm bệ đỡ chân đế năng lượng phía dưới (Base Energy Cradle Arc - R = 8.8, tube = 0.12)
+            baseCradleMat = createRingShaderMaterial({
+                colorBase: 0x0044aa,
+                colorGlow: 0x00e5ff,
+                colorHot: 0xbfffff,
+                speed: 0.50,
+                phase: 0.8
+            });
+            const cradleGeo = new THREE.TorusGeometry(8.8, 0.12, ringRadialSegs, 48, Math.PI * 0.78);
+            baseCradleMesh = new THREE.Mesh(cradleGeo, baseCradleMat);
+            baseCradleMesh.position.set(0, -2.2, 0.6);
             baseCradleMesh.rotation.x = 1.38;
             baseCradleMesh.rotation.z = -0.55;
             techCoreGroup.add(baseCradleMesh);
 
-            // Vành đai 6: Vòm đỉnh năng lượng công nghệ (Upper Crown Tech Arc - R = 9.2, tube = 0.11)
-            const crownGeo = new THREE.TorusGeometry(9.2, 0.11, ringRadialSegs, 40, Math.PI * 0.55);
-            upperCrownMesh = new THREE.Mesh(crownGeo, deepBlueRingMat);
-            upperCrownMesh.position.set(0, 2.5, -0.4);
-            upperCrownMesh.rotation.x = -1.35;
-            upperCrownMesh.rotation.z = 0.45;
-            techCoreGroup.add(upperCrownMesh);
+            // 10 tia phóng điện phát sáng nhảy múa trên vòm bệ đỡ chân đế (Cradle Electric Sparks)
+            cradleSparkSprites = [];
+            const cradleSparkMat = new THREE.SpriteMaterial({
+                map: createGlowPointTexture(),
+                blending: THREE.AdditiveBlending,
+                transparent: true,
+                opacity: 0.85,
+                depthWrite: false
+            });
+            for (let i = 0; i < 10; i++) {
+                const sp = new THREE.Sprite(cradleSparkMat.clone());
+                const ang = -0.40 + (i / 9) * (Math.PI * 0.78);
+                const rCradle = 8.8;
+                sp.position.set(Math.cos(ang) * rCradle, Math.sin(ang) * rCradle, 0.05);
+                const sc = 0.55 + Math.random() * 0.45;
+                sp.scale.set(sc, sc, 1);
+                baseCradleMesh.add(sp);
+                cradleSparkSprites.push({ sp, baseScale: sc, phase: Math.random() * Math.PI * 2, speed: 2.2 + Math.random() * 2.5 });
+            }
 
-            // Vành đai 7: Vành thước đo phân đoạn Holographic Gyro Ring (R = 11.0)
+            // Vành thước đo phân đoạn tinh tế (Holographic Gyro Ticks - R = 11.0)
             techGyroRing = new THREE.Group();
-            const tickGeo = new THREE.TorusGeometry(11.0, 0.05, 8, 12, Math.PI * 0.06);
+            const tickMat = new THREE.MeshBasicMaterial({
+                color: 0x00e5ff,
+                transparent: true,
+                opacity: 0.85,
+                blending: THREE.AdditiveBlending
+            });
+            const tickGeo = new THREE.TorusGeometry(11.0, 0.04, 8, 12, Math.PI * 0.05);
             for (let i = 0; i < 16; i++) {
-                const tickMesh = new THREE.Mesh(tickGeo, electricMat);
+                const tickMesh = new THREE.Mesh(tickGeo, tickMat);
                 tickMesh.rotation.z = (i / 16) * Math.PI * 2;
                 techGyroRing.add(tickMesh);
             }
@@ -2501,7 +2765,7 @@
             techGyroRing.rotation.y = -0.30;
             techCoreGroup.add(techGyroRing);
 
-            // ── 3. HOA TIA NHIỄU XẠ KIM CƯƠNG (STARBURST DIFFRACTION FLARES) ──
+            // ── 3. HOA TIA NHIỄU XẠ & ĐIỂM NĂNG LƯỢNG QUỸ ĐẠO KÈM VỆT SÁNG (LIGHT TRAILS) ──
             function createGlowPointTexture() {
                 const canvas = document.createElement('canvas');
                 canvas.width = 32;
@@ -2528,7 +2792,6 @@
                 const ctx = canvas.getContext('2d');
                 const cx = 128, cy = 128;
 
-                // Quầng sáng tâm tròn
                 const rad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 70);
                 rad.addColorStop(0, 'rgba(255, 255, 255, 1)');
                 rad.addColorStop(0.15, 'rgba(0, 229, 255, 0.95)');
@@ -2537,7 +2800,6 @@
                 ctx.fillStyle = rad;
                 ctx.fillRect(0, 0, 256, 256);
 
-                // Tia nhọn ngang (Horizontal Spike)
                 const hGrad = ctx.createLinearGradient(0, cy, 256, cy);
                 hGrad.addColorStop(0, 'rgba(0, 229, 255, 0)');
                 hGrad.addColorStop(0.38, 'rgba(0, 229, 255, 0.7)');
@@ -2547,7 +2809,6 @@
                 ctx.fillStyle = hGrad;
                 ctx.fillRect(0, cy - 2, 256, 4);
 
-                // Tia nhọn dọc (Vertical Spike)
                 const vGrad = ctx.createLinearGradient(cx, 0, cx, 256);
                 vGrad.addColorStop(0, 'rgba(0, 229, 255, 0)');
                 vGrad.addColorStop(0.38, 'rgba(0, 229, 255, 0.7)');
@@ -2557,7 +2818,6 @@
                 ctx.fillStyle = vGrad;
                 ctx.fillRect(cx - 2, 0, 4, 256);
 
-                // Tia phụ chéo 45 độ
                 ctx.save();
                 ctx.translate(cx, cy);
                 ctx.rotate(Math.PI / 4);
@@ -2576,7 +2836,7 @@
             }
             const starFlareTexture = createStarFlareTexture();
 
-            // Thêm các điểm lóe sáng sao 4 cánh tại các giao điểm vành đai
+            // 4 điểm lóe sao chính tại các giao điểm hội tụ quang học
             starFlares = [];
             const starMat = new THREE.SpriteMaterial({
                 map: starFlareTexture,
@@ -2594,110 +2854,141 @@
                 starFlares.push({ sprite, baseScale, phase });
             }
 
-            // 8 điểm lóe sao chính trên vành đai và đường chân trời xích đạo như ảnh tham khảo
-            addStarFlare(-10.0, 0, 0.35, 6.2, 0.0);      // Nút trái xích đạo chính
-            addStarFlare(10.0, 0, 0.35, 6.2, 1.2);       // Nút phải xích đạo chính
-            addStarFlare(-12.4, 0, 0.35, 4.8, 2.0);      // Chân trời ngoài trái
-            addStarFlare(12.4, 0, 0.35, 4.8, 3.2);       // Chân trời ngoài phải
-            addStarFlare(4.8, 9.4, -1.8, 4.2, 2.4);      // Đỉnh trên vành chéo Alpha
-            addStarFlare(-7.2, 6.2, 3.5, 4.0, 3.6);      // Nhánh giao cắt trái
-            addStarFlare(7.5, -6.8, 2.8, 3.8, 4.8);      // Nhánh dưới phải
-            addStarFlare(0, -8.6, 1.2, 3.8, 1.8);        // Đáy vòm bệ đỡ
+            addStarFlare(-10.6, 0, 0.35, 6.0, 0.0);      // Nút ngoài trái xích đạo
+            addStarFlare(10.6, 0, 0.35, 6.0, 1.2);       // Nút ngoài phải xích đạo
+            addStarFlare(-7.6, 0, 0.25, 4.8, 0.6);       // Điểm giao cắt mép trái quả cầu & chùm tia
+            addStarFlare(7.6, 0, 0.25, 4.8, 1.8);        // Điểm giao cắt mép phải quả cầu & chùm tia
+            addStarFlare(4.8, 9.6, -1.8, 4.2, 2.4);      // Đỉnh trên vành chéo Alpha
+            addStarFlare(-6.5, 5.8, 3.2, 3.8, 3.6);      // Nhánh giao cắt trái
 
-            // 22 ngôi sao lóe sáng kim cương rải rác trong nền vũ trụ sâu
+            // 18 ngôi sao kim cương lấp lánh rải rác nền vũ trụ
             bgStarSprites = [];
-            for (let i = 0; i < 22; i++) {
+            for (let i = 0; i < 18; i++) {
                 const bgSprite = new THREE.Sprite(starMat.clone());
                 const bx = (Math.random() - 0.5) * 85;
                 const by = (Math.random() - 0.5) * 60;
-                const bz = -35 + Math.random() * 25;
+                const bz = -40 + Math.random() * 25;
                 bgSprite.position.set(bx, by, bz);
-                const bScale = 1.0 + Math.random() * 1.3;
+                const bScale = 0.9 + Math.random() * 1.2;
                 bgSprite.scale.set(bScale, bScale, 1);
                 scene.add(bgSprite);
                 bgStarSprites.push({ sprite: bgSprite, baseScale: bScale, phase: Math.random() * Math.PI * 2 });
             }
 
-            // Dòng hạt năng lượng điện thế cao chạy dọc theo Vành đai 1B (Horizon) và Vành đai 4 (Meridian)
-            const pCount1 = isMobile ? 32 : 48;
-            const pPos1 = new Float32Array(pCount1 * 3);
-            for (let i = 0; i < pCount1; i++) {
-                const a = (i / pCount1) * Math.PI * 2;
-                pPos1[i * 3] = Math.cos(a) * 12.4;
-                pPos1[i * 3 + 1] = Math.sin(a) * 12.4;
-                pPos1[i * 3 + 2] = (Math.random() - 0.5) * 0.12;
-            }
-            const pGeo1 = new THREE.BufferGeometry();
-            pGeo1.setAttribute('position', new THREE.BufferAttribute(pPos1, 3));
-            const pMat1 = new THREE.PointsMaterial({
-                size: isMobile ? 0.40 : 0.52,
-                map: glowPointTexture,
-                color: 0x00e5ff,
+            // Cấu trúc 6 điểm năng lượng quỹ đạo (Orbital Nodes) chạy có gia tốc/giảm tốc kèm vệt sáng (Light Trails)
+            orbitalEnergyNodes = [];
+            const nodeMatHead = new THREE.SpriteMaterial({
+                map: starFlareTexture,
+                blending: THREE.AdditiveBlending,
                 transparent: true,
                 opacity: 0.95,
-                blending: THREE.AdditiveBlending,
                 depthWrite: false
             });
-            orbitParticles1 = new THREE.Points(pGeo1, pMat1);
-            thickRing1B.add(orbitParticles1);
-
-            const pCount2 = isMobile ? 24 : 36;
-            const pPos2 = new Float32Array(pCount2 * 3);
-            for (let i = 0; i < pCount2; i++) {
-                const a = (i / pCount2) * Math.PI * 2;
-                pPos2[i * 3] = Math.cos(a) * 12.2;
-                pPos2[i * 3 + 1] = Math.sin(a) * 12.2;
-                pPos2[i * 3 + 2] = (Math.random() - 0.5) * 0.12;
-            }
-            const pGeo2 = new THREE.BufferGeometry();
-            pGeo2.setAttribute('position', new THREE.BufferAttribute(pPos2, 3));
-            const pMat2 = new THREE.PointsMaterial({
-                size: isMobile ? 0.36 : 0.46,
+            const nodeMatTrail1 = new THREE.SpriteMaterial({
                 map: glowPointTexture,
-                color: 0x70e5ff,
-                transparent: true,
-                opacity: 0.90,
                 blending: THREE.AdditiveBlending,
+                transparent: true,
+                opacity: 0.65,
                 depthWrite: false
             });
-            orbitParticles2 = new THREE.Points(pGeo2, pMat2);
-            thickRing4.add(orbitParticles2);
+            const nodeMatTrail2 = new THREE.SpriteMaterial({
+                map: glowPointTexture,
+                blending: THREE.AdditiveBlending,
+                transparent: true,
+                opacity: 0.35,
+                depthWrite: false
+            });
 
-            // ── 4. NỀN KHÔNG GIAN VŨ TRỤ (COSMIC STARFIELD – ELECTRIC BLUE) ──
-            const dustCount = isSmallMobile ? 220 : (isMobile ? 300 : 380);
-            const dustGeo = new THREE.BufferGeometry();
-            const dustPositions = new Float32Array(dustCount * 3);
-            const dustColors = new Float32Array(dustCount * 3);
+            function createOrbitalNode(parentGroup, radius, baseAngle, speed, eccentricity, phase) {
+                const head = new THREE.Sprite(nodeMatHead.clone());
+                head.scale.set(1.4, 1.4, 1);
+                parentGroup.add(head);
 
-            for (let i = 0; i < dustCount * 3; i += 3) {
-                // Phân bố đều khắp toàn màn hình, không tập trung quá dày ở giữa
-                dustPositions[i] = (Math.random() - 0.5) * 88;
-                dustPositions[i + 1] = (Math.random() - 0.5) * 88;
-                dustPositions[i + 2] = -60 + Math.random() * 66; // z từ -60 tới +6
+                const trail1 = new THREE.Sprite(nodeMatTrail1.clone());
+                trail1.scale.set(0.9, 0.9, 1);
+                parentGroup.add(trail1);
 
+                const trail2 = new THREE.Sprite(nodeMatTrail2.clone());
+                trail2.scale.set(0.6, 0.6, 1);
+                parentGroup.add(trail2);
+
+                orbitalEnergyNodes.push({
+                    parentGroup,
+                    radius,
+                    baseAngle,
+                    speed,
+                    eccentricity,
+                    phase,
+                    head,
+                    trail1,
+                    trail2
+                });
+            }
+
+            // 2 hạt trên Vành 1 (Xích đạo)
+            createOrbitalNode(thickRing1, 10.6, 0.0, 0.75, 0.35, 0.0);
+            createOrbitalNode(thickRing1, 10.6, Math.PI, 0.75, 0.35, Math.PI);
+
+            // 2 hạt trên Vành 2 (Chéo Alpha)
+            createOrbitalNode(thickRing2Group, 11.4, 0.8, -0.65, 0.40, 1.2);
+            createOrbitalNode(thickRing2Group, 11.4, 0.8 + Math.PI, -0.65, 0.40, 1.2 + Math.PI);
+
+            // 2 hạt trên Vành 3 (Chéo Beta)
+            createOrbitalNode(thickRing3, 12.0, 2.1, 0.55, 0.30, 2.5);
+            createOrbitalNode(thickRing3, 12.0, 2.1 + Math.PI, 0.55, 0.30, 2.5 + Math.PI);
+
+            // ── 4. NỀN KHÔNG GIAN VŨ TRỤ 3 TẦNG CHIỀU SÂU (3-TIER LAYERED COSMOS) ──
+
+            // Tầng 1: Sao xa (Distant Stars) - 280 hạt, độ sâu -85 tới -45, di chuyển cực chậm
+            const farCount = isSmallMobile ? 180 : (isMobile ? 220 : 280);
+            const farGeo = new THREE.BufferGeometry();
+            const farPos = new Float32Array(farCount * 3);
+            const farCol = new Float32Array(farCount * 3);
+            for (let i = 0; i < farCount * 3; i += 3) {
+                farPos[i] = (Math.random() - 0.5) * 110;
+                farPos[i + 1] = (Math.random() - 0.5) * 110;
+                farPos[i + 2] = -85 + Math.random() * 40;
                 const r = Math.random();
-                if (r < 0.60) {
-                    // Electric Blue / Neon Cyan
-                    dustColors[i] = 0.0;
-                    dustColors[i + 1] = 0.75;
-                    dustColors[i + 2] = 1.0;
-                } else if (r < 0.88) {
-                    // Ice Blue / Diamond White
-                    dustColors[i] = 0.75;
-                    dustColors[i + 1] = 1.0;
-                    dustColors[i + 2] = 1.0;
+                if (r < 0.7) {
+                    farCol[i] = 0.0; farCol[i+1] = 0.35; farCol[i+2] = 0.85; // Deep Sapphire
                 } else {
-                    // Deep Blue
-                    dustColors[i] = 0.0;
-                    dustColors[i + 1] = 0.48;
-                    dustColors[i + 2] = 1.0;
+                    farCol[i] = 0.70; farCol[i+1] = 0.88; farCol[i+2] = 1.0; // Diamond White
                 }
             }
-            dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
-            dustGeo.setAttribute('color', new THREE.BufferAttribute(dustColors, 3));
+            farGeo.setAttribute('position', new THREE.BufferAttribute(farPos, 3));
+            farGeo.setAttribute('color', new THREE.BufferAttribute(farCol, 3));
+            const farMat = new THREE.PointsMaterial({
+                size: isMobile ? 0.32 : 0.40,
+                map: glowPointTexture,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.70,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            spaceFarStars = new THREE.Points(farGeo, farMat);
+            scene.add(spaceFarStars);
 
-            const dustMat = new THREE.PointsMaterial({
-                size: isMobile ? 0.48 : 0.58,
+            // Tầng 2: Sao trung gian (Midground Field) - 130 hạt, độ sâu -45 tới -15, màu Electric Blue & Neon Cyan
+            const midCount = isSmallMobile ? 80 : (isMobile ? 100 : 130);
+            const midGeo = new THREE.BufferGeometry();
+            const midPos = new Float32Array(midCount * 3);
+            const midCol = new Float32Array(midCount * 3);
+            for (let i = 0; i < midCount * 3; i += 3) {
+                midPos[i] = (Math.random() - 0.5) * 85;
+                midPos[i + 1] = (Math.random() - 0.5) * 85;
+                midPos[i + 2] = -45 + Math.random() * 30;
+                const r = Math.random();
+                if (r < 0.6) {
+                    midCol[i] = 0.0; midCol[i+1] = 0.75; midCol[i+2] = 1.0; // Electric Blue
+                } else {
+                    midCol[i] = 0.0; midCol[i+1] = 0.90; midCol[i+2] = 1.0; // Neon Cyan
+                }
+            }
+            midGeo.setAttribute('position', new THREE.BufferAttribute(midPos, 3));
+            midGeo.setAttribute('color', new THREE.BufferAttribute(midCol, 3));
+            const midMat = new THREE.PointsMaterial({
+                size: isMobile ? 0.50 : 0.62,
                 map: glowPointTexture,
                 vertexColors: true,
                 transparent: true,
@@ -2705,13 +2996,38 @@
                 blending: THREE.AdditiveBlending,
                 depthWrite: false
             });
-            spaceDustPoints = new THREE.Points(dustGeo, dustMat);
-            scene.add(spaceDustPoints);
+            spaceMidStars = new THREE.Points(midGeo, midMat);
+            scene.add(spaceMidStars);
+
+            // Tầng 3: Bụi năng lượng gần (Near Floating Cosmic Motes) - 45 hạt, độ sâu -15 tới +8
+            const nearCount = isSmallMobile ? 25 : (isMobile ? 32 : 45);
+            const nearGeo = new THREE.BufferGeometry();
+            const nearPos = new Float32Array(nearCount * 3);
+            const nearCol = new Float32Array(nearCount * 3);
+            for (let i = 0; i < nearCount * 3; i += 3) {
+                nearPos[i] = (Math.random() - 0.5) * 60;
+                nearPos[i + 1] = (Math.random() - 0.5) * 60;
+                nearPos[i + 2] = -15 + Math.random() * 23;
+                nearCol[i] = 0.65; nearCol[i+1] = 0.95; nearCol[i+2] = 1.0; // Ice Blue Glow
+            }
+            nearGeo.setAttribute('position', new THREE.BufferAttribute(nearPos, 3));
+            nearGeo.setAttribute('color', new THREE.BufferAttribute(nearCol, 3));
+            const nearMat = new THREE.PointsMaterial({
+                size: isMobile ? 0.75 : 0.92,
+                map: glowPointTexture,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.80,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            spaceNearDust = new THREE.Points(nearGeo, nearMat);
+            scene.add(spaceNearDust);
 
             // Tương tác chuột / chạm parallax
             function onPointerMove(x, y) {
-                targetCamX = (x / window.innerWidth - 0.5) * 3.6;
-                targetCamY = (y / window.innerHeight - 0.5) * 2.6;
+                targetCamX = (x / window.innerWidth - 0.5) * 3.4;
+                targetCamY = (y / window.innerHeight - 0.5) * 2.4;
             }
 
             window.addEventListener('mousemove', (e) => {
@@ -2738,65 +3054,106 @@
                 }
             });
 
-            // Vòng lặp render Three.js chuyển động điện ảnh – Electric Blue Energy Orb
+            // Vòng lặp render Three.js chuyển động điện ảnh – Advanced Fluid Energy System
             function animateThree() {
                 if (!isIntroActive) return;
                 introAnimId = requestAnimationFrame(animateThree);
 
                 const now = performance.now();
                 const elapsed = threeClock ? threeClock.getElapsedTime() : now * 0.001;
+                const dt = threeClock ? Math.min(0.05, threeClock.getDelta()) : 0.016;
 
-                // Cập nhật shader thời gian cho quả cầu năng lượng và lõi
-                if (orbMaterial && orbMaterial.uniforms && orbMaterial.uniforms.uTime) {
-                    orbMaterial.uniforms.uTime.value = elapsed;
+                // 1. TÍNH TOÁN XUNG NĂNG LƯỢNG LÕI THỐNG NHẤT (Harmonic Core Energy Coupling)
+                // Nhịp thở năng lượng bất đối xứng, không nhấp nháy cơ học tuần hoàn đơn giản
+                const corePulse = 0.90 + 0.18 * Math.sin(elapsed * 1.6) + 0.08 * Math.cos(elapsed * 2.7);
+
+                // Cập nhật shader thời gian và nhịp năng lượng cho quả cầu
+                if (orbMaterial && orbMaterial.uniforms) {
+                    if (orbMaterial.uniforms.uTime) orbMaterial.uniforms.uTime.value = elapsed;
+                    if (orbMaterial.uniforms.uCoreEnergy) orbMaterial.uniforms.uCoreEnergy.value = corePulse;
                 }
-                if (orbInnerMaterial && orbInnerMaterial.uniforms && orbInnerMaterial.uniforms.uTime) {
-                    orbInnerMaterial.uniforms.uTime.value = elapsed;
+
+                // Cập nhật nhịp năng lượng cho các vành đai
+                if (thickRing1Mat && thickRing1Mat.uniforms) {
+                    thickRing1Mat.uniforms.uTime.value = elapsed;
+                    thickRing1Mat.uniforms.uCoreEnergy.value = corePulse;
+                }
+                if (thickRing2Mat && thickRing2Mat.uniforms) {
+                    thickRing2Mat.uniforms.uTime.value = elapsed;
+                    thickRing2Mat.uniforms.uCoreEnergy.value = corePulse;
+                }
+                if (thickRing3Mat && thickRing3Mat.uniforms) {
+                    thickRing3Mat.uniforms.uTime.value = elapsed;
+                    thickRing3Mat.uniforms.uCoreEnergy.value = corePulse;
+                }
+                if (baseCradleMat && baseCradleMat.uniforms) {
+                    baseCradleMat.uniforms.uTime.value = elapsed;
+                    baseCradleMat.uniforms.uCoreEnergy.value = corePulse;
                 }
 
                 if (!isWarping) {
-                    // 1. Quả cầu xoay nhẹ năng lượng bên trong
+                    // 2. CHUYỂN ĐỘNG QUẢ CẦU PLASMA HỮU CƠ (Organic Core Orientation)
                     if (orbMesh) {
-                        orbMesh.rotation.y = elapsed * 0.12;
-                        orbMesh.rotation.x = Math.sin(elapsed * 0.25) * 0.08;
-                    }
-                    if (orbInnerMesh) {
-                        orbInnerMesh.rotation.y = -elapsed * 0.16;
+                        orbMesh.rotation.y = elapsed * 0.10 + Math.sin(elapsed * 0.35) * 0.04;
+                        orbMesh.rotation.x = Math.sin(elapsed * 0.22) * 0.05;
                     }
 
-                    // 2. Chuyển động xoay mượt mà, độc lập giữa các vành đai đa trục
+                    // 3. CHUYỂN ĐỘNG VÀNH ĐAI HỮU CƠ PHI TUYẾN TÍNH (Fluid Multi-Harmonic Ring Nutation)
+                    // Vành 1: Xoay thuận, dao động góc nghiêng nutation đa tần số
                     if (thickRing1) {
-                        thickRing1.rotation.z += 0.0014;
-                        thickRing1.rotation.x = Math.PI * 0.44 + Math.sin(elapsed * 0.24) * 0.025;
+                        const speed1 = 0.085 + 0.025 * Math.sin(elapsed * 0.42);
+                        thickRing1.rotation.z += speed1 * dt;
+                        thickRing1.rotation.x = Math.PI * 0.46 + Math.sin(elapsed * 0.28) * 0.035 + Math.cos(elapsed * 0.17) * 0.015;
+                        thickRing1.rotation.y = Math.sin(elapsed * 0.21) * 0.020;
                     }
-                    if (thickRing1B) {
-                        thickRing1B.rotation.z -= 0.0009;
-                    }
+
+                    // Vành 2: Xoay nghịch, nhịp thở góc nghiêng độc lập
                     if (thickRing2Group) {
-                        thickRing2Group.rotation.z -= 0.0011;
-                        thickRing2Group.rotation.x = 0.54 + Math.cos(elapsed * 0.28) * 0.030;
-                        thickRing2Group.rotation.y = 0.44 + Math.sin(elapsed * 0.22) * 0.025;
+                        const speed2 = -0.070 - 0.020 * Math.cos(elapsed * 0.36);
+                        thickRing2Group.rotation.z += speed2 * dt;
+                        thickRing2Group.rotation.x = 0.54 + Math.cos(elapsed * 0.31) * 0.040 + Math.sin(elapsed * 0.19) * 0.020;
+                        thickRing2Group.rotation.y = 0.44 + Math.sin(elapsed * 0.25) * 0.035;
                     }
+
+                    // Vành 3: Xoay chéo đối lập, dao động phối hợp
                     if (thickRing3) {
-                        thickRing3.rotation.z += 0.0010;
-                        thickRing3.rotation.x = -0.50 + Math.sin(elapsed * 0.20) * 0.025;
-                        thickRing3.rotation.y = -0.42 + Math.cos(elapsed * 0.24) * 0.025;
+                        const speed3 = 0.060 + 0.018 * Math.sin(elapsed * 0.29 + 1.2);
+                        thickRing3.rotation.z += speed3 * dt;
+                        thickRing3.rotation.x = -0.50 + Math.sin(elapsed * 0.23) * 0.038;
+                        thickRing3.rotation.y = -0.42 + Math.cos(elapsed * 0.33) * 0.032;
                     }
-                    if (thickRing4) {
-                        thickRing4.rotation.z += 0.0008;
-                        thickRing4.rotation.y = 0.18 + Math.sin(elapsed * 0.18) * 0.025;
-                    }
+
+                    // Vòm bệ đỡ chân đế & vạch chia công nghệ
                     if (baseCradleMesh) {
-                        baseCradleMesh.rotation.z = -0.55 + Math.sin(elapsed * 0.32) * 0.04;
-                    }
-                    if (upperCrownMesh) {
-                        upperCrownMesh.rotation.z = 0.52 + Math.cos(elapsed * 0.30) * 0.04;
+                        baseCradleMesh.rotation.z = -0.55 + Math.sin(elapsed * 0.32) * 0.035;
                     }
                     if (techGyroRing) {
-                        techGyroRing.rotation.z -= 0.0006;
+                        techGyroRing.rotation.z -= 0.030 * dt;
                     }
 
-                    // 3. Hiệu ứng ánh sáng: Volumetric God Rays + Anamorphic flare + Core Optical Glow
+                    // 4. CẬP NHẬT CÁC ĐIỂM NĂNG LƯỢNG QUỸ ĐẠO KÈM VỆT SÁNG (Orbital Nodes with Light Trails)
+                    for (let i = 0; i < orbitalEnergyNodes.length; i++) {
+                        const n = orbitalEnergyNodes[i];
+                        const tRel = elapsed * n.speed + n.phase;
+                        // Gia tốc phi tuyến tính (tăng tốc khi đi qua mặt trước năng lượng và giảm tốc khi ra sau)
+                        const harmonicAccel = n.eccentricity * Math.sin(tRel);
+                        const angle = tRel + harmonicAccel;
+                        const r = n.radius;
+
+                        // Cập nhật đầu hạt sáng
+                        n.head.position.set(Math.cos(angle) * r, Math.sin(angle) * r, 0.05);
+                        const velFactor = 1.0 + Math.abs(harmonicAccel) * 0.35;
+                        n.head.scale.set(1.3 * velFactor, 1.3 * velFactor, 1);
+
+                        // Cập nhật vệt sáng phía sau (Trail 1 & Trail 2)
+                        const trailAngle1 = angle - 0.07 * Math.sign(n.speed);
+                        n.trail1.position.set(Math.cos(trailAngle1) * r, Math.sin(trailAngle1) * r, 0.03);
+
+                        const trailAngle2 = angle - 0.14 * Math.sign(n.speed);
+                        n.trail2.position.set(Math.cos(trailAngle2) * r, Math.sin(trailAngle2) * r, 0.01);
+                    }
+
+                    // 5. HIỆU ỨNG ÁNH SÁNG & QUANG HỌC LIÊN KẾT LÕI
                     if (volumetricRaysMaterial && volumetricRaysMaterial.uniforms && volumetricRaysMaterial.uniforms.uTime) {
                         volumetricRaysMaterial.uniforms.uTime.value = elapsed;
                     }
@@ -2806,105 +3163,116 @@
                     if (anamorphicGlowMaterial && anamorphicGlowMaterial.uniforms && anamorphicGlowMaterial.uniforms.uIntensity) {
                         anamorphicGlowMaterial.uniforms.uIntensity.value = 1.0 + 0.20 * Math.cos(elapsed * 2.5);
                     }
+                    if (coreLight) {
+                        coreLight.intensity = 3.6 + corePulse * 1.5;
+                    }
                     if (flareLightLeft) {
-                        flareLightLeft.intensity = 1.6 + 0.5 * Math.sin(elapsed * 3.5);
+                        flareLightLeft.intensity = 1.5 + 0.4 * Math.sin(elapsed * 3.2);
                     }
                     if (flareLightRight) {
-                        flareLightRight.intensity = 1.6 + 0.5 * Math.cos(elapsed * 3.5);
+                        flareLightRight.intensity = 1.5 + 0.4 * Math.cos(elapsed * 3.2);
                     }
 
-                    // 4. Các điểm lóe sáng sao 4 cánh (Starbursts) lấp lánh như kim cương
+                    // 6. CÁC ĐIỂM LÓE SAO NHIỄU XẠ & SAO NỀN KIM CƯƠNG
                     for (let i = 0; i < starFlares.length; i++) {
                         const sf = starFlares[i];
-                        const tw = 1.0 + 0.18 * Math.sin(elapsed * 3.5 + sf.phase);
+                        const tw = 1.0 + 0.16 * Math.sin(elapsed * 3.2 + sf.phase);
                         sf.sprite.scale.set(sf.baseScale * tw, sf.baseScale * tw, 1);
                     }
-
-                    // 5. Ngôi sao lấp lánh nền vũ trụ sâu
                     for (let i = 0; i < bgStarSprites.length; i++) {
                         const bgS = bgStarSprites[i];
-                        const tw2 = 1.0 + 0.25 * Math.sin(elapsed * 2.5 + bgS.phase);
+                        const tw2 = 1.0 + 0.22 * Math.sin(elapsed * 2.2 + bgS.phase);
                         bgS.sprite.scale.set(bgS.baseScale * tw2, bgS.baseScale * tw2, 1);
                     }
 
-                    // 6. Hạt năng lượng vi mô chạy dọc 2 luồng quỹ đạo
-                    if (orbitParticles1) {
-                        orbitParticles1.rotation.z += 0.0028;
+                    // 7. PARALLAX 3 TẦNG CHIỀU SÂU VŨ TRỤ (3-Tier Layered Cosmos)
+                    if (spaceFarStars) {
+                        spaceFarStars.rotation.y += 0.00003;
+                        spaceFarStars.position.x = currentCamX * -0.05;
+                        spaceFarStars.position.y = currentCamY * -0.05;
                     }
-                    if (orbitParticles2) {
-                        orbitParticles2.rotation.z -= 0.0022;
+                    if (spaceMidStars) {
+                        spaceMidStars.rotation.y += 0.00008;
+                        spaceMidStars.rotation.x += 0.00002;
+                        spaceMidStars.position.x = currentCamX * -0.15;
+                        spaceMidStars.position.y = currentCamY * -0.15;
+                    }
+                    if (spaceNearDust) {
+                        spaceNearDust.rotation.y += 0.00016;
+                        spaceNearDust.position.x = currentCamX * -0.35;
+                        spaceNearDust.position.y = currentCamY * -0.35;
+                        spaceNearDust.position.z = Math.sin(elapsed * 0.4) * 0.5;
                     }
 
-                    // 7. Bụi sao không gian chuyển động lơ lửng chậm rãi
-                    if (spaceDustPoints) {
-                        spaceDustPoints.rotation.y += 0.00012;
-                        spaceDustPoints.rotation.x += 0.00005;
-                    }
+                    // 8. CAMERA CINEMATIC NATURAL SWAY & DAMPED MOUSE PARALLAX
+                    // Khi người dùng không rê chuột, camera vẫn có nhịp thở không gian mềm mại
+                    const idleSwayX = Math.sin(elapsed * 0.28) * 0.55 + Math.cos(elapsed * 0.17) * 0.30;
+                    const idleSwayY = Math.cos(elapsed * 0.22) * 0.40 + Math.sin(elapsed * 0.14) * 0.20;
 
-                    // 8. Cụm trung tâm lơ lửng nhẹ nhàng
-                    if (techCoreGroup) {
-                        techCoreGroup.position.y = Math.sin(elapsed * 0.65) * 0.14;
-                    }
+                    const destX = targetCamX + idleSwayX;
+                    const destY = targetCamY + idleSwayY;
 
-                    // 9. Parallax camera theo tương tác chuột/chạm
-                    currentCamX += (targetCamX - currentCamX) * 0.025;
-                    currentCamY += (-targetCamY - currentCamY) * 0.025;
+                    currentCamX += (destX - currentCamX) * 0.035;
+                    currentCamY += (-destY - currentCamY) * 0.035;
+
                     camera.position.x = currentCamX;
                     camera.position.y = currentCamY;
                     camera.lookAt(0, 0, 0);
+
+                    // Cụm trung tâm phản hồi nghiêng nhẹ tự nhiên theo con trỏ
+                    techCoreGroup.rotation.y = (currentCamX * 0.035) + Math.sin(elapsed * 0.25) * 0.02;
+                    techCoreGroup.rotation.x = (-currentCamY * 0.030) + Math.cos(elapsed * 0.30) * 0.015;
+                    techCoreGroup.position.y = Math.sin(elapsed * 0.55) * 0.12;
+
                 } else {
-                    // ── HIỆU ỨNG CHUYỂN CẢNH CINEMATIC THREE.JS: QUẢ CẦU BÙNG SÁNG + VÀNH ĐAI TĂNG TỐC & CO TÂM + ZOOM TOÀN CẢNH ──
+                    // ── 9. HIỆU ỨNG CHUYỂN CẢNH ĐIỆN ẢNH CÓ TẦNG BẬC (Staggered Cinematic Warp) ──
                     const timeInWarp = now - warpStartTime;
 
                     if (warpPhase === 1) {
-                        // Giai đoạn 1: Tích tụ năng lượng, vành đai xoay nhanh dần & bắt đầu co quỹ đạo (0 -> 550ms)
+                        // Giai đoạn 1: Tích tụ năng lượng với độ trễ chuyển động phân tầng (0 -> 550ms)
                         const p1 = Math.min(1, timeInWarp / 550);
                         const ease1 = p1 * p1;
+
+                        // Độ trễ tăng tốc giữa các vành đai (Staggered acceleration)
+                        const p1_ring1 = Math.min(1, Math.max(0, timeInWarp / 500));
+                        const p1_ring2 = Math.min(1, Math.max(0, (timeInWarp - 80) / 470));
+                        const p1_ring3 = Math.min(1, Math.max(0, (timeInWarp - 160) / 390));
 
                         const scale1 = baseFrameScale * (1.0 + ease1 * 0.40);
                         techCoreGroup.scale.set(scale1, scale1, scale1);
                         camera.position.z = 24 - ease1 * 3.5;
 
-                        // Gia tốc xoay của nhóm vành đai
+                        // Gia tốc xoay vành đai so le
                         if (thickRing1) {
-                            thickRing1.rotation.z += 0.004 + ease1 * 0.040;
-                            thickRing1.rotation.x += 0.003 + ease1 * 0.025;
-                        }
-                        if (thickRing1B) {
-                            thickRing1B.rotation.z -= 0.003 + ease1 * 0.035;
+                            thickRing1.rotation.z += 0.005 + p1_ring1 * p1_ring1 * 0.045;
+                            thickRing1.rotation.x += 0.003 + p1_ring1 * 0.025;
+                            const rc1 = 1.0 - p1_ring1 * 0.32;
+                            thickRing1.scale.set(rc1, rc1, rc1);
                         }
                         if (thickRing2Group) {
-                            thickRing2Group.rotation.z -= 0.004 + ease1 * 0.040;
-                            thickRing2Group.rotation.y += 0.003 + ease1 * 0.028;
+                            thickRing2Group.rotation.z -= 0.004 + p1_ring2 * p1_ring2 * 0.042;
+                            thickRing2Group.rotation.y += 0.003 + p1_ring2 * 0.028;
+                            const rc2 = 1.0 - p1_ring2 * 0.30;
+                            thickRing2Group.scale.set(rc2, rc2, rc2);
                         }
                         if (thickRing3) {
-                            thickRing3.rotation.z += 0.003 + ease1 * 0.032;
+                            thickRing3.rotation.z += 0.003 + p1_ring3 * p1_ring3 * 0.038;
+                            const rc3 = 1.0 - p1_ring3 * 0.28;
+                            thickRing3.scale.set(rc3, rc3, rc3);
                         }
-                        if (thickRing4) {
-                            thickRing4.rotation.z += 0.003 + ease1 * 0.030;
-                        }
-                        if (techGyroRing) {
-                            techGyroRing.rotation.z -= 0.003 + ease1 * 0.025;
+                        if (baseCradleMesh) {
+                            const rcb = 1.0 - ease1 * 0.30;
+                            baseCradleMesh.scale.set(rcb, rcb, rcb);
                         }
 
-                        // Thu hẹp vành đai về tâm quả cầu
-                        const ringContract1 = 1.0 - ease1 * 0.32;
-                        if (thickRing1) thickRing1.scale.set(ringContract1, ringContract1, ringContract1);
-                        if (thickRing1B) thickRing1B.scale.set(ringContract1, ringContract1, ringContract1);
-                        if (thickRing2Group) thickRing2Group.scale.set(ringContract1, ringContract1, ringContract1);
-                        if (thickRing3) thickRing3.scale.set(ringContract1, ringContract1, ringContract1);
-                        if (thickRing4) thickRing4.scale.set(ringContract1, ringContract1, ringContract1);
-                        if (baseCradleMesh) baseCradleMesh.scale.set(ringContract1, ringContract1, ringContract1);
-                        if (upperCrownMesh) upperCrownMesh.scale.set(ringContract1, ringContract1, ringContract1);
-                        if (techGyroRing) techGyroRing.scale.set(ringContract1, ringContract1, ringContract1);
-
-                        // Tăng độ sáng quả cầu năng lượng và ánh sáng
+                        // Tăng độ sáng năng lượng
                         if (orbMaterial && orbMaterial.uniforms && orbMaterial.uniforms.uIntensity) {
                             orbMaterial.uniforms.uIntensity.value = 1.0 + ease1 * 1.8;
                         }
-                        if (orbCoronaMaterial && orbCoronaMaterial.uniforms && orbCoronaMaterial.uniforms.uIntensity) {
-                            orbCoronaMaterial.uniforms.uIntensity.value = 1.0 + ease1 * 2.2;
-                        }
+                        if (thickRing1Mat && thickRing1Mat.uniforms) thickRing1Mat.uniforms.uWarpIntensity.value = 1.0 + ease1 * 1.6;
+                        if (thickRing2Mat && thickRing2Mat.uniforms) thickRing2Mat.uniforms.uWarpIntensity.value = 1.0 + ease1 * 1.6;
+                        if (thickRing3Mat && thickRing3Mat.uniforms) thickRing3Mat.uniforms.uWarpIntensity.value = 1.0 + ease1 * 1.6;
+
                         if (volumetricRaysMaterial && volumetricRaysMaterial.uniforms && volumetricRaysMaterial.uniforms.uIntensity) {
                             volumetricRaysMaterial.uniforms.uIntensity.value = 1.0 + ease1 * 3.0;
                         }
@@ -2914,19 +3282,13 @@
                         if (anamorphicGlowMaterial && anamorphicGlowMaterial.uniforms && anamorphicGlowMaterial.uniforms.uIntensity) {
                             anamorphicGlowMaterial.uniforms.uIntensity.value = 1.0 + ease1 * 3.0;
                         }
-                        if (anamorphicFlareMesh) {
-                            anamorphicFlareMesh.scale.x = 1.0 + ease1 * 0.6;
-                        }
+                        if (anamorphicFlareMesh) anamorphicFlareMesh.scale.x = 1.0 + ease1 * 0.6;
                         if (coreLight) coreLight.intensity = 3.8 + ease1 * 8.5;
-                        if (rimLight1) rimLight1.intensity = 2.5 + ease1 * 5.0;
-                        if (rimLight2) rimLight2.intensity = 2.2 + ease1 * 4.5;
                         if (flareLightLeft) flareLightLeft.intensity = 2.0 + ease1 * 6.0;
                         if (flareLightRight) flareLightRight.intensity = 2.0 + ease1 * 6.0;
 
-                        if (spaceDustPoints) spaceDustPoints.rotation.y += 0.0008 + ease1 * 0.004;
-
                     } else if (warpPhase === 2) {
-                        // Giai đoạn 2: Tăng tốc cực đại, quả cầu năng lượng bùng nổ, camera lao xuyên tâm (550ms -> 1350ms)
+                        // Giai đoạn 2: Tăng tốc cực đại, camera lao xuyên tâm (550ms -> 1350ms)
                         const p2 = Math.min(1, (timeInWarp - 550) / 800);
                         const ease2 = p2 * p2 * (3 - 2 * p2);
                         const accel2 = Math.pow(p2, 1.8);
@@ -2934,50 +3296,37 @@
                         const scale2 = baseFrameScale * (1.40 + ease2 * 5.5);
                         techCoreGroup.scale.set(scale2, scale2, scale2);
 
-                        camera.position.z = 20.5 - ease2 * 34.5; // từ 20.5 tới -14 (lao qua tâm)
+                        camera.position.z = 20.5 - ease2 * 34.5;
                         camera.fov = 60 + ease2 * 24;
                         camera.updateProjectionMatrix();
 
-                        // Vành đai xoáy cực nhanh
+                        // Vành đai xoáy nhanh và co sát tâm
                         if (thickRing1) {
-                            thickRing1.rotation.z += 0.045 + accel2 * 0.16;
-                            thickRing1.rotation.x += 0.025 + accel2 * 0.10;
-                        }
-                        if (thickRing1B) {
-                            thickRing1B.rotation.z -= 0.040 + accel2 * 0.14;
+                            thickRing1.rotation.z += 0.048 + accel2 * 0.17;
+                            thickRing1.rotation.x += 0.026 + accel2 * 0.11;
                         }
                         if (thickRing2Group) {
-                            thickRing2Group.rotation.z -= 0.042 + accel2 * 0.15;
-                            thickRing2Group.rotation.y += 0.028 + accel2 * 0.11;
+                            thickRing2Group.rotation.z -= 0.044 + accel2 * 0.16;
+                            thickRing2Group.rotation.y += 0.030 + accel2 * 0.12;
                         }
                         if (thickRing3) {
-                            thickRing3.rotation.z += 0.038 + accel2 * 0.13;
-                        }
-                        if (thickRing4) {
-                            thickRing4.rotation.z += 0.036 + accel2 * 0.12;
-                        }
-                        if (techGyroRing) {
-                            techGyroRing.rotation.z -= 0.030 + accel2 * 0.10;
+                            thickRing3.rotation.z += 0.040 + accel2 * 0.14;
                         }
 
-                        // Vành đai co sát tâm quả cầu (singularity collapse)
                         const ringContract2 = Math.max(0.02, 0.68 - ease2 * 0.66);
                         if (thickRing1) thickRing1.scale.set(ringContract2, ringContract2, ringContract2);
-                        if (thickRing1B) thickRing1B.scale.set(ringContract2, ringContract2, ringContract2);
                         if (thickRing2Group) thickRing2Group.scale.set(ringContract2, ringContract2, ringContract2);
                         if (thickRing3) thickRing3.scale.set(ringContract2, ringContract2, ringContract2);
-                        if (thickRing4) thickRing4.scale.set(ringContract2, ringContract2, ringContract2);
                         if (baseCradleMesh) baseCradleMesh.scale.set(ringContract2, ringContract2, ringContract2);
-                        if (upperCrownMesh) upperCrownMesh.scale.set(ringContract2, ringContract2, ringContract2);
-                        if (techGyroRing) techGyroRing.scale.set(ringContract2, ringContract2, ringContract2);
 
                         // Quả cầu năng lượng đạt đỉnh phát sáng
                         if (orbMaterial && orbMaterial.uniforms && orbMaterial.uniforms.uIntensity) {
                             orbMaterial.uniforms.uIntensity.value = 2.8 + ease2 * 4.0;
                         }
-                        if (orbCoronaMaterial && orbCoronaMaterial.uniforms && orbCoronaMaterial.uniforms.uIntensity) {
-                            orbCoronaMaterial.uniforms.uIntensity.value = 3.2 + ease2 * 5.0;
-                        }
+                        if (thickRing1Mat && thickRing1Mat.uniforms) thickRing1Mat.uniforms.uWarpIntensity.value = 2.6 + ease2 * 3.5;
+                        if (thickRing2Mat && thickRing2Mat.uniforms) thickRing2Mat.uniforms.uWarpIntensity.value = 2.6 + ease2 * 3.5;
+                        if (thickRing3Mat && thickRing3Mat.uniforms) thickRing3Mat.uniforms.uWarpIntensity.value = 2.6 + ease2 * 3.5;
+
                         if (volumetricRaysMaterial && volumetricRaysMaterial.uniforms && volumetricRaysMaterial.uniforms.uIntensity) {
                             volumetricRaysMaterial.uniforms.uIntensity.value = 4.0 + ease2 * 8.0;
                         }
@@ -2991,20 +3340,17 @@
                         if (flareLightLeft) flareLightLeft.intensity = 8.0 + ease2 * 15.0;
                         if (flareLightRight) flareLightRight.intensity = 8.0 + ease2 * 15.0;
 
-                        // Các hạt sao lao nhanh về phía trước
-                        if (spaceDustPoints) {
-                            const rushSpeed = 1.6 + accel2 * 6.8;
-                            spaceDustPoints.position.z += rushSpeed;
-                            if (spaceDustPoints.position.z > 45) {
-                                spaceDustPoints.position.z = -35;
-                            }
-                            const sXY = 1.0 + accel2 * 0.85;
-                            const sZ = 1.0 + accel2 * 2.8;
-                            spaceDustPoints.scale.set(sXY, sXY, sZ);
+                        // Các hạt sao tầng gần và trung lao nhanh
+                        if (spaceNearDust) {
+                            spaceNearDust.position.z += 1.8 + accel2 * 8.0;
+                            if (spaceNearDust.position.z > 35) spaceNearDust.position.z = -20;
+                        }
+                        if (spaceMidStars) {
+                            spaceMidStars.position.z += 1.0 + accel2 * 4.5;
+                            if (spaceMidStars.position.z > 25) spaceMidStars.position.z = -45;
                         }
 
                     } else if (warpPhase === 3) {
-                        // Giai đoạn 3: Duy trì độ sáng điện ảnh và lướt êm dịu khi chuyển giao sang CV
                         camera.position.z -= 0.04;
                         techCoreGroup.rotation.y += 0.002;
                     }
