@@ -1990,9 +1990,9 @@
        ══════════════════════════════════════════════════════════════ */
     let scene, camera, renderer;
     let techCoreGroup;
-    let orbitalRing1, orbitalRing2, orbitalRing3, orbitalRing4;
-    let sat1A, sat1B, sat2A, sat2B, sat3A, sat3B, sat4A, sat4B;
-    let ring1Particles, ring2Particles, ring3Particles, ring4Particles;
+    let orbitalRing1, orbitalRing2, orbitalRing3;
+    let sat1A, sat1B, sat2A, sat2B, sat3A, sat3B;
+    let ring1Particles, ring2Particles, ring3Particles;
     let spaceDustPoints;
     let coreLight, rimLight, blueAccentLight;
     let introAnimId = null;
@@ -2048,212 +2048,180 @@
             const ambientLight = new THREE.AmbientLight(0x0a192f, 1.8);
             scene.add(ambientLight);
 
-            coreLight = new THREE.PointLight(0x38bdf8, 3.2, 60);
+            coreLight = new THREE.PointLight(0x38bdf8, 2.2, 45);
             coreLight.position.set(0, 0, 0);
             scene.add(coreLight);
 
-            rimLight = new THREE.PointLight(0x60a5fa, 2.4, 65);
-            rimLight.position.set(18, 14, 12);
+            rimLight = new THREE.PointLight(0x60a5fa, 1.8, 50);
+            rimLight.position.set(16, 12, 10);
             scene.add(rimLight);
 
-            blueAccentLight = new THREE.PointLight(0x0284c7, 2.0, 55);
-            blueAccentLight.position.set(-18, -12, 10);
+            blueAccentLight = new THREE.PointLight(0x0284c7, 1.5, 45);
+            blueAccentLight.position.set(-16, -10, 8);
             scene.add(blueAccentLight);
 
-            // Cụm khung quỹ đạo không gian Futuristic 3D Orbital Frame
+            // Cụm khung holographic 3D bảo vệ lõi trung tâm (Futuristic Holographic Energy Frame)
             techCoreGroup = new THREE.Group();
             scene.add(techCoreGroup);
 
-            // Responsive: Tự động điều chỉnh kích thước khung quỹ đạo theo kích thước màn hình
-            baseFrameScale = isSmallMobile ? 0.58 : (isMobile ? 0.72 : 1.0);
+            // Responsive: Tự động điều chỉnh kích thước khung holographic ôm sát cụm nội dung
+            baseFrameScale = isSmallMobile ? 0.46 : (isMobile ? 0.65 : 0.88);
             techCoreGroup.scale.set(baseFrameScale, baseFrameScale, baseFrameScale);
 
-            // ── KHÔNG TẠO KHỐI CẦU ĐẶC Ở TRUNG TÂM (Để hở không gian cho ảnh đại diện & thông tin nổi bật) ──
+            // ── KHÔNG TẠO KHỐI CẦU ĐẶC Ở TRUNG TÂM (Để hở hoàn toàn không gian cho ảnh đại diện & thông tin) ──
 
-            // Cấu hình số đa giác thanh mảnh, tối ưu GPU
+            // Cấu hình đường nét siêu mảnh tinh tế chuẩn Hologram sci-fi (không dày thô như neon)
             const ringRadial = 8;
             const ringSegs = isMobile ? 48 : 64;
 
-            // 1. VÀNH ĐAI 1: Khung giá đỡ kỹ thuật bên trong (Inner Tech Frame - bao bọc toàn bộ card)
-            const ring1Geo = new THREE.TorusGeometry(12.8, 0.055, ringRadial, ringSegs);
+            // 1. VÀNH ĐAI 1: Khung giá đỡ kỹ thuật lõi trong (Inner Tech Frame - ôm sát avatar và badge)
+            const ring1Geo = new THREE.TorusGeometry(8.8, 0.028, ringRadial, ringSegs);
             const ring1Mat = new THREE.MeshStandardMaterial({
                 color: 0x38bdf8,
                 emissive: 0x0284c7,
-                emissiveIntensity: 0.85,
-                roughness: 0.18,
-                metalness: 0.85
+                emissiveIntensity: 0.65,
+                roughness: 0.25,
+                metalness: 0.85,
+                transparent: true,
+                opacity: 0.85
             });
             orbitalRing1 = new THREE.Mesh(ring1Geo, ring1Mat);
-            orbitalRing1.rotation.x = 0.38;
+            orbitalRing1.rotation.x = 0.35;
             orbitalRing1.rotation.y = 0.22;
             techCoreGroup.add(orbitalRing1);
 
-            // Nút phát sáng và vệ tinh trên vành đai 1
-            const sat1Geo = new THREE.SphereGeometry(0.28, 8, 8);
-            const sat1Mat = new THREE.MeshStandardMaterial({ color: 0x7dd3fc, emissive: 0x38bdf8, emissiveIntensity: 1.5 });
+            // Điểm sáng nhỏ tinh tế trên vành đai 1
+            const sat1Geo = new THREE.SphereGeometry(0.15, 8, 8);
+            const sat1Mat = new THREE.MeshStandardMaterial({ color: 0x7dd3fc, emissive: 0x38bdf8, emissiveIntensity: 1.3 });
             sat1A = new THREE.Mesh(sat1Geo, sat1Mat);
             orbitalRing1.add(sat1A);
 
-            const sat1BGeo = new THREE.SphereGeometry(0.20, 8, 8);
-            const sat1BMat = new THREE.MeshStandardMaterial({ color: 0xbae6fd, emissive: 0x60a5fa, emissiveIntensity: 1.3 });
+            const sat1BGeo = new THREE.SphereGeometry(0.12, 8, 8);
+            const sat1BMat = new THREE.MeshStandardMaterial({ color: 0xbae6fd, emissive: 0x60a5fa, emissiveIntensity: 1.2 });
             sat1B = new THREE.Mesh(sat1BGeo, sat1BMat);
             orbitalRing1.add(sat1B);
 
-            // Hạt năng lượng chạy dọc vành đai 1
-            const pCount1 = isMobile ? 24 : 36;
+            // Hạt năng lượng chạy dọc vành đai 1 (tia laser holographic)
+            const pCount1 = isMobile ? 20 : 30;
             const pPos1 = new Float32Array(pCount1 * 3);
             for (let i = 0; i < pCount1; i++) {
                 const a = (i / pCount1) * Math.PI * 2;
-                pPos1[i * 3] = Math.cos(a) * 12.8;
-                pPos1[i * 3 + 1] = Math.sin(a) * 12.8;
-                pPos1[i * 3 + 2] = (Math.random() - 0.5) * 0.25;
+                pPos1[i * 3] = Math.cos(a) * 8.8;
+                pPos1[i * 3 + 1] = Math.sin(a) * 8.8;
+                pPos1[i * 3 + 2] = (Math.random() - 0.5) * 0.18;
             }
             const pGeo1 = new THREE.BufferGeometry();
             pGeo1.setAttribute('position', new THREE.BufferAttribute(pPos1, 3));
             const pMat1 = new THREE.PointsMaterial({
-                size: isMobile ? 0.26 : 0.34,
+                size: isMobile ? 0.20 : 0.26,
                 color: 0x7dd3fc,
                 transparent: true,
-                opacity: 0.85
+                opacity: 0.75,
+                blending: THREE.AdditiveBlending
             });
             ring1Particles = new THREE.Points(pGeo1, pMat1);
             orbitalRing1.add(ring1Particles);
 
-            // 2. VÀNH ĐAI 2: Vòng quỹ đạo xích đạo con quay (Equatorial Gimbal Ring)
-            const ring2Geo = new THREE.TorusGeometry(16.0, 0.050, ringRadial, ringSegs);
+            // 2. VÀNH ĐAI 2: Vòng quỹ đạo năng lượng bảo vệ (Middle Protective Energy Belt - ôm trọn họ tên & chức danh)
+            const ring2Geo = new THREE.TorusGeometry(10.6, 0.026, ringRadial, ringSegs);
             const ring2Mat = new THREE.MeshStandardMaterial({
                 color: 0x60a5fa,
                 emissive: 0x1d4ed8,
-                emissiveIntensity: 0.80,
-                roughness: 0.20,
-                metalness: 0.80
+                emissiveIntensity: 0.60,
+                roughness: 0.25,
+                metalness: 0.85,
+                transparent: true,
+                opacity: 0.80
             });
             orbitalRing2 = new THREE.Mesh(ring2Geo, ring2Mat);
-            orbitalRing2.rotation.y = 0.52;
-            orbitalRing2.rotation.z = 0.25;
+            orbitalRing2.rotation.y = 0.55;
+            orbitalRing2.rotation.z = 0.32;
             techCoreGroup.add(orbitalRing2);
 
-            const sat2Geo = new THREE.SphereGeometry(0.26, 8, 8);
-            const sat2Mat = new THREE.MeshStandardMaterial({ color: 0x93c5fd, emissive: 0x3b82f6, emissiveIntensity: 1.4 });
+            const sat2Geo = new THREE.SphereGeometry(0.14, 8, 8);
+            const sat2Mat = new THREE.MeshStandardMaterial({ color: 0x93c5fd, emissive: 0x3b82f6, emissiveIntensity: 1.3 });
             sat2A = new THREE.Mesh(sat2Geo, sat2Mat);
             orbitalRing2.add(sat2A);
 
-            const sat2BGeo = new THREE.SphereGeometry(0.18, 8, 8);
+            const sat2BGeo = new THREE.SphereGeometry(0.11, 8, 8);
             sat2B = new THREE.Mesh(sat2BGeo, sat1BMat);
             orbitalRing2.add(sat2B);
 
-            const pCount2 = isMobile ? 28 : 42;
+            const pCount2 = isMobile ? 22 : 32;
             const pPos2 = new Float32Array(pCount2 * 3);
             for (let i = 0; i < pCount2; i++) {
                 const a = (i / pCount2) * Math.PI * 2;
-                pPos2[i * 3] = Math.cos(a) * 16.0;
-                pPos2[i * 3 + 1] = Math.sin(a) * 16.0;
-                pPos2[i * 3 + 2] = (Math.random() - 0.5) * 0.25;
+                pPos2[i * 3] = Math.cos(a) * 10.6;
+                pPos2[i * 3 + 1] = Math.sin(a) * 10.6;
+                pPos2[i * 3 + 2] = (Math.random() - 0.5) * 0.18;
             }
             const pGeo2 = new THREE.BufferGeometry();
             pGeo2.setAttribute('position', new THREE.BufferAttribute(pPos2, 3));
             const pMat2 = new THREE.PointsMaterial({
-                size: isMobile ? 0.26 : 0.34,
+                size: isMobile ? 0.20 : 0.24,
                 color: 0x93c5fd,
                 transparent: true,
-                opacity: 0.80
+                opacity: 0.70,
+                blending: THREE.AdditiveBlending
             });
             ring2Particles = new THREE.Points(pGeo2, pMat2);
             orbitalRing2.add(ring2Particles);
 
-            // 3. VÀNH ĐAI 3: Vòng quỹ đạo nghiêng cực (Oblique Polar Ring)
-            const ring3Geo = new THREE.TorusGeometry(19.2, 0.045, ringRadial, ringSegs);
+            // 3. VÀNH ĐAI 3: Khung viền chân trời bao bọc ngoài cùng (Outer Horizon Frame - bao bọc trọn vẹn toàn card)
+            const ring3Geo = new THREE.TorusGeometry(12.4, 0.024, ringRadial, ringSegs);
             const ring3Mat = new THREE.MeshStandardMaterial({
                 color: 0x7dd3fc,
                 emissive: 0x0369a1,
-                emissiveIntensity: 0.75,
-                roughness: 0.22,
-                metalness: 0.80
+                emissiveIntensity: 0.55,
+                roughness: 0.25,
+                metalness: 0.85,
+                transparent: true,
+                opacity: 0.72
             });
             orbitalRing3 = new THREE.Mesh(ring3Geo, ring3Mat);
-            orbitalRing3.rotation.x = -0.48;
-            orbitalRing3.rotation.z = -0.32;
+            orbitalRing3.rotation.x = -0.42;
+            orbitalRing3.rotation.z = -0.28;
             techCoreGroup.add(orbitalRing3);
 
-            const sat3Geo = new THREE.SphereGeometry(0.24, 8, 8);
-            const sat3Mat = new THREE.MeshStandardMaterial({ color: 0xbae6fd, emissive: 0x0ea5e9, emissiveIntensity: 1.4 });
+            const sat3Geo = new THREE.SphereGeometry(0.13, 8, 8);
+            const sat3Mat = new THREE.MeshStandardMaterial({ color: 0xbae6fd, emissive: 0x0ea5e9, emissiveIntensity: 1.2 });
             sat3A = new THREE.Mesh(sat3Geo, sat3Mat);
             orbitalRing3.add(sat3A);
 
-            const sat3BGeo = new THREE.SphereGeometry(0.18, 8, 8);
-            sat3B = new THREE.Mesh(sat3BGeo, sat3Mat);
+            const sat3BGeo = new THREE.SphereGeometry(0.10, 8, 8);
+            sat3B = new THREE.Mesh(sat3BGeo, sat1BMat);
             orbitalRing3.add(sat3B);
 
-            const pCount3 = isMobile ? 32 : 48;
+            const pCount3 = isMobile ? 24 : 36;
             const pPos3 = new Float32Array(pCount3 * 3);
             for (let i = 0; i < pCount3; i++) {
                 const a = (i / pCount3) * Math.PI * 2;
-                pPos3[i * 3] = Math.cos(a) * 19.2;
-                pPos3[i * 3 + 1] = Math.sin(a) * 19.2;
-                pPos3[i * 3 + 2] = (Math.random() - 0.5) * 0.25;
+                pPos3[i * 3] = Math.cos(a) * 12.4;
+                pPos3[i * 3 + 1] = Math.sin(a) * 12.4;
+                pPos3[i * 3 + 2] = (Math.random() - 0.5) * 0.18;
             }
             const pGeo3 = new THREE.BufferGeometry();
             pGeo3.setAttribute('position', new THREE.BufferAttribute(pPos3, 3));
             const pMat3 = new THREE.PointsMaterial({
-                size: isMobile ? 0.24 : 0.32,
+                size: isMobile ? 0.18 : 0.22,
                 color: 0x38bdf8,
                 transparent: true,
-                opacity: 0.75
+                opacity: 0.65,
+                blending: THREE.AdditiveBlending
             });
             ring3Particles = new THREE.Points(pGeo3, pMat3);
             orbitalRing3.add(ring3Particles);
 
-            // 4. VÀNH ĐAI 4: Vành đai thiên hà ngoài cùng (Outer Celestial Halo Ring)
-            const ring4Geo = new THREE.TorusGeometry(22.5, 0.038, ringRadial, ringSegs);
-            const ring4Mat = new THREE.MeshStandardMaterial({
-                color: 0xbae6fd,
-                emissive: 0x0284c7,
-                emissiveIntensity: 0.65,
-                roughness: 0.25,
-                metalness: 0.75
-            });
-            orbitalRing4 = new THREE.Mesh(ring4Geo, ring4Mat);
-            orbitalRing4.rotation.y = -0.42;
-            orbitalRing4.rotation.x = 0.40;
-            techCoreGroup.add(orbitalRing4);
-
-            const sat4Geo = new THREE.SphereGeometry(0.22, 8, 8);
-            sat4A = new THREE.Mesh(sat4Geo, sat3Mat);
-            orbitalRing4.add(sat4A);
-
-            const sat4BGeo = new THREE.SphereGeometry(0.16, 8, 8);
-            sat4B = new THREE.Mesh(sat4BGeo, sat1BMat);
-            orbitalRing4.add(sat4B);
-
-            const pCount4 = isMobile ? 36 : 54;
-            const pPos4 = new Float32Array(pCount4 * 3);
-            for (let i = 0; i < pCount4; i++) {
-                const a = (i / pCount4) * Math.PI * 2;
-                pPos4[i * 3] = Math.cos(a) * 22.5;
-                pPos4[i * 3 + 1] = Math.sin(a) * 22.5;
-                pPos4[i * 3 + 2] = (Math.random() - 0.5) * 0.25;
-            }
-            const pGeo4 = new THREE.BufferGeometry();
-            pGeo4.setAttribute('position', new THREE.BufferAttribute(pPos4, 3));
-            const pMat4 = new THREE.PointsMaterial({
-                size: isMobile ? 0.24 : 0.30,
-                color: 0xbae6fd,
-                transparent: true,
-                opacity: 0.70
-            });
-            ring4Particles = new THREE.Points(pGeo4, pMat4);
-            orbitalRing4.add(ring4Particles);
-
-            // 5. Hệ thống bụi sao đa tầng (Tông màu xanh như bản cũ, tối ưu số hạt)
-            const dustCount = isSmallMobile ? 160 : (isMobile ? 240 : 380);
+            // 4. Hệ thống bụi sao không gian sâu (Tông màu xanh tinh tế, tối ưu số hạt)
+            const dustCount = isSmallMobile ? 120 : (isMobile ? 180 : 260);
             const dustGeo = new THREE.BufferGeometry();
             const dustPositions = new Float32Array(dustCount * 3);
             const dustColors = new Float32Array(dustCount * 3);
 
             for (let i = 0; i < dustCount * 3; i += 3) {
-                dustPositions[i] = (Math.random() - 0.5) * 90;
-                dustPositions[i + 1] = (Math.random() - 0.5) * 90;
-                dustPositions[i + 2] = (Math.random() - 0.5) * 110;
+                dustPositions[i] = (Math.random() - 0.5) * 80;
+                dustPositions[i + 1] = (Math.random() - 0.5) * 80;
+                dustPositions[i + 2] = (Math.random() - 0.5) * 90;
 
                 const r = Math.random();
                 if (r < 0.6) {
@@ -2274,18 +2242,18 @@
             dustGeo.setAttribute('color', new THREE.BufferAttribute(dustColors, 3));
 
             const dustMat = new THREE.PointsMaterial({
-                size: isMobile ? 0.35 : 0.45,
+                size: isMobile ? 0.32 : 0.40,
                 vertexColors: true,
                 transparent: true,
-                opacity: 0.82
+                opacity: 0.75
             });
             spaceDustPoints = new THREE.Points(dustGeo, dustMat);
             scene.add(spaceDustPoints);
 
             // Tương tác chuột / chạm parallax
             function onPointerMove(x, y) {
-                targetCamX = (x / window.innerWidth - 0.5) * 4.5;
-                targetCamY = (y / window.innerHeight - 0.5) * 3.5;
+                targetCamX = (x / window.innerWidth - 0.5) * 3.8;
+                targetCamY = (y / window.innerHeight - 0.5) * 2.8;
             }
 
             window.addEventListener('mousemove', (e) => {
@@ -2306,7 +2274,7 @@
                 const isMob = window.innerWidth <= 768;
                 const isSmallMob = window.innerWidth <= 480;
                 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMob ? 1.25 : 1.5));
-                baseFrameScale = isSmallMob ? 0.58 : (isMob ? 0.72 : 1.0);
+                baseFrameScale = isSmallMob ? 0.46 : (isMob ? 0.65 : 0.88);
                 if (!isWarping && techCoreGroup) {
                     techCoreGroup.scale.set(baseFrameScale, baseFrameScale, baseFrameScale);
                 }
@@ -2321,56 +2289,46 @@
                 const elapsed = threeClock ? threeClock.getElapsedTime() : now * 0.001;
 
                 if (!isWarping) {
-                    // Chuyển động xoay mặt phẳng quỹ đạo chậm, lệch tốc độ và khác trục giữa các vành đai
-                    orbitalRing1.rotation.z += 0.0016;
-                    orbitalRing1.rotation.x = 0.38 + Math.sin(elapsed * 0.40) * 0.06;
-                    orbitalRing1.rotation.y = 0.22 + Math.cos(elapsed * 0.35) * 0.05;
+                    // Chuyển động xoay mặt phẳng quỹ đạo chậm, độc lập và mượt mà giữa 3 vòng
+                    orbitalRing1.rotation.z += 0.0012;
+                    orbitalRing1.rotation.x = 0.35 + Math.sin(elapsed * 0.32) * 0.04;
+                    orbitalRing1.rotation.y = 0.22 + Math.cos(elapsed * 0.28) * 0.035;
 
-                    orbitalRing2.rotation.z -= 0.0013;
-                    orbitalRing2.rotation.y = 0.52 + Math.sin(elapsed * 0.32) * 0.06;
-                    orbitalRing2.rotation.x = -0.25 + Math.cos(elapsed * 0.38) * 0.05;
+                    orbitalRing2.rotation.z -= 0.0010;
+                    orbitalRing2.rotation.y = 0.55 + Math.sin(elapsed * 0.26) * 0.04;
+                    orbitalRing2.rotation.x = -0.22 + Math.cos(elapsed * 0.30) * 0.035;
 
-                    orbitalRing3.rotation.z += 0.0011;
-                    orbitalRing3.rotation.x = -0.48 + Math.cos(elapsed * 0.28) * 0.06;
-                    orbitalRing3.rotation.y = 0.30 + Math.sin(elapsed * 0.30) * 0.05;
-
-                    orbitalRing4.rotation.z -= 0.0009;
-                    orbitalRing4.rotation.y = -0.42 + Math.sin(elapsed * 0.24) * 0.05;
-                    orbitalRing4.rotation.x = 0.40 + Math.cos(elapsed * 0.26) * 0.05;
+                    orbitalRing3.rotation.z += 0.0008;
+                    orbitalRing3.rotation.x = -0.42 + Math.cos(elapsed * 0.22) * 0.04;
+                    orbitalRing3.rotation.y = 0.32 + Math.sin(elapsed * 0.25) * 0.035;
 
                     // Các hạt năng lượng trôi dọc theo vành đai (100% GPU)
-                    ring1Particles.rotation.z += 0.0022;
-                    ring2Particles.rotation.z -= 0.0018;
-                    ring3Particles.rotation.z += 0.0015;
-                    ring4Particles.rotation.z -= 0.0012;
+                    ring1Particles.rotation.z += 0.0018;
+                    ring2Particles.rotation.z -= 0.0015;
+                    ring3Particles.rotation.z += 0.0012;
 
-                    // Các nút phát sáng vệ tinh di chuyển mượt mà trên quỹ đạo
-                    const t1A = elapsed * 0.42;
-                    sat1A.position.set(Math.cos(t1A) * 12.8, Math.sin(t1A) * 12.8, 0);
+                    // Các điểm sáng nhỏ di chuyển mượt mà trên quỹ đạo
+                    const t1A = elapsed * 0.38;
+                    sat1A.position.set(Math.cos(t1A) * 8.8, Math.sin(t1A) * 8.8, 0);
                     const t1B = t1A + Math.PI;
-                    sat1B.position.set(Math.cos(t1B) * 12.8, Math.sin(t1B) * 12.8, 0);
+                    sat1B.position.set(Math.cos(t1B) * 8.8, Math.sin(t1B) * 8.8, 0);
 
-                    const t2A = -elapsed * 0.35;
-                    sat2A.position.set(Math.cos(t2A) * 16.0, Math.sin(t2A) * 16.0, 0);
+                    const t2A = -elapsed * 0.32;
+                    sat2A.position.set(Math.cos(t2A) * 10.6, Math.sin(t2A) * 10.6, 0);
                     const t2B = t2A + Math.PI * 0.9;
-                    sat2B.position.set(Math.cos(t2B) * 16.0, Math.sin(t2B) * 16.0, 0);
+                    sat2B.position.set(Math.cos(t2B) * 10.6, Math.sin(t2B) * 10.6, 0);
 
-                    const t3A = elapsed * 0.30;
-                    sat3A.position.set(Math.cos(t3A) * 19.2, Math.sin(t3A) * 19.2, 0);
+                    const t3A = elapsed * 0.26;
+                    sat3A.position.set(Math.cos(t3A) * 12.4, Math.sin(t3A) * 12.4, 0);
                     const t3B = t3A + Math.PI * 1.1;
-                    sat3B.position.set(Math.cos(t3B) * 19.2, Math.sin(t3B) * 19.2, 0);
-
-                    const t4A = -elapsed * 0.25;
-                    sat4A.position.set(Math.cos(t4A) * 22.5, Math.sin(t4A) * 22.5, 0);
-                    const t4B = t4A + Math.PI * 0.85;
-                    sat4B.position.set(Math.cos(t4B) * 22.5, Math.sin(t4B) * 22.5, 0);
+                    sat3B.position.set(Math.cos(t3B) * 12.4, Math.sin(t3B) * 12.4, 0);
 
                     // Bụi sao không gian sâu
-                    spaceDustPoints.rotation.y += 0.00018;
-                    spaceDustPoints.rotation.x += 0.00008;
+                    spaceDustPoints.rotation.y += 0.00014;
+                    spaceDustPoints.rotation.x += 0.00006;
 
                     // Chuyển động nâng hạ lơ lửng nhẹ nhàng
-                    techCoreGroup.position.y = Math.sin(elapsed * 0.7) * 0.2;
+                    techCoreGroup.position.y = Math.sin(elapsed * 0.6) * 0.15;
 
                     // Parallax camera theo tương tác chuột/chạm
                     currentCamX += (targetCamX - currentCamX) * 0.025;
@@ -2411,43 +2369,34 @@
                         orbitalRing3.rotation.y -= 0.0025 + ease1 * 0.026;
                         orbitalRing3.rotation.z += 0.003 + ease1 * 0.028;
 
-                        orbitalRing4.rotation.x -= 0.0025 + ease1 * 0.020;
-                        orbitalRing4.rotation.y += 0.003 + ease1 * 0.024;
-                        orbitalRing4.rotation.z += 0.0025 + ease1 * 0.025;
-
                         // 3. THU HẸP QUỸ ĐẠO: Vành đai và các vệ tinh bắt đầu co dần về tâm màn hình
                         const ringContract1 = 1.0 - ease1 * 0.30; // 1.0 -> 0.70
                         orbitalRing1.scale.set(ringContract1, ringContract1, ringContract1);
                         orbitalRing2.scale.set(ringContract1, ringContract1, ringContract1);
                         orbitalRing3.scale.set(ringContract1, ringContract1, ringContract1);
-                        orbitalRing4.scale.set(ringContract1, ringContract1, ringContract1);
 
                         // Vệ tinh quay nhanh dần trên quỹ đạo
                         const satT1 = elapsed * 0.6 + timeInWarp * 0.0035;
-                        sat1A.position.set(Math.cos(satT1 * 2) * 12.8, Math.sin(satT1 * 2) * 12.8, 0);
-                        sat1B.position.set(Math.cos(satT1 * 2 + Math.PI) * 12.8, Math.sin(satT1 * 2 + Math.PI) * 12.8, 0);
-                        sat2A.position.set(Math.cos(-satT1 * 2.2) * 16.0, Math.sin(-satT1 * 2.2) * 16.0, 0);
-                        sat2B.position.set(Math.cos(-satT1 * 2.2 + Math.PI * 0.9) * 16.0, Math.sin(-satT1 * 2.2 + Math.PI * 0.9) * 16.0, 0);
-                        sat3A.position.set(Math.cos(satT1 * 2.5) * 19.2, Math.sin(satT1 * 2.5) * 19.2, 0);
-                        sat3B.position.set(Math.cos(satT1 * 2.5 + Math.PI * 1.1) * 19.2, Math.sin(satT1 * 2.5 + Math.PI * 1.1) * 19.2, 0);
-                        sat4A.position.set(Math.cos(-satT1 * 2.8) * 22.5, Math.sin(-satT1 * 2.8) * 22.5, 0);
-                        sat4B.position.set(Math.cos(-satT1 * 2.8 + Math.PI * 0.85) * 22.5, Math.sin(-satT1 * 2.8 + Math.PI * 0.85) * 22.5, 0);
+                        sat1A.position.set(Math.cos(satT1 * 2) * 8.8, Math.sin(satT1 * 2) * 8.8, 0);
+                        sat1B.position.set(Math.cos(satT1 * 2 + Math.PI) * 8.8, Math.sin(satT1 * 2 + Math.PI) * 8.8, 0);
+                        sat2A.position.set(Math.cos(-satT1 * 2.2) * 10.6, Math.sin(-satT1 * 2.2) * 10.6, 0);
+                        sat2B.position.set(Math.cos(-satT1 * 2.2 + Math.PI * 0.9) * 10.6, Math.sin(-satT1 * 2.2 + Math.PI * 0.9) * 10.6, 0);
+                        sat3A.position.set(Math.cos(satT1 * 2.5) * 12.4, Math.sin(satT1 * 2.5) * 12.4, 0);
+                        sat3B.position.set(Math.cos(satT1 * 2.5 + Math.PI * 1.1) * 12.4, Math.sin(satT1 * 2.5 + Math.PI * 1.1) * 12.4, 0);
 
                         // Hạt năng lượng tăng tốc
                         ring1Particles.rotation.z += 0.006 + ease1 * 0.02;
                         ring2Particles.rotation.z -= 0.005 + ease1 * 0.02;
                         ring3Particles.rotation.z += 0.005 + ease1 * 0.02;
-                        ring4Particles.rotation.z -= 0.004 + ease1 * 0.018;
 
                         // Tăng độ phát sáng của các vành đai
-                        if (orbitalRing1.material) orbitalRing1.material.emissiveIntensity = 0.85 + ease1 * 1.6;
-                        if (orbitalRing2.material) orbitalRing2.material.emissiveIntensity = 0.80 + ease1 * 1.6;
-                        if (orbitalRing3.material) orbitalRing3.material.emissiveIntensity = 0.75 + ease1 * 1.6;
-                        if (orbitalRing4.material) orbitalRing4.material.emissiveIntensity = 0.65 + ease1 * 1.5;
+                        if (orbitalRing1.material) orbitalRing1.material.emissiveIntensity = 0.65 + ease1 * 1.8;
+                        if (orbitalRing2.material) orbitalRing2.material.emissiveIntensity = 0.60 + ease1 * 1.8;
+                        if (orbitalRing3.material) orbitalRing3.material.emissiveIntensity = 0.55 + ease1 * 1.8;
 
-                        if (coreLight) coreLight.intensity = 3.2 + ease1 * 6.5;
-                        if (rimLight) rimLight.intensity = 2.4 + ease1 * 3.5;
-                        if (blueAccentLight) blueAccentLight.intensity = 2.0 + ease1 * 3.0;
+                        if (coreLight) coreLight.intensity = 2.2 + ease1 * 7.5;
+                        if (rimLight) rimLight.intensity = 1.8 + ease1 * 4.0;
+                        if (blueAccentLight) blueAccentLight.intensity = 1.5 + ease1 * 3.5;
 
                         spaceDustPoints.rotation.y += 0.0008 + ease1 * 0.004;
 
@@ -2458,7 +2407,7 @@
                         const accel2 = Math.pow(p2, 1.8);
 
                         // 1. ZOOM TOÀN CẢNH: Camera lao xuyên tâm & cụm khung phóng to cực đại
-                        const scale2 = baseFrameScale * (1.45 + ease2 * 4.95); // 1.45 -> 6.4
+                        const scale2 = baseFrameScale * (1.45 + ease2 * 5.2); // 1.45 -> 6.65
                         techCoreGroup.scale.set(scale2, scale2, scale2);
 
                         camera.position.z = 20.5 - ease2 * 34.5; // từ 20.5 tới -14 (lao xuyên qua tâm)
@@ -2484,38 +2433,29 @@
                         orbitalRing3.rotation.y -= 0.027 + accel2 * 0.115;
                         orbitalRing3.rotation.z += 0.032 + accel2 * 0.125;
 
-                        orbitalRing4.rotation.x -= 0.022 + accel2 * 0.095;
-                        orbitalRing4.rotation.y += 0.025 + accel2 * 0.11;
-                        orbitalRing4.rotation.z += 0.028 + accel2 * 0.115;
-
                         // 3. THU HẸP QUỸ ĐẠO & LAO NHANH VỀ TÂM: Các vòng co lại sát tâm điểm (singularity collapse)
                         const ringContract2 = Math.max(0.03, 0.70 - ease2 * 0.67); // 0.70 -> 0.03
                         orbitalRing1.scale.set(ringContract2, ringContract2, ringContract2);
                         orbitalRing2.scale.set(ringContract2, ringContract2, ringContract2);
                         orbitalRing3.scale.set(ringContract2, ringContract2, ringContract2);
-                        orbitalRing4.scale.set(ringContract2, ringContract2, ringContract2);
 
                         // Vệ tinh xoay cuồng nhiệt trên quỹ đạo đang thu hẹp về tâm
                         const satT2 = elapsed * 1.0 + timeInWarp * 0.012;
-                        sat1A.position.set(Math.cos(satT2 * 2.8) * 12.8, Math.sin(satT2 * 2.8) * 12.8, 0);
-                        sat1B.position.set(Math.cos(satT2 * 2.8 + Math.PI) * 12.8, Math.sin(satT2 * 2.8 + Math.PI) * 12.8, 0);
-                        sat2A.position.set(Math.cos(-satT2 * 3.2) * 16.0, Math.sin(-satT2 * 3.2) * 16.0, 0);
-                        sat2B.position.set(Math.cos(-satT2 * 3.2 + Math.PI * 0.9) * 16.0, Math.sin(-satT2 * 3.2 + Math.PI * 0.9) * 16.0, 0);
-                        sat3A.position.set(Math.cos(satT2 * 3.6) * 19.2, Math.sin(satT2 * 3.6) * 19.2, 0);
-                        sat3B.position.set(Math.cos(satT2 * 3.6 + Math.PI * 1.1) * 19.2, Math.sin(satT2 * 3.6 + Math.PI * 1.1) * 19.2, 0);
-                        sat4A.position.set(Math.cos(-satT2 * 4.0) * 22.5, Math.sin(-satT2 * 4.0) * 22.5, 0);
-                        sat4B.position.set(Math.cos(-satT2 * 4.0 + Math.PI * 0.85) * 22.5, Math.sin(-satT2 * 4.0 + Math.PI * 0.85) * 22.5, 0);
+                        sat1A.position.set(Math.cos(satT2 * 2.8) * 8.8, Math.sin(satT2 * 2.8) * 8.8, 0);
+                        sat1B.position.set(Math.cos(satT2 * 2.8 + Math.PI) * 8.8, Math.sin(satT2 * 2.8 + Math.PI) * 8.8, 0);
+                        sat2A.position.set(Math.cos(-satT2 * 3.2) * 10.6, Math.sin(-satT2 * 3.2) * 10.6, 0);
+                        sat2B.position.set(Math.cos(-satT2 * 3.2 + Math.PI * 0.9) * 10.6, Math.sin(-satT2 * 3.2 + Math.PI * 0.9) * 10.6, 0);
+                        sat3A.position.set(Math.cos(satT2 * 3.6) * 12.4, Math.sin(satT2 * 3.6) * 12.4, 0);
+                        sat3B.position.set(Math.cos(satT2 * 3.6 + Math.PI * 1.1) * 12.4, Math.sin(satT2 * 3.6 + Math.PI * 1.1) * 12.4, 0);
 
                         ring1Particles.rotation.z += 0.04 + accel2 * 0.12;
                         ring2Particles.rotation.z -= 0.04 + accel2 * 0.12;
                         ring3Particles.rotation.z += 0.035 + accel2 * 0.11;
-                        ring4Particles.rotation.z -= 0.03 + accel2 * 0.10;
 
                         // Rực sáng điện ảnh cực đại ở tâm điểm
-                        if (orbitalRing1.material) orbitalRing1.material.emissiveIntensity = 2.4 + ease2 * 5.0;
-                        if (orbitalRing2.material) orbitalRing2.material.emissiveIntensity = 2.3 + ease2 * 5.0;
+                        if (orbitalRing1.material) orbitalRing1.material.emissiveIntensity = 2.5 + ease2 * 5.0;
+                        if (orbitalRing2.material) orbitalRing2.material.emissiveIntensity = 2.4 + ease2 * 5.0;
                         if (orbitalRing3.material) orbitalRing3.material.emissiveIntensity = 2.2 + ease2 * 5.0;
-                        if (orbitalRing4.material) orbitalRing4.material.emissiveIntensity = 2.0 + ease2 * 4.8;
 
                         if (coreLight) coreLight.intensity = 9.5 + ease2 * 17.0;
 
