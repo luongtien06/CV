@@ -1974,14 +1974,14 @@
     let orbMesh, orbMaterial;
     let orbCoronaMesh, orbCoronaMaterial;
     let orbInnerMesh, orbInnerMaterial;
-    // Hệ thống 5 vành đai năng lượng Aurora cực quang độc lập
-    let auroraRing1, auroraRing1Mat, auroraRing1Core;
-    let auroraRing2, auroraRing2Mat, auroraRing2Core;
-    let auroraRing3, auroraRing3Mat, auroraRing3Core;
-    let auroraRing4, auroraRing4Mat, auroraRing4Core;
-    let auroraRing5, auroraRing5Mat, auroraRing5Core;
-    // Biến tương thích ngược cho chuyển cảnh và dọn dẹp
-    let thickRing1 = null, thickRing2Group = null, thickRing3 = null, thickRing1Mat = null, thickRing2Mat = null, thickRing3Mat = null;
+    // ── Cosmic Plasma Energy Core System ──
+    let plasmaWaveMeshes = [];      // Các dải cực quang plasma hữu cơ
+    let plasmaWaveMats = [];        // Shader materials cho từng dải
+    let energyMotes = [];           // Các hạt năng lượng nhỏ trôi dọc dải plasma
+    let plasmaWaveGroup;            // Group chứa toàn bộ dải plasma
+    // Tương thích ngược cho chuyển cảnh
+    let thickRing1 = null, thickRing2Group = null, thickRing3 = null;
+    let thickRing1Mat = null, thickRing2Mat = null, thickRing3Mat = null;
     let baseCradleMesh = null, baseCradleMat = null, techGyroRing = null;
     let thickRing1B = null, thickRing4 = null, upperCrownMesh = null;
     let anamorphicFlareMesh, anamorphicFlareMaterial;
@@ -2408,227 +2408,283 @@
             anamorphicGlowMesh.position.set(0, 0, 0.04);
             techCoreGroup.add(anamorphicGlowMesh);
 
-            const ringRadialSegs = 20;
-            const ringTubularSegs = isMobile ? 64 : 96;
+            // ══════════════════════════════════════════════════════════════
+            // COSMIC PLASMA ENERGY WAVES — Organic Aurora Plasma System
+            // Dải năng lượng cực quang lan tỏa tự nhiên từ lõi plasma
+            // ══════════════════════════════════════════════════════════════
+            plasmaWaveGroup = new THREE.Group();
+            techCoreGroup.add(plasmaWaveGroup);
 
-            // Vật liệu Laser Hot Core phát sáng trắng tinh khiết ở tâm lòng ống
-            const coreHotWireMat = new THREE.MeshBasicMaterial({
-                color: 0xffffff,
-                transparent: true,
-                opacity: 0.96,
-                blending: THREE.AdditiveBlending
-            });
+            // ── Shader dải cực quang plasma hữu cơ (Organic Aurora Plasma Ribbon Shader) ──
+            const plasmaWaveVertShader = `
+                uniform float uTime;
+                uniform float uNoiseScale;
+                uniform float uNoiseSpeed;
+                uniform float uAmplitude;
+                uniform float uWarpIntensity;
+                varying vec2 vUv;
+                varying vec3 vNormal;
+                varying vec3 vWorldPosition;
+                varying float vDisplacement;
 
-            // ── CUSTOM SHADER HIỆU ỨNG CỰC QUANG (AURORA NEON ENERGY SHADER) TRÊN TOÀN BỘ VÀNH ĐAI ──
-            function createAuroraRingShaderMaterial(params) {
-                return new THREE.ShaderMaterial({
+                // Compact Simplex Noise 3D
+                vec3 mod289v(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+                vec4 mod289v4(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+                vec4 perm4(vec4 x) { return mod289v4(((x*34.0)+1.0)*x); }
+                vec4 tInvSq(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+                float snoise3(vec3 v) {
+                    const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+                    const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+                    vec3 i = floor(v + dot(v, C.yyy));
+                    vec3 x0 = v - i + dot(i, C.xxx);
+                    vec3 g = step(x0.yzx, x0.xyz);
+                    vec3 l = 1.0 - g;
+                    vec3 i1 = min(g, l.zxy); vec3 i2 = max(g, l.zxy);
+                    vec3 x1 = x0 - i1 + C.xxx; vec3 x2 = x0 - i2 + C.yyy; vec3 x3 = x0 - D.yyy;
+                    i = mod289v(i);
+                    vec4 p = perm4(perm4(perm4(i.z+vec4(0.,i1.z,i2.z,1.))+i.y+vec4(0.,i1.y,i2.y,1.))+i.x+vec4(0.,i1.x,i2.x,1.));
+                    float n_ = 0.142857142857; vec3 ns = n_ * D.wyz - D.xzx;
+                    vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+                    vec4 x_ = floor(j * ns.z); vec4 y_ = floor(j - 7.0 * x_);
+                    vec4 x = x_*ns.x + ns.yyyy; vec4 y = y_*ns.x + ns.yyyy;
+                    vec4 h = 1.0 - abs(x) - abs(y);
+                    vec4 b0 = vec4(x.xy, y.xy); vec4 b1 = vec4(x.zw, y.zw);
+                    vec4 s0 = floor(b0)*2.0+1.0; vec4 s1 = floor(b1)*2.0+1.0;
+                    vec4 sh = -step(h, vec4(0.0));
+                    vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy; vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+                    vec3 p0 = vec3(a0.xy,h.x); vec3 p1 = vec3(a0.zw,h.y);
+                    vec3 p2 = vec3(a1.xy,h.z); vec3 p3 = vec3(a1.zw,h.w);
+                    vec4 norm = tInvSq(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+                    p0*=norm.x; p1*=norm.y; p2*=norm.z; p3*=norm.w;
+                    vec4 m = max(0.6 - vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)), 0.0);
+                    m = m * m;
+                    return 42.0 * dot(m*m, vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
+                }
+
+                void main() {
+                    vUv = uv;
+                    vNormal = normalize(normalMatrix * normal);
+
+                    vec3 p = position;
+                    float t = uTime * uNoiseSpeed;
+                    float theta = uv.x * 6.2831853;
+
+                    // 1. Dao động sóng hình sin mềm mại dọc theo chiều dài cung (Smooth undulating wave)
+                    float w1 = sin(theta * 2.0 + t * 1.4) * 0.35;
+                    float w2 = cos(theta * 3.0 - t * 0.9) * 0.22;
+                    float w3 = sin(theta * 5.0 + t * 1.8) * 0.12;
+                    float waveDisp = (w1 + w2 + w3) * uAmplitude;
+
+                    // 2. Biến dạng tự nhiên tần số thấp (Low-frequency domain warp) - tránh gấp nếp góc cạnh
+                    float n1 = snoise3(p * uNoiseScale + vec3(t * 0.18, 0.0, t * 0.12));
+                    float n2 = snoise3(p * uNoiseScale * 0.7 + vec3(0.0, t * 0.22, -t * 0.15));
+                    float noiseDisp = (n1 * 0.7 + n2 * 0.3) * uAmplitude * 0.65;
+
+                    float totalDisp = (waveDisp + noiseDisp) * uWarpIntensity;
+                    p += normal * totalDisp;
+
+                    vDisplacement = totalDisp;
+                    vec4 worldPos = modelMatrix * vec4(p, 1.0);
+                    vWorldPosition = worldPos.xyz;
+                    gl_Position = projectionMatrix * viewMatrix * worldPos;
+                }
+            `;
+
+            const plasmaWaveFragShader = `
+                uniform float uTime;
+                uniform vec3 uColorDeep;
+                uniform vec3 uColorElectric;
+                uniform vec3 uColorNeon;
+                uniform vec3 uColorIce;
+                uniform float uSpeed;
+                uniform float uPhase;
+                uniform float uCoreEnergy;
+                uniform float uWarpIntensity;
+                uniform float uOpacityBase;
+                varying vec2 vUv;
+                varying vec3 vNormal;
+                varying vec3 vWorldPosition;
+                varying float vDisplacement;
+
+                float snoise3f(vec3 v) {
+                    const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+                    const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+                    vec3 i = floor(v + dot(v, C.yyy));
+                    vec3 x0 = v - i + dot(i, C.xxx);
+                    vec3 g = step(x0.yzx, x0.xyz); vec3 l = 1.0 - g;
+                    vec3 i1 = min(g, l.zxy); vec3 i2 = max(g, l.zxy);
+                    vec3 x1 = x0 - i1 + C.xxx; vec3 x2 = x0 - i2 + C.yyy; vec3 x3 = x0 - D.yyy;
+                    i = i - floor(i * (1.0 / 289.0)) * 289.0;
+                    vec4 pp = ((i.z+vec4(0.,i1.z,i2.z,1.))*34.0+1.0)*(i.z+vec4(0.,i1.z,i2.z,1.));
+                    pp = pp - floor(pp*(1.0/289.0))*289.0;
+                    pp = ((pp+i.y+vec4(0.,i1.y,i2.y,1.))*34.0+1.0)*(pp+i.y+vec4(0.,i1.y,i2.y,1.));
+                    pp = pp - floor(pp*(1.0/289.0))*289.0;
+                    pp = ((pp+i.x+vec4(0.,i1.x,i2.x,1.))*34.0+1.0)*(pp+i.x+vec4(0.,i1.x,i2.x,1.));
+                    pp = pp - floor(pp*(1.0/289.0))*289.0;
+                    float n_ = 0.142857142857; vec3 ns = n_ * D.wyz - D.xzx;
+                    vec4 j = pp - 49.0 * floor(pp * ns.z * ns.z);
+                    vec4 x_ = floor(j * ns.z); vec4 y_ = floor(j - 7.0 * x_);
+                    vec4 x = x_*ns.x + ns.yyyy; vec4 y = y_*ns.x + ns.yyyy;
+                    vec4 h = 1.0 - abs(x) - abs(y);
+                    vec4 b0 = vec4(x.xy, y.xy); vec4 b1 = vec4(x.zw, y.zw);
+                    vec4 s0 = floor(b0)*2.0+1.0; vec4 s1 = floor(b1)*2.0+1.0;
+                    vec4 sh = -step(h, vec4(0.0));
+                    vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy; vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+                    vec3 p0 = vec3(a0.xy,h.x); vec3 p1 = vec3(a0.zw,h.y);
+                    vec3 p2 = vec3(a1.xy,h.z); vec3 p3 = vec3(a1.zw,h.w);
+                    vec4 norm = 1.79284291400159 - 0.85373472095314*vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3));
+                    p0*=norm.x; p1*=norm.y; p2*=norm.z; p3*=norm.w;
+                    vec4 m = max(0.6 - vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)), 0.0);
+                    m = m*m;
+                    return 42.0 * dot(m*m, vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
+                }
+
+                void main() {
+                    float t = uTime * uSpeed + uPhase;
+
+                    // 1. Phân rã biên dải plasma (Soft boundary falloff - 100% triệt tiêu mép cứng)
+                    // Mặt cắt ngang: hàm Hermite êm dịu, đạt 0.0 tuyệt đối tại mép ống
+                    float tubeDist = abs(vUv.y - 0.5) * 2.0; // 0 tại tâm dải, 1 tại mép
+                    float lateralFade = 1.0 - smoothstep(0.10, 1.0, tubeDist);
+                    
+                    // Chiều dọc: điều chế mật độ năng lượng tuần hoàn 360 độ êm ái (hoàn toàn liền mạch không có vết cắt hình học)
+                    float circ = vUv.x * 6.2831853;
+                    float waveDensity = pow(0.5 + 0.5 * sin(circ + uPhase * 1.5), 1.6);
+                    waveDensity = mix(0.35, 1.0, waveDensity); // Duy trì vầng hào quang mỏng ngay cả ở phân đoạn tối
+                    
+                    // Bao phong chung - đảm bảo viền ngoài mượt mà tan biến vào chân không vũ trụ
+                    float envelope = lateralFade * waveDensity;
+                    if (envelope < 0.002) discard;
+
+                    // 2. Dòng chảy cực quang chính (Primary aurora stream)
+                    vec3 nCoord1 = vec3(vUv.x * 5.0 - t * 0.7, vUv.y * 1.8, t * 0.18);
+                    float aurora1 = snoise3f(nCoord1);
+                    aurora1 = pow(clamp(aurora1 * 0.5 + 0.5, 0.0, 1.0), 1.6);
+
+                    // 3. Dòng xung đối lưu (Counter-current filament)
+                    vec3 nCoord2 = vec3(vUv.x * 7.5 + t * 0.5, vUv.y * 2.4, -t * 0.22 + 2.5);
+                    float aurora2 = snoise3f(nCoord2);
+                    aurora2 = pow(clamp(aurora2 * 0.5 + 0.5, 0.0, 1.0), 2.0);
+
+                    // 4. Sợi điện plasma mảnh sáng rực (Electric spark filaments)
+                    vec3 sparkCoord = vec3(vUv.x * 14.0 - t * 1.3, vUv.y * 5.5, t * 0.10);
+                    float sparkVein = pow(clamp(1.0 - abs(snoise3f(sparkCoord)), 0.0, 1.0), 6.0);
+
+                    // 5. Cường độ sống lưng dải sáng (Luminous spine)
+                    float spine = pow(clamp(1.0 - tubeDist, 0.0, 1.0), 2.6);
+
+                    // 6. Fresnel viền hào quang thể tích (Volumetric Fresnel rim)
+                    vec3 viewDir = normalize(cameraPosition - vWorldPosition);
+                    float fresnel = pow(1.0 - clamp(abs(dot(normalize(vNormal), viewDir)), 0.0, 1.0), 2.4);
+
+                    // 7. Nhịp thở năng lượng hữu cơ
+                    float energyBreath = (0.86 + 0.22 * sin(uTime * 1.5 + uPhase) + 0.08 * cos(uTime * 2.4 + uPhase * 0.8)) * uCoreEnergy;
+
+                    // 8. Phối màu Electric Blue Cosmic Aurora
+                    vec3 col = uColorDeep;
+                    col = mix(col, uColorElectric, clamp((aurora1 * 0.6 + aurora2 * 0.4) * lateralFade, 0.0, 1.0));
+                    col = mix(col, uColorNeon, clamp(spine * 1.1 + aurora1 * 0.5, 0.0, 1.0));
+                    col += uColorIce * pow(spine, 3.2) * (0.85 + sparkVein * 2.2); // Tia sáng trắng lõi
+                    col += uColorNeon * fresnel * 0.80;                            // Viền Fresnel cực quang
+                    col += uColorIce * pow(fresnel, 4.0) * 0.50;                   // Tia lấp lánh rìa
+                    col += uColorNeon * pow(clamp(vDisplacement * 1.8, 0.0, 1.0), 2.0) * 0.45;
+
+                    // 9. Alpha tổng hợp mềm mại
+                    float alpha = (spine * 0.68 + aurora1 * 0.42 + aurora2 * 0.28 + sparkVein * 0.52 + fresnel * 0.38);
+                    alpha *= envelope * energyBreath * uOpacityBase * uWarpIntensity;
+
+                    gl_FragColor = vec4(col * (1.1 + aurora1 * 0.5) * uWarpIntensity * envelope, clamp(alpha, 0.0, 1.0));
+                }
+            `;
+
+            // ── Tạo geometry dải plasma hữu cơ (Organic Aurora Ribbon) ──
+            function createPlasmaWave(params) {
+                const mat = new THREE.ShaderMaterial({
                     uniforms: {
                         uTime: { value: 0 },
-                        uColorBase: { value: new THREE.Color(params.colorBase || 0x001d4a) },     // Midnight / Deep Blue
-                        uColorElectric: { value: new THREE.Color(params.colorElectric || 0x007bff) }, // Electric Blue
-                        uColorNeon: { value: new THREE.Color(params.colorNeon || 0x00e5ff) },         // Neon Cyan
-                        uColorIce: { value: new THREE.Color(params.colorIce || 0xffffff) },          // Ice Blue / Pure White
-                        uSpeed: { value: params.speed || 1.0 },
+                        uColorDeep: { value: new THREE.Color(params.colorDeep || 0x010c28) },
+                        uColorElectric: { value: new THREE.Color(params.colorElectric || 0x0055ff) },
+                        uColorNeon: { value: new THREE.Color(params.colorNeon || 0x00e5ff) },
+                        uColorIce: { value: new THREE.Color(params.colorIce || 0xffffff) },
+                        uSpeed: { value: params.speed || 0.7 },
                         uPhase: { value: params.phase || 0.0 },
-                        uHarmonics: { value: new THREE.Vector3(params.h1 || 3.0, params.h2 || 4.0, params.h3 || 1.0) },
+                        uNoiseScale: { value: params.noiseScale || 0.25 },
+                        uNoiseSpeed: { value: params.noiseSpeed || 0.45 },
+                        uAmplitude: { value: params.amplitude || 0.6 },
                         uCoreEnergy: { value: 1.0 },
-                        uWarpIntensity: { value: 1.0 }
+                        uWarpIntensity: { value: 1.0 },
+                        uOpacityBase: { value: params.opacity || 0.72 }
                     },
-                    vertexShader: `
-                        varying vec2 vUv;
-                        varying vec3 vNormal;
-                        varying vec3 vWorldPosition;
-                        uniform float uTime;
-                        uniform float uSpeed;
-
-                        void main() {
-                            vUv = uv;
-                            vNormal = normalize(normalMatrix * normal);
-                            vec3 p = position;
-                            // Dao động vi mô nhẹ theo chu vi dải năng lượng
-                            float ripple = sin(uv.x * 6.28318 * 4.0 - uTime * uSpeed * 2.2) * 0.025;
-                            p += normal * ripple;
-                            vec4 worldPos = modelMatrix * vec4(p, 1.0);
-                            vWorldPosition = worldPos.xyz;
-                            gl_Position = projectionMatrix * viewMatrix * worldPos;
-                        }
-                    `,
-                    fragmentShader: `
-                        uniform float uTime;
-                        uniform vec3 uColorBase;
-                        uniform vec3 uColorElectric;
-                        uniform vec3 uColorNeon;
-                        uniform vec3 uColorIce;
-                        uniform float uSpeed;
-                        uniform float uPhase;
-                        uniform vec3 uHarmonics;
-                        uniform float uCoreEnergy;
-                        uniform float uWarpIntensity;
-                        varying vec2 vUv;
-                        varying vec3 vNormal;
-                        varying vec3 vWorldPosition;
-
-                        void main() {
-                            float t = uTime * uSpeed + uPhase;
-                            float circ = vUv.x * 6.2831853;
-
-                            // 1. Luồng sáng cực quang chính (Primary flowing aurora ribbon)
-                            float wave1 = sin(circ * uHarmonics.x - t * 2.2);
-                            wave1 = pow(clamp(wave1 * 0.5 + 0.5, 0.0, 1.0), 2.8);
-
-                            // 2. Luồng giao thoa cực quang thứ hai ngược hướng (Counter-shimmering aurora)
-                            float wave2 = sin(circ * uHarmonics.y + t * 1.6 + uPhase * 1.5);
-                            wave2 = pow(clamp(wave2 * 0.5 + 0.5, 0.0, 1.0), 3.4);
-
-                            // 3. Vệt sáng kéo dài dạng đuôi sao chổi (Long trailing aurora stream)
-                            float wave3 = sin(circ * uHarmonics.z - t * 0.85 + 2.2);
-                            wave3 = pow(clamp(wave3 * 0.5 + 0.5, 0.0, 1.0), 1.8);
-
-                            // 4. Xoắn ốc plasma uốn lượn trên bề mặt vành đai
-                            float twist = sin((vUv.x * 14.0 + vUv.y * 3.5) * 3.14159 - t * 1.5);
-                            float auroraPlasma = clamp(wave1 * 0.55 + wave2 * 0.35 + wave3 * 0.40 + twist * 0.16, 0.0, 1.5);
-
-                            // 5. Ba lớp ánh sáng mặt cắt ống:
-                            float tubeDist = abs(vUv.y - 0.5) * 2.0;
-                            float hotLaserCore = pow(clamp(1.0 - tubeDist, 0.0, 1.0), 4.2); // Lõi laser sáng rực
-                            float plasmaSheath = pow(clamp(1.0 - tubeDist, 0.0, 1.0), 2.2); // Màng plasma cực quang
-                            vec3 viewDir = normalize(cameraPosition - vWorldPosition);
-                            float fresnel = pow(1.0 - clamp(dot(normalize(vNormal), viewDir), 0.0, 1.0), 2.6);
-                            float outerHalo = pow(clamp(1.0 - tubeDist, 0.0, 1.0), 1.2) + fresnel * 0.65; // Quầng sáng dịu bên ngoài
-
-                            // 6. Nhịp thở năng lượng thống nhất
-                            float energyBreath = (0.85 + 0.25 * sin(uTime * 1.5 + uPhase)) * uCoreEnergy;
-
-                            // 7. Phối màu Electric Blue Aurora chuẩn mực (Không lẫn bất kỳ màu tạp)
-                            vec3 col = mix(uColorBase, uColorElectric, clamp(plasmaSheath * (0.6 + auroraPlasma * 0.7), 0.0, 1.0));
-                            col = mix(col, uColorNeon, clamp(auroraPlasma * (0.75 + hotLaserCore * 0.35), 0.0, 1.0));
-                            col += uColorIce * pow(hotLaserCore, 2.8) * (0.95 + auroraPlasma * 0.85) * 1.65;
-                            col += uColorNeon * outerHalo * (0.55 + wave1 * 0.45);
-                            col += uColorIce * pow(fresnel, 4.0) * 0.75;
-
-                            float alpha = (outerHalo * 0.72 + plasmaSheath * 0.85 + hotLaserCore * 0.55) * energyBreath * uWarpIntensity;
-                            gl_FragColor = vec4(col * (1.15 + auroraPlasma * 0.65) * uWarpIntensity, clamp(alpha, 0.0, 1.0));
-                        }
-                    `,
+                    vertexShader: plasmaWaveVertShader,
+                    fragmentShader: plasmaWaveFragShader,
                     transparent: true,
                     blending: THREE.AdditiveBlending,
                     depthWrite: false,
                     side: THREE.DoubleSide
                 });
+
+                // Độ phân giải cao cho dải mượt mà như lụa cực quang
+                const tubSegs = isMobile ? 80 : 136;
+                const radSegs = isMobile ? 16 : 22;
+                const geo = new THREE.TorusGeometry(params.radius, params.tubeRadius, radSegs, tubSegs, params.arc || Math.PI * 2);
+
+                const mesh = new THREE.Mesh(geo, mat);
+                return { mesh, mat };
             }
 
-            // ══════════════════════════════════════════════════════════════
-            // XÂY DỰNG CHÍNH XÁC 5 VÀNH ĐAI 3D CHUYỂN ĐỘNG ĐỘC LẬP
-            // ══════════════════════════════════════════════════════════════
+            // ── 7 Dải plasma cực quang hữu cơ lan tỏa từ lõi vũ trụ (Seamless 360 Orbit Ribbons) ──
+            const waveConfigs = [
+                // Dải 1: Vòng cận lõi ôm sát quả cầu plasma, nhấp nháy năng lượng
+                { radius: 8.6, tubeRadius: 0.46, arc: Math.PI*2, rot: [1.25, 0.15, -0.10],
+                  speed: 0.85, phase: 0.0, noiseScale: 0.28, noiseSpeed: 0.50, amplitude: 0.45, opacity: 0.78,
+                  colorDeep: 0x010e30, colorElectric: 0x0066ee, colorNeon: 0x00e5ff, colorIce: 0xffffff },
 
-            // VÀNH ĐAI 1: Nhỏ, ôm sát quả cầu trung tâm (Inner Core Orbit - R = 8.6, tube = 0.16)
-            auroraRing1 = new THREE.Group();
-            auroraRing1Mat = createAuroraRingShaderMaterial({
-                colorBase: 0x001d4a,
-                colorElectric: 0x007bff,
-                colorNeon: 0x00e5ff,
-                colorIce: 0xffffff,
-                speed: 1.30,
-                phase: 0.0,
-                h1: 3.0, h2: 4.0, h3: 1.0
-            });
-            const r1Geo = new THREE.TorusGeometry(8.6, 0.16, ringRadialSegs, ringTubularSegs);
-            const r1Mesh = new THREE.Mesh(r1Geo, auroraRing1Mat);
-            auroraRing1.add(r1Mesh);
-            auroraRing1Core = new THREE.Mesh(new THREE.TorusGeometry(8.6, 0.052, 8, ringTubularSegs), coreHotWireMat);
-            auroraRing1.add(auroraRing1Core);
-            auroraRing1.rotation.set(1.38, 0.18, -0.12);
-            techCoreGroup.add(auroraRing1);
+                // Dải 2: Cung ngang rộng lớn kéo dài sang hai bên như đôi cánh cực quang
+                { radius: 11.4, tubeRadius: 0.65, arc: Math.PI*2, rot: [0.15, 0.06, -0.06],
+                  speed: -0.65, phase: 1.6, noiseScale: 0.22, noiseSpeed: 0.40, amplitude: 0.55, opacity: 0.72,
+                  colorDeep: 0x010b28, colorElectric: 0x007bff, colorNeon: 0x00e5ff, colorIce: 0xeeffff },
 
-            // VÀNH ĐAI 2: Kích thước trung bình, nghiêng theo trục khác (Mid Inclined Orbit - R = 10.3, tube = 0.18)
-            auroraRing2 = new THREE.Group();
-            auroraRing2Mat = createAuroraRingShaderMaterial({
-                colorBase: 0x00183d,
-                colorElectric: 0x0088ff,
-                colorNeon: 0x00e5ff,
-                colorIce: 0xffffff,
-                speed: -1.15,
-                phase: 1.6,
-                h1: 2.0, h2: 5.0, h3: 1.0
-            });
-            const r2Geo = new THREE.TorusGeometry(10.3, 0.18, ringRadialSegs, ringTubularSegs);
-            const r2Mesh = new THREE.Mesh(r2Geo, auroraRing2Mat);
-            auroraRing2.add(r2Mesh);
-            auroraRing2Core = new THREE.Mesh(new THREE.TorusGeometry(10.3, 0.056, 8, ringTubularSegs), coreHotWireMat);
-            auroraRing2.add(auroraRing2Core);
-            auroraRing2.scale.set(1.08, 0.94, 1.0); // Tỷ lệ elip riêng
-            auroraRing2.rotation.set(0.58, 0.52, -0.32);
-            techCoreGroup.add(auroraRing2);
+                // Dải 3: Dải cực quang uốn lượn vươn cao lên đỉnh
+                { radius: 13.0, tubeRadius: 0.70, arc: Math.PI*2, rot: [0.75, -0.38, 0.25],
+                  speed: 0.55, phase: 3.0, noiseScale: 0.20, noiseSpeed: 0.42, amplitude: 0.60, opacity: 0.66,
+                  colorDeep: 0x01123a, colorElectric: 0x0055dd, colorNeon: 0x60e5ff, colorIce: 0xffffff },
 
-            // VÀNH ĐAI 3: Lớn hơn, tạo quỹ đạo elip rộng (Wide Elliptical Orbit - R = 12.0, tube = 0.20)
-            auroraRing3 = new THREE.Group();
-            auroraRing3Mat = createAuroraRingShaderMaterial({
-                colorBase: 0x002255,
-                colorElectric: 0x0066ee,
-                colorNeon: 0x70e5ff,
-                colorIce: 0xffffff,
-                speed: 1.0,
-                phase: 3.1,
-                h1: 4.0, h2: 3.0, h3: 2.0
-            });
-            const r3Geo = new THREE.TorusGeometry(12.0, 0.20, ringRadialSegs, ringTubularSegs);
-            const r3Mesh = new THREE.Mesh(r3Geo, auroraRing3Mat);
-            auroraRing3.add(r3Mesh);
-            auroraRing3Core = new THREE.Mesh(new THREE.TorusGeometry(12.0, 0.062, 8, ringTubularSegs), coreHotWireMat);
-            auroraRing3.add(auroraRing3Core);
-            auroraRing3.scale.set(1.24, 0.85, 1.0); // Dẹt ngang elip rõ rệt
-            auroraRing3.rotation.set(1.48, -0.24, 0.20);
-            techCoreGroup.add(auroraRing3);
+                // Dải 4: Vành xoắn nghiêng tạo chiều sâu tiền cảnh / hậu cảnh
+                { radius: 14.0, tubeRadius: 0.60, arc: Math.PI*2, rot: [-0.60, -0.68, 0.35],
+                  speed: -0.48, phase: 4.4, noiseScale: 0.24, noiseSpeed: 0.46, amplitude: 0.55, opacity: 0.68,
+                  colorDeep: 0x010926, colorElectric: 0x0070ee, colorNeon: 0x00e5ff, colorIce: 0xdfffff },
 
-            // VÀNH ĐAI 4: Độ nghiêng mạnh, tạo chiều sâu 3D (Deep Polar Tilt Orbit - R = 13.5, tube = 0.16)
-            auroraRing4 = new THREE.Group();
-            auroraRing4Mat = createAuroraRingShaderMaterial({
-                colorBase: 0x001438,
-                colorElectric: 0x007bff,
-                colorNeon: 0x00e5ff,
-                colorIce: 0xbfffff,
-                speed: -0.85,
-                phase: 4.5,
-                h1: 3.0, h2: 6.0, h3: 1.0
-            });
-            const r4Geo = new THREE.TorusGeometry(13.5, 0.16, ringRadialSegs, ringTubularSegs);
-            const r4Mesh = new THREE.Mesh(r4Geo, auroraRing4Mat);
-            auroraRing4.add(r4Mesh);
-            auroraRing4Core = new THREE.Mesh(new THREE.TorusGeometry(13.5, 0.050, 8, ringTubularSegs), coreHotWireMat);
-            auroraRing4.add(auroraRing4Core);
-            auroraRing4.scale.set(0.90, 1.15, 1.0); // Kéo dài theo trục thẳng đứng
-            auroraRing4.rotation.set(-0.65, -0.70, 0.42);
-            techCoreGroup.add(auroraRing4);
+                // Dải 5: Cung xoáy mềm mại lượn dưới đáy lõi năng lượng
+                { radius: 10.2, tubeRadius: 0.50, arc: Math.PI*2, rot: [2.15, 0.35, -0.50],
+                  speed: 0.78, phase: 2.2, noiseScale: 0.26, noiseSpeed: 0.52, amplitude: 0.50, opacity: 0.64,
+                  colorDeep: 0x010d2c, colorElectric: 0x0060e0, colorNeon: 0x00e5ff, colorIce: 0xffffff },
 
-            // VÀNH ĐAI 5: Lớn nhất, bao bọc toàn bộ hệ thống (Outer Boundary Orbit - R = 15.2, tube = 0.14)
-            auroraRing5 = new THREE.Group();
-            auroraRing5Mat = createAuroraRingShaderMaterial({
-                colorBase: 0x00112d,
-                colorElectric: 0x0055dd,
-                colorNeon: 0x00e5ff,
-                colorIce: 0xffffff,
-                speed: 0.70,
-                phase: 5.8,
-                h1: 5.0, h2: 2.0, h3: 1.0
-            });
-            const r5Geo = new THREE.TorusGeometry(15.2, 0.14, ringRadialSegs, ringTubularSegs);
-            const r5Mesh = new THREE.Mesh(r5Geo, auroraRing5Mat);
-            auroraRing5.add(r5Mesh);
-            auroraRing5Core = new THREE.Mesh(new THREE.TorusGeometry(15.2, 0.046, 8, ringTubularSegs), coreHotWireMat);
-            auroraRing5.add(auroraRing5Core);
-            auroraRing5.scale.set(1.12, 1.04, 1.0); // Vành đai bao ngoài cùng
-            auroraRing5.rotation.set(0.38, -0.48, -0.72);
-            techCoreGroup.add(auroraRing5);
+                // Dải 6: Dải lụa năng lượng xa rộng bao bọc trường không gian
+                { radius: 16.8, tubeRadius: 0.55, arc: Math.PI*2, rot: [0.38, -0.48, -0.65],
+                  speed: 0.38, phase: 5.2, noiseScale: 0.18, noiseSpeed: 0.35, amplitude: 0.65, opacity: 0.55,
+                  colorDeep: 0x000c22, colorElectric: 0x0050cc, colorNeon: 0x00e5ff, colorIce: 0xffffff },
 
-            // Gán bí danh tương thích ngược
-            thickRing1 = auroraRing1;
-            thickRing2Group = auroraRing2;
-            thickRing3 = auroraRing3;
-            thickRing1Mat = auroraRing1Mat;
-            thickRing2Mat = auroraRing2Mat;
-            thickRing3Mat = auroraRing3Mat;
+                // Dải 7: Màn sương cực quang khuếch tán rộng mở ngoài cùng
+                { radius: 15.5, tubeRadius: 0.85, arc: Math.PI*2, rot: [1.45, -0.22, 0.40],
+                  speed: 0.30, phase: 0.9, noiseScale: 0.16, noiseSpeed: 0.30, amplitude: 0.70, opacity: 0.48,
+                  colorDeep: 0x010e30, colorElectric: 0x005cd8, colorNeon: 0x00e5ff, colorIce: 0xeeffff }
+            ];
 
-            // ── 3. HOA TIA NHIỄU XẠ & ĐIỂM NĂNG LƯỢNG QUỸ ĐẠO KÈM VỆT SÁNG (LIGHT TRAILS) ──
+            plasmaWaveMeshes = [];
+            plasmaWaveMats = [];
+            for (let i = 0; i < waveConfigs.length; i++) {
+                const cfg = waveConfigs[i];
+                const { mesh, mat } = createPlasmaWave(cfg);
+                mesh.rotation.set(cfg.rot[0], cfg.rot[1], cfg.rot[2]);
+                plasmaWaveGroup.add(mesh);
+                plasmaWaveMeshes.push(mesh);
+                plasmaWaveMats.push(mat);
+            }
+
+            // ── Hạt năng lượng nhỏ trôi dọc dải plasma (Energy Motes) ──
+            energyMotes = [];
+            
+                        // ── 3. HOA TIA NHIỄU XẠ & ĐIỂM NĂNG LƯỢNG QUỸ ĐẠO KÈM VỆT SÁNG (LIGHT TRAILS) ──
             function createGlowPointTexture() {
                 const canvas = document.createElement('canvas');
                 canvas.width = 32;
@@ -2788,21 +2844,53 @@
                 });
             }
 
-            // Phân bổ 10 điểm năng lượng cực quang lướt trên 5 vành đai (mỗi vành 2 hạt đối pha)
-            createOrbitalNode(auroraRing1, 8.6, 0.0, 0.85, 0.35, 0.0);
-            createOrbitalNode(auroraRing1, 8.6, Math.PI, 0.85, 0.35, Math.PI);
+            // Phân bổ các điểm năng lượng cực quang lướt trên các dải plasma chính kèm vệt sáng (Light Trails)
+            if (plasmaWaveMeshes.length > 0) {
+                createOrbitalNode(plasmaWaveMeshes[0], 8.6, 0.0, 0.85, 0.35, 0.0);
+                createOrbitalNode(plasmaWaveMeshes[0], 8.6, Math.PI, 0.85, 0.35, Math.PI);
+            }
+            if (plasmaWaveMeshes.length > 1) {
+                createOrbitalNode(plasmaWaveMeshes[1], 11.4, 0.6, -0.65, 0.32, 1.2);
+                createOrbitalNode(plasmaWaveMeshes[1], 11.4, 0.6 + Math.PI, -0.65, 0.32, 1.2 + Math.PI);
+            }
+            if (plasmaWaveMeshes.length > 2) {
+                createOrbitalNode(plasmaWaveMeshes[2], 13.0, 1.4, 0.55, 0.28, 2.4);
+            }
+            if (plasmaWaveMeshes.length > 3) {
+                createOrbitalNode(plasmaWaveMeshes[3], 14.0, 2.2, -0.48, 0.36, 3.6);
+            }
+            if (plasmaWaveMeshes.length > 4) {
+                createOrbitalNode(plasmaWaveMeshes[4], 10.2, 0.9, 0.78, 0.30, 4.8);
+            }
+            if (plasmaWaveMeshes.length > 5) {
+                createOrbitalNode(plasmaWaveMeshes[5], 16.8, 0.3, 0.38, 0.25, 0.7);
+            }
 
-            createOrbitalNode(auroraRing2, 10.3, 0.6, -0.72, 0.38, 1.2);
-            createOrbitalNode(auroraRing2, 10.3, 0.6 + Math.PI, -0.72, 0.38, 1.2 + Math.PI);
-
-            createOrbitalNode(auroraRing3, 12.0, 1.4, 0.60, 0.32, 2.4);
-            createOrbitalNode(auroraRing3, 12.0, 1.4 + Math.PI, 0.60, 0.32, 2.4 + Math.PI);
-
-            createOrbitalNode(auroraRing4, 13.5, 2.2, -0.52, 0.40, 3.6);
-            createOrbitalNode(auroraRing4, 13.5, 2.2 + Math.PI, -0.52, 0.40, 3.6 + Math.PI);
-
-            createOrbitalNode(auroraRing5, 15.2, 0.9, 0.45, 0.30, 4.8);
-            createOrbitalNode(auroraRing5, 15.2, 0.9 + Math.PI, 0.45, 0.30, 4.8 + Math.PI);
+            // Tạo 24 hạt năng lượng nhỏ phát tán từ lõi ra các dải plasma (Motes From Core)
+            for (let i = 0; i < (isMobile ? 16 : 24); i++) {
+                const mote = new THREE.Sprite(nodeMatHead.clone());
+                const theta = Math.random() * Math.PI * 2;
+                const phi = (Math.random() - 0.5) * Math.PI * 0.8;
+                const rDist = 8.0 + Math.random() * 7.0;
+                mote.position.set(
+                    Math.cos(theta) * Math.cos(phi) * rDist,
+                    Math.sin(phi) * rDist,
+                    Math.sin(theta) * Math.cos(phi) * rDist
+                );
+                const sc = 0.6 + Math.random() * 0.9;
+                mote.scale.set(sc, sc, 1);
+                plasmaWaveGroup.add(mote);
+                energyMotes.push({
+                    sprite: mote,
+                    baseScale: sc,
+                    theta: theta,
+                    phi: phi,
+                    radius: rDist,
+                    speed: 0.15 + Math.random() * 0.35,
+                    phiSpeed: (Math.random() - 0.5) * 0.08,
+                    phase: Math.random() * Math.PI * 2
+                });
+            }
 
             // ── 4. NỀN KHÔNG GIAN VŨ TRỤ 3 TẦNG CHIỀU SÂU (3-TIER LAYERED COSMOS) ──
 
@@ -2915,7 +3003,7 @@
                 const isMob = window.innerWidth <= 768;
                 const isSmallMob = window.innerWidth <= 480;
                 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMob ? 1.25 : 1.5));
-                baseFrameScale = isSmallMob ? 0.38 : (isMob ? 0.52 : 0.74);
+                baseFrameScale = isSmallMob ? 0.44 : (isMob ? 0.58 : 0.80);
                 if (!isWarping && techCoreGroup) {
                     techCoreGroup.scale.set(baseFrameScale, baseFrameScale, baseFrameScale);
                 }
@@ -2940,13 +3028,12 @@
                     if (orbMaterial.uniforms.uCoreEnergy) orbMaterial.uniforms.uCoreEnergy.value = corePulse;
                 }
 
-                // Cập nhật nhịp năng lượng cực quang cho cả 5 vành đai
-                const allRingMats = [auroraRing1Mat, auroraRing2Mat, auroraRing3Mat, auroraRing4Mat, auroraRing5Mat];
-                for (let k = 0; k < 5; k++) {
-                    const rm = allRingMats[k];
-                    if (rm && rm.uniforms) {
-                        rm.uniforms.uTime.value = elapsed;
-                        rm.uniforms.uCoreEnergy.value = corePulse;
+                // Cập nhật nhịp năng lượng cho tất cả dải plasma cực quang
+                for (let k = 0; k < plasmaWaveMats.length; k++) {
+                    const pm = plasmaWaveMats[k];
+                    if (pm && pm.uniforms) {
+                        pm.uniforms.uTime.value = elapsed;
+                        pm.uniforms.uCoreEnergy.value = corePulse;
                     }
                 }
 
@@ -2957,45 +3044,55 @@
                         orbMesh.rotation.x = Math.sin(elapsed * 0.22) * 0.040;
                     }
 
-                    // 3. CHUYỂN ĐỘNG ĐỘC LẬP & PHI TUYẾN TÍNH CỦA CHÍNH XÁC 5 VÀNH ĐAI AURORA
-                    // Vành 1: Vòng nhỏ cận cầu, xoay thuận, nhịp lắc góc nghiêng nhanh hơn
-                    if (auroraRing1) {
-                        const sp1 = 1.0 + 0.28 * Math.sin(elapsed * 0.45);
-                        auroraRing1.rotation.z += 0.38 * dt * sp1;
-                        auroraRing1.rotation.x = 1.38 + Math.sin(elapsed * 0.32 + 0.5) * 0.08 + Math.cos(elapsed * 0.18) * 0.04;
-                        auroraRing1.rotation.y = 0.18 + Math.cos(elapsed * 0.28 + 1.2) * 0.07;
+                    // 3. CHUYỂN ĐỘNG HỮU CƠ CÁC DẢI PLASMA CỰC QUANG (Organic Plasma Wave Motion)
+                    // Mỗi dải có nhịp lắc góc nghiêng riêng — noise-based, không quay tròn
+                    const waveBaseTilts = [
+                        [1.25, 0.15, -0.10],   // Dải 1
+                        [0.12, 0.05, -0.08],   // Dải 2
+                        [0.65, -0.35, 0.22],   // Dải 3
+                        [-0.55, -0.72, 0.38],  // Dải 4
+                        [2.20, 0.40, -0.55],   // Dải 5
+                        [0.35, -0.50, -0.70],  // Dải 6
+                        [1.50, -0.20, 0.45]    // Dải 7
+                    ];
+                    const waveSpeeds = [0.28, -0.22, 0.18, -0.15, 0.32, 0.12, 0.10];
+                    const waveFreqs = [0.35, 0.28, 0.22, 0.19, 0.40, 0.16, 0.14];
+
+                    for (let w = 0; w < plasmaWaveMeshes.length; w++) {
+                        const wm = plasmaWaveMeshes[w];
+                        const bt = waveBaseTilts[w];
+                        if (!wm) continue;
+
+                        // Dao động góc nghiêng phi tuyến tính (nutation hữu cơ)
+                        const f = waveFreqs[w];
+                        const wPhase = w * 1.37;
+                        wm.rotation.x = bt[0] + Math.sin(elapsed * f + wPhase) * 0.12 + Math.cos(elapsed * f * 0.7 + wPhase * 1.3) * 0.06;
+                        wm.rotation.y = bt[1] + Math.cos(elapsed * f * 1.2 + wPhase * 0.8) * 0.10 + Math.sin(elapsed * f * 0.5) * 0.05;
+                        // Xoay quanh trục Z: chậm, mượt mà, không phải bánh xe
+                        wm.rotation.z = bt[2] + elapsed * waveSpeeds[w] * 0.3;
                     }
 
-                    // Vành 2: Vòng trung bình nghiêng trục, xoay nghịch, chuyển động êm
-                    if (auroraRing2) {
-                        const sp2 = 1.0 + 0.24 * Math.cos(elapsed * 0.38 + 1.2);
-                        auroraRing2.rotation.z -= 0.32 * dt * sp2;
-                        auroraRing2.rotation.x = 0.58 + Math.sin(elapsed * 0.25 + 2.1) * 0.09 + Math.cos(elapsed * 0.42) * 0.03;
-                        auroraRing2.rotation.y = 0.52 + Math.sin(elapsed * 0.36 + 0.8) * 0.08;
-                    }
+                    // Cập nhật hạt năng lượng trôi trên dải plasma
+                    for (let m = 0; m < energyMotes.length; m++) {
+                        const em = energyMotes[m];
+                        em.theta += em.speed * dt;
+                        em.phi += em.phiSpeed * dt;
+                        // Giới hạn phi để hạt không bay quá xa mặt phẳng xích đạo
+                        em.phi = Math.max(-0.55, Math.min(0.55, em.phi));
+                        em.phiSpeed += (Math.random() - 0.5) * 0.002; // Micro-jitter
+                        em.phiSpeed *= 0.995; // Damping
 
-                    // Vành 3: Quỹ đạo elip rộng, xoay thuận với quán tính dao động
-                    if (auroraRing3) {
-                        const sp3 = 1.0 + 0.30 * Math.sin(elapsed * 0.31 + 2.4);
-                        auroraRing3.rotation.z += 0.26 * dt * sp3;
-                        auroraRing3.rotation.x = 1.48 + Math.cos(elapsed * 0.19 + 3.4) * 0.07 + Math.sin(elapsed * 0.35) * 0.04;
-                        auroraRing3.rotation.y = -0.24 + Math.sin(elapsed * 0.25 + 1.7) * 0.09;
-                    }
-
-                    // Vành 4: Độ nghiêng mạnh, xoay nghịch tạo chiều sâu 3D đối cực
-                    if (auroraRing4) {
-                        const sp4 = 1.0 + 0.22 * Math.cos(elapsed * 0.26 + 3.6);
-                        auroraRing4.rotation.z -= 0.22 * dt * sp4;
-                        auroraRing4.rotation.x = -0.65 + Math.sin(elapsed * 0.16 + 4.2) * 0.10 + Math.cos(elapsed * 0.31) * 0.05;
-                        auroraRing4.rotation.y = -0.70 + Math.cos(elapsed * 0.22 + 2.9) * 0.08;
-                    }
-
-                    // Vành 5: Vòng lớn ngoài cùng bao bọc toàn bộ hệ thống, xoay chậm rãi uy nghi
-                    if (auroraRing5) {
-                        const sp5 = 1.0 + 0.26 * Math.sin(elapsed * 0.21 + 4.8);
-                        auroraRing5.rotation.z += 0.16 * dt * sp5;
-                        auroraRing5.rotation.x = 0.38 + Math.cos(elapsed * 0.12 + 0.9) * 0.08 + Math.sin(elapsed * 0.27) * 0.04;
-                        auroraRing5.rotation.y = -0.48 + Math.sin(elapsed * 0.18 + 5.1) * 0.07;
+                        const rd = em.radius + Math.sin(elapsed * 0.8 + em.phase) * 0.8;
+                        em.sprite.position.set(
+                            Math.cos(em.theta) * Math.cos(em.phi) * rd,
+                            Math.sin(em.phi) * rd,
+                            Math.sin(em.theta) * Math.cos(em.phi) * rd
+                        );
+                        // Nhấp nháy nhẹ
+                        const tw = 0.5 + 0.5 * Math.sin(elapsed * 2.5 + em.phase);
+                        const sc = em.baseScale * (0.7 + tw * 0.5);
+                        em.sprite.scale.set(sc, sc, 1);
+                        em.sprite.material.opacity = 0.3 + tw * 0.65;
                     }
 
                     // 4. CẬP NHẬT CÁC ĐIỂM NĂNG LƯỢNG QUỸ ĐẠO KÈM VỆT SÁNG (Orbital Nodes with Light Trails)
@@ -3109,46 +3206,22 @@
                         techCoreGroup.scale.set(scale1, scale1, scale1);
                         camera.position.z = 24 - ease1 * 3.5;
 
-                        // Gia tốc xoay phân tầng so le trên cả 5 vành đai (Staggered cascading acceleration)
-                        const p1_r1 = Math.min(1, Math.max(0, timeInWarp / 500));
-                        const p1_r2 = Math.min(1, Math.max(0, (timeInWarp - 60) / 460));
-                        const p1_r3 = Math.min(1, Math.max(0, (timeInWarp - 120) / 420));
-                        const p1_r4 = Math.min(1, Math.max(0, (timeInWarp - 180) / 380));
-                        const p1_r5 = Math.min(1, Math.max(0, (timeInWarp - 240) / 340));
-
-                        if (auroraRing1) {
-                            auroraRing1.rotation.z += 0.006 + p1_r1 * p1_r1 * 0.050;
-                            const rc1 = 1.0 - p1_r1 * 0.32;
-                            auroraRing1.scale.set(rc1, rc1, rc1);
-                        }
-                        if (auroraRing2) {
-                            auroraRing2.rotation.z -= 0.005 + p1_r2 * p1_r2 * 0.045;
-                            const rc2 = 1.0 - p1_r2 * 0.30;
-                            auroraRing2.scale.set(rc2 * 1.08, rc2 * 0.94, rc2);
-                        }
-                        if (auroraRing3) {
-                            auroraRing3.rotation.z += 0.004 + p1_r3 * p1_r3 * 0.040;
-                            const rc3 = 1.0 - p1_r3 * 0.28;
-                            auroraRing3.scale.set(rc3 * 1.24, rc3 * 0.85, rc3);
-                        }
-                        if (auroraRing4) {
-                            auroraRing4.rotation.z -= 0.004 + p1_r4 * p1_r4 * 0.038;
-                            const rc4 = 1.0 - p1_r4 * 0.26;
-                            auroraRing4.scale.set(rc4 * 0.90, rc4 * 1.15, rc4);
-                        }
-                        if (auroraRing5) {
-                            auroraRing5.rotation.z += 0.003 + p1_r5 * p1_r5 * 0.035;
-                            const rc5 = 1.0 - p1_r5 * 0.24;
-                            auroraRing5.scale.set(rc5 * 1.12, rc5 * 1.04, rc5);
+                        // Gia tốc dải plasma hội tụ về tâm (Plasma convergence acceleration)
+                        for (let w = 0; w < plasmaWaveMeshes.length; w++) {
+                            const wm = plasmaWaveMeshes[w];
+                            if (!wm) continue;
+                            const pW = Math.min(1, Math.max(0, (timeInWarp - w * 40) / (500 - w * 30)));
+                            wm.rotation.z += (0.004 + pW * pW * 0.04) * (w % 2 === 0 ? 1 : -1);
+                            const rcW = 1.0 - pW * 0.30;
+                            wm.scale.set(rcW, rcW, rcW);
                         }
 
-                        // Tăng độ sáng năng lượng cực quang trên cả 5 vành đai
+                        // Tăng độ sáng năng lượng toàn bộ dải plasma
                         if (orbMaterial && orbMaterial.uniforms && orbMaterial.uniforms.uIntensity) {
                             orbMaterial.uniforms.uIntensity.value = 1.0 + ease1 * 1.8;
                         }
-                        const allMats1 = [auroraRing1Mat, auroraRing2Mat, auroraRing3Mat, auroraRing4Mat, auroraRing5Mat];
-                        for (let k = 0; k < 5; k++) {
-                            if (allMats1[k] && allMats1[k].uniforms) allMats1[k].uniforms.uWarpIntensity.value = 1.0 + ease1 * 1.6;
+                        for (let k = 0; k < plasmaWaveMats.length; k++) {
+                            if (plasmaWaveMats[k] && plasmaWaveMats[k].uniforms) plasmaWaveMats[k].uniforms.uWarpIntensity.value = 1.0 + ease1 * 1.6;
                         }
 
                         if (volumetricRaysMaterial && volumetricRaysMaterial.uniforms && volumetricRaysMaterial.uniforms.uIntensity) {
@@ -3178,27 +3251,21 @@
                         camera.fov = 60 + ease2 * 24;
                         camera.updateProjectionMatrix();
 
-                        // Cả 5 vành đai xoáy nhanh và co sát tâm
-                        if (auroraRing1) auroraRing1.rotation.z += 0.052 + accel2 * 0.18;
-                        if (auroraRing2) auroraRing2.rotation.z -= 0.048 + accel2 * 0.16;
-                        if (auroraRing3) auroraRing3.rotation.z += 0.044 + accel2 * 0.15;
-                        if (auroraRing4) auroraRing4.rotation.z -= 0.040 + accel2 * 0.14;
-                        if (auroraRing5) auroraRing5.rotation.z += 0.036 + accel2 * 0.12;
-
-                        const ringContract2 = Math.max(0.02, 0.68 - ease2 * 0.66);
-                        if (auroraRing1) auroraRing1.scale.set(ringContract2, ringContract2, ringContract2);
-                        if (auroraRing2) auroraRing2.scale.set(ringContract2 * 1.08, ringContract2 * 0.94, ringContract2);
-                        if (auroraRing3) auroraRing3.scale.set(ringContract2 * 1.24, ringContract2 * 0.85, ringContract2);
-                        if (auroraRing4) auroraRing4.scale.set(ringContract2 * 0.90, ringContract2 * 1.15, ringContract2);
-                        if (auroraRing5) auroraRing5.scale.set(ringContract2 * 1.12, ringContract2 * 1.04, ringContract2);
+                        // Dải plasma co nhanh xoáy mạnh hội tụ vào singularity
+                        const plasmaContract = Math.max(0.02, 0.68 - ease2 * 0.66);
+                        for (let w = 0; w < plasmaWaveMeshes.length; w++) {
+                            const wm = plasmaWaveMeshes[w];
+                            if (!wm) continue;
+                            wm.rotation.z += (0.04 + accel2 * 0.15) * (w % 2 === 0 ? 1 : -1);
+                            wm.scale.set(plasmaContract, plasmaContract, plasmaContract);
+                        }
 
                         // Quả cầu năng lượng đạt đỉnh phát sáng
                         if (orbMaterial && orbMaterial.uniforms && orbMaterial.uniforms.uIntensity) {
                             orbMaterial.uniforms.uIntensity.value = 2.8 + ease2 * 4.0;
                         }
-                        const allMats2 = [auroraRing1Mat, auroraRing2Mat, auroraRing3Mat, auroraRing4Mat, auroraRing5Mat];
-                        for (let k = 0; k < 5; k++) {
-                            if (allMats2[k] && allMats2[k].uniforms) allMats2[k].uniforms.uWarpIntensity.value = 2.6 + ease2 * 3.5;
+                        for (let k = 0; k < plasmaWaveMats.length; k++) {
+                            if (plasmaWaveMats[k] && plasmaWaveMats[k].uniforms) plasmaWaveMats[k].uniforms.uWarpIntensity.value = 2.6 + ease2 * 3.5;
                         }
 
                         if (volumetricRaysMaterial && volumetricRaysMaterial.uniforms && volumetricRaysMaterial.uniforms.uIntensity) {
