@@ -2007,11 +2007,30 @@
     let isWarping = false;
     let warpPhase = 0; // 0 = idle, 1 = buildup (tích tụ), 2 = bloom & warp dive, 3 = dissolve
     let warpStartTime = 0;
+    let warpPausedElapsed = 0; // Lưu thời gian đã trôi qua trong quá trình chuyển cảnh nếu tab bị ẩn
+    let cvStaggerTriggered = false;
+    let mascotGreeted = false;
+    let animateThree = null; // Quản lý tập trung hàm render loop ở phạm vi module
+    let lastFrameTime = performance.now();
+    let totalActiveTime = 0; // Bộ đếm thời gian hoạt động đơn điệu, tránh reset về 0 hoặc giật hình khi chuyển tab
     let warpVelocity = 0.05;
     let targetCamX = 0, targetCamY = 0;
     let currentCamX = 0, currentCamY = 0;
     let baseFrameScale = 1.0;
-    let threeClock = (window.THREE && window.THREE.Clock) ? new THREE.Clock() : null;
+
+    // ── BỘ QUẢN LÝ VÒNG LẶP RENDER INTRO THREE.JS TẬP TRUNG ──
+    function startIntroLoop() {
+        if (!isIntroActive || introAnimId !== null || document.hidden || typeof animateThree !== 'function') return;
+        lastFrameTime = performance.now();
+        introAnimId = requestAnimationFrame(animateThree);
+    }
+
+    function pauseIntroLoop() {
+        if (introAnimId !== null) {
+            cancelAnimationFrame(introAnimId);
+            introAnimId = null;
+        }
+    }
 
     function isWebGLAvailable() {
         try {
@@ -2050,6 +2069,20 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             const maxDpr = isMobile ? 1.25 : 1.5;
             renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
+
+            // Xử lý mất & phục hồi WebGL Context (ngăn crash ứng dụng khi đổi app/tab hoặc GPU bận)
+            canvas.addEventListener('webglcontextlost', (e) => {
+                e.preventDefault();
+                pauseIntroLoop();
+                console.warn("[Three.js] WebGL Context Lost. Tạm dừng render loop an toàn.");
+            }, false);
+
+            canvas.addEventListener('webglcontextrestored', () => {
+                console.log("[Three.js] WebGL Context Restored. Khôi phục render loop.");
+                if (isIntroActive && !document.hidden) {
+                    startIntroLoop();
+                }
+            }, false);
 
             // ── ÁNH SÁNG ĐIỆN ẢNH ELECTRIC BLUE THUẦN KHIẾT ──
             const ambientLight = new THREE.AmbientLight(0x030c22, 2.0);
@@ -2964,13 +2997,17 @@
             });
 
             // Vòng lặp render Three.js chuyển động điện ảnh – Advanced Fluid Energy System
-            function animateThree() {
+            animateThree = function() {
                 if (!isIntroActive) return;
                 introAnimId = requestAnimationFrame(animateThree);
 
                 const now = performance.now();
-                const elapsed = threeClock ? threeClock.getElapsedTime() : now * 0.001;
-                const dt = threeClock ? Math.min(0.05, threeClock.getDelta()) : 0.016;
+                const rawDt = (now - lastFrameTime) * 0.001;
+                lastFrameTime = now;
+                // Giới hạn delta time an toàn [0.001, 0.05] (tương đương 20fps - 1000fps) để triệt tiêu hoàn toàn hiện tượng nhảy vọt khi tab hoạt động trở lại
+                const dt = Math.min(0.05, Math.max(0.001, rawDt));
+                totalActiveTime += dt;
+                const elapsed = totalActiveTime;
 
                 // 1. TÍNH TOÁN XUNG NĂNG LƯỢNG LÕI THỐNG NHẤT (Harmonic Core Energy Coupling)
                 // Nhịp thở năng lượng hữu cơ bất quy tắc & chu kỳ sóng xung kích tỏa tròn
@@ -3134,7 +3171,17 @@
                     // ── 9. CƠN BÃO PLASMA VŨ TRỤ CHUYỂN CẢNH (Electric Blue Plasma Storm Transition) ──
                     const timeInWarp = now - warpStartTime;
 
-                    if (warpPhase === 1) {
+                    if (timeInWarp < 800) {
+                        if (warpPhase !== 1) {
+                            warpPhase = 1;
+                            if (cinematicOverlay) {
+                                cinematicOverlay.style.display = 'flex';
+                                cinematicOverlay.className = 'cinematic-transition-overlay stage-buildup';
+                            }
+                            if (welcomeScreen) {
+                                welcomeScreen.classList.add('energy-buildup');
+                            }
+                        }
                         // ── GIAI ĐOẠN 1: TÍCH TỤ NĂNG LƯỢNG (0 -> 800ms) ──
                         // Lõi năng lượng tăng sáng, các dòng plasma xoáy mạnh và tụ về tâm trước khi bùng nổ
                         const p1 = Math.min(1.0, timeInWarp / 800.0);
@@ -3209,7 +3256,17 @@
                         if (flareLightLeft) flareLightLeft.intensity = 1.5 + ease1 * 4.5;
                         if (flareLightRight) flareLightRight.intensity = 1.5 + ease1 * 4.5;
 
-                    } else if (warpPhase === 2) {
+                    } else if (timeInWarp < 2400) {
+                        if (warpPhase !== 2) {
+                            warpPhase = 2;
+                            if (cinematicOverlay) {
+                                cinematicOverlay.className = 'cinematic-transition-overlay stage-bloom';
+                            }
+                            if (welcomeScreen) {
+                                welcomeScreen.classList.remove('energy-buildup');
+                                welcomeScreen.classList.add('warping');
+                            }
+                        }
                         // ── GIAI ĐOẠN 2: BÃO PLASMA BÙNG NỔ (800ms -> 2400ms, tổng 1600ms) ──
                         // Bão plasma quy mô lớn bùng tỏa ra toàn màn hình, mây khói cuộn xoáy 3D đa tầng,
                         // camera bay xuyên qua tâm bão, tia điện và bụi sao bắn tỏa tốc độ cao
@@ -3302,7 +3359,23 @@
                         if (flareLightLeft) flareLightLeft.intensity = 6.0 + easeBlast * 14.0;
                         if (flareLightRight) flareLightRight.intensity = 6.0 + easeBlast * 14.0;
 
-                    } else if (warpPhase === 3) {
+                    } else if (timeInWarp < 3600) {
+                        if (warpPhase !== 3) {
+                            warpPhase = 3;
+                            if (welcomeScreen) {
+                                welcomeScreen.classList.add('hidden');
+                            }
+                            if (cinematicOverlay) {
+                                cinematicOverlay.className = 'cinematic-transition-overlay stage-dissolve';
+                            }
+                            document.body.classList.remove('intro-active');
+                            document.body.classList.add('cv-revealing');
+                            resetScrollToTop();
+                        }
+                        if (timeInWarp >= 2520 && !cvStaggerTriggered) {
+                            cvStaggerTriggered = true;
+                            triggerCvStaggerReveal();
+                        }
                         // ── GIAI ĐOẠN 3: PHÂN TÁN MỀM & HÉ LỘ CV (2400ms -> 3600ms, tổng 1200ms) ──
                         // Khói plasma tản dần về các cạnh màn hình và tan biến như hơi nước,
                         // lõi năng lượng dịu dần, tạo điều kiện cho giao diện CV hiện rõ
@@ -3338,12 +3411,23 @@
                         camera.position.z = 3.5 - ease3 * 0.5;
                         techCoreGroup.rotation.y += 0.001 * fadeFactor;
                         if (coreLight) coreLight.intensity = 34.0 * fadeFactor;
+                    } else {
+                        // ── HOÀN TẤT CHUYỂN CẢNH KHI THỜI GIAN >= 3600ms ──
+                        completeIntroTransition();
+                        resetScrollToTop();
+                        if (!mascotGreeted) {
+                            mascotGreeted = true;
+                            setTimeout(() => {
+                                showClaudeAttitude('happy', "Chào mừng bạn đã đến với CV của Tiến! Chúc bạn có trải nghiệm tuyệt vời! 🎶✨");
+                            }, 250);
+                        }
+                        return;
                     }
                 }
 
                 renderer.render(scene, camera);
             }
-            animateThree();
+            startIntroLoop();
 
         } catch (err) {
             console.error("Three.js initialization error:", err);
@@ -3406,48 +3490,8 @@
             welcomeScreen.classList.add('energy-buildup');
         }
 
-        // 2. GIAI ĐOẠN 2: BÃO PLASMA BÙNG NỔ (sau 800ms, kéo dài đến 2400ms)
-        setTimeout(() => {
-            warpPhase = 2;
-            if (cinematicOverlay) {
-                cinematicOverlay.className = 'cinematic-transition-overlay stage-bloom';
-            }
-            if (welcomeScreen) {
-                welcomeScreen.classList.remove('energy-buildup');
-                welcomeScreen.classList.add('warping');
-            }
-        }, 800);
-
-        // 3. GIAI ĐOẠN 3: PHÂN TÁN MỀM & BẮT ĐẦU HÉ LỘ CV (sau 2400ms)
-        setTimeout(() => {
-            warpPhase = 3;
-            if (welcomeScreen) {
-                welcomeScreen.classList.add('hidden');
-            }
-            if (cinematicOverlay) {
-                cinematicOverlay.className = 'cinematic-transition-overlay stage-dissolve';
-            }
-            document.body.classList.remove('intro-active');
-            document.body.classList.add('cv-revealing');
-            resetScrollToTop();
-        }, 2400);
-
-        // Hé lộ so le các thẻ CV từ phía sau màn năng lượng với vi trễ tự nhiên (sau 2520ms)
-        setTimeout(() => {
-            triggerCvStaggerReveal();
-        }, 2520);
-
-        // 4. HOÀN TẤT CHUYỂN CẢNH, DỪNG THREE.JS ĐỂ TIẾT KIỆM 100% CPU/GPU (sau 3600ms)
-        const totalDuration = 3600;
-        setTimeout(() => {
-            completeIntroTransition();
-            resetScrollToTop();
-        }, totalDuration);
-
-        // Lời chào mừng linh vật sau khi CV ổn định hoàn toàn (sau 3850ms)
-        setTimeout(() => {
-            showClaudeAttitude('happy', "Chào mừng bạn đã đến với CV của Tiến! Chúc bạn có trải nghiệm tuyệt vời! 🎶✨");
-        }, totalDuration + 250);
+        // Đảm bảo vòng lặp Three.js tiếp tục chạy chuyển cảnh ngay cả khi đang bị ngắt quãng
+        startIntroLoop();
     }
 
     function skipToCV(immediate = false) {
@@ -3500,14 +3544,12 @@
 
     function completeIntroTransition() {
         isIntroActive = false;
+        isWarping = false;
+        pauseIntroLoop();
         resetScrollToTop();
         if (welcomeScreen) {
             welcomeScreen.classList.add('hidden');
             welcomeScreen.style.display = 'none';
-        }
-        if (introAnimId) {
-            cancelAnimationFrame(introAnimId);
-            introAnimId = null;
         }
         if (cinematicOverlay) {
             cinematicOverlay.className = 'cinematic-transition-overlay';
@@ -3518,7 +3560,7 @@
         document.body.classList.add('cv-settled');
 
         // Khởi động particle nền của CV sau khi intro kết thúc (tránh tải trùng lặp)
-        if (!particleAnimId && typeof animateParticles === 'function') {
+        if (!particleAnimId && typeof animateParticles === 'function' && !document.hidden) {
             animateParticles();
         }
         // Đảm bảo toàn bộ các thẻ CV trở về trạng thái sắc nét tuyệt đối, không lưu lại filter/transform
@@ -4544,31 +4586,51 @@
         particleAnimId = requestAnimationFrame(animateParticles);
     }
     // Chỉ khởi chạy particle nền khi không có màn hình intro 3D (tránh chạy 2 vòng lặp render cùng lúc)
-    if (!isIntroActive) {
+    if (!isIntroActive && !document.hidden) {
         animateParticles();
     }
 
-    // Quản lý tạm dừng hoạt ảnh khi tab chuyển sang chạy nền (tiết kiệm pin & CPU)
-    document.addEventListener('visibilitychange', () => {
+    // Quản lý tạm dừng & khôi phục hoạt ảnh khi tab thay đổi trạng thái hiển thị (Page Visibility API)
+    function handleVisibilityChange() {
         if (document.hidden) {
             isTabVisible = false;
-            if (particleAnimId) {
+            // 1. Tạm dừng Intro Three.js
+            if (isIntroActive) {
+                if (isWarping && warpStartTime > 0) {
+                    // Lưu lại thời gian đã trôi qua trong quá trình chuyển cảnh để tiếp tục chính xác khi quay lại
+                    warpPausedElapsed = Math.max(0, performance.now() - warpStartTime);
+                }
+                pauseIntroLoop();
+            }
+            // 2. Tạm dừng canvas particle nền nếu đang hoạt động
+            if (particleAnimId !== null) {
                 cancelAnimationFrame(particleAnimId);
                 particleAnimId = null;
             }
-            if (introAnimId) {
-                cancelAnimationFrame(introAnimId);
-                introAnimId = null;
-            }
         } else {
             isTabVisible = true;
-            if (!particleAnimId && !isIntroActive) {
-                animateParticles();
+            // Đồng bộ lại lastFrameTime với thời điểm hiện tại để triệt tiêu delta time nhảy vọt
+            lastFrameTime = performance.now();
+
+            // Khôi phục animation tương ứng theo trạng thái hiện tại
+            if (isIntroActive) {
+                if (isWarping && warpPausedElapsed > 0) {
+                    warpStartTime = performance.now() - warpPausedElapsed;
+                }
+                startIntroLoop();
+            } else {
+                if (!particleAnimId && typeof animateParticles === 'function') {
+                    animateParticles();
+                }
             }
-            if (isIntroActive && !introAnimId && typeof animateThree === 'function') {
-                threeClock = new THREE.Clock();
-                animateThree();
-            }
+        }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('pageshow', handleVisibilityChange);
+    window.addEventListener('focus', () => {
+        if (!document.hidden && isIntroActive && introAnimId === null) {
+            handleVisibilityChange();
         }
     });
 
