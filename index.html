@@ -1975,6 +1975,9 @@
     let orbCoronaMesh, orbCoronaMaterial;
     let orbInnerMesh, orbInnerMaterial;
     // ── Living Cosmic Energy System (5 Interactive Layers) ──
+    let cosmicSmokeClouds = [];     // 3 Tầng mây khói vũ trụ thể tích (Inner, Mid, Outer)
+    let smokeWisps = [];            // Các sợi tơ khói năng lượng mảnh uốn lượn
+    let cosmicSmokeMats = [];       // Shader materials cho khói
     let plasmaWaveMeshes = [];      // Toàn bộ các mesh cực quang, dải lụa và sợi plasma
     let plasmaWaveMats = [];        // Shader materials tương ứng
     let fluidStreamers = [];        // Lớp 2: Các dải cực quang lớn uốn lượn tự do
@@ -2441,35 +2444,33 @@
             techCoreGroup.add(plasmaWaveGroup);
             plasmaWaveMeshes = [];
             plasmaWaveMats = [];
+            cosmicSmokeClouds = [];
+            cosmicSmokeMats = [];
+            smokeWisps = [];
             fluidStreamers = [];
+            tendrilMeshes = [];
             nebulaMistMeshes = [];
             hairlineFilamentMeshes = [];
 
-            // ──────────────────────────────────────────────────────────
-            // [A] SHADER DẢI CỰC QUANG LỤA HỮU CƠ (Curved Fluid Aurora Ribbons)
-            // Uốn lượn mềm mại quanh lõi, vuốt nhọn 2 đầu hình chiếc lá (Zero flat cuts)
-            // ──────────────────────────────────────────────────────────
-            const fluidStreamerVertShader = `
+            // ══════════════════════════════════════════════════════════════
+            // ORGANIC COSMIC SMOKE & VOLUMETRIC AURORA SYSTEM
+            // 1. Mây khói năng lượng đa tầng thể tích (3D Volumetric Nebula Clouds)
+            // 2. Ôm sát từ vành lõi plasma lan tỏa ra không gian vũ trụ (Zero Gap)
+            // 3. Khói bán trong suốt tự do cuộn sóng, lan tỏa và tan biến vào không gian
+            // ══════════════════════════════════════════════════════════════
+
+            const cosmicSmokeVertShader = `
                 uniform float uTime;
                 uniform float uSpeed;
                 uniform float uFlowOffset;
+                uniform float uDisplacement;
                 uniform float uWarpIntensity;
-                uniform float uPhiStart;
-                uniform float uPhiSweep;
-                uniform float uRStart;
-                uniform float uRMid;
-                uniform float uREnd;
-                uniform float uTilt;
-                uniform float uYaw;
-                uniform float uMaxWidth;
 
                 varying vec2 vUv;
-                varying float vProgress;
-                varying float vEdgeGlow;
-                varying float vTurbulence;
                 varying vec3 vWorldPosition;
+                varying vec3 vLocalPosition;
 
-                // Simplex noise 3D (compact)
+                // 3D Simplex noise
                 vec3 mod289v(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
                 vec4 mod289v4(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
                 vec4 perm4(vec4 x) { return mod289v4(((x*34.0)+1.0)*x); }
@@ -2505,521 +2506,61 @@
 
                 void main() {
                     vUv = uv;
-                    float u = uv.x; // 0.0 (đầu dải) → 1.0 (đuôi dải)
-                    float v = (uv.y - 0.5) * 2.0; // -1.0 → +1.0 ngang dải
-                    float absV = abs(v);
-
+                    vLocalPosition = position;
                     float t = uTime * uSpeed + uFlowOffset;
 
-                    // 1. Quỹ đạo xoắn elip mở bao bọc mềm mại quanh quả cầu (Open orbital spiral)
-                    float phi = uPhiStart + u * uPhiSweep;
-                    // Bán kính thay đổi tự nhiên theo hình cánh cung
-                    float r = mix(uRStart, uREnd, u) + sin(u * 3.14159265) * (uRMid - mix(uRStart, uREnd, 0.5));
+                    // Dao động thể tích cuộn sóng (Physical 3D Billow Displacement)
+                    vec3 p = position * 0.045;
+                    float billow1 = snoise3(p + vec3(0.0, -t * 0.22, t * 0.16));
+                    float billow2 = snoise3(p * 2.1 + vec3(t * 0.18, 1.4, -t * 0.15)) * 0.45;
+                    float disp = (billow1 + billow2) * uDisplacement * uWarpIntensity;
 
-                    // Toạ độ phẳng elip cơ sở
-                    float x0 = r * cos(phi);
-                    float y0 = r * sin(phi) * 0.88;
-                    float z0 = sin(u * 6.2831853 + t * 0.8) * 1.4 * sin(u * 3.14159265);
-
-                    // Xoay theo góc nghiêng (Tilt) và hướng nhìn (Yaw)
-                    float cosT = cos(uTilt), sinT = sin(uTilt);
-                    float cosY = cos(uYaw), sinY = sin(uYaw);
-
-                    vec3 pSpine = vec3(
-                        x0 * cosY - z0 * sinY,
-                        y0 * cosT - (x0 * sinY + z0 * cosY) * sinT,
-                        y0 * sinT + (x0 * sinY + z0 * cosY) * cosT
-                    );
-
-                    // 2. Hệ vector pháp tuyến và tiếp tuyến cục bộ
-                    vec3 outDir = normalize(pSpine);
-                    vec3 tangentDir = vec3(-sin(phi), cos(phi) * cosT, cos(phi) * sinT);
-                    vec3 ribbonNormal = normalize(cross(tangentDir, outDir));
-                    vec3 ribbonLateral = normalize(cross(tangentDir, ribbonNormal));
-
-                    // 3. Dao động sóng lụa hữu cơ 3D (Organic billowing)
-                    float billow1 = sin(u * 5.0 - t * 2.0) * 1.2 * sin(u * 3.14159265);
-                    float billow2 = cos(u * 8.5 + t * 2.8 + v * 1.4) * 0.6 * sin(u * 3.14159265);
-                    float billowNoise = snoise3(pSpine * 0.12 + vec3(0.0, t * 0.35, -t * 0.25)) * 1.6 * sin(u * 3.14159265);
-                    pSpine += ribbonNormal * (billow1 + billow2 + billowNoise) * uWarpIntensity;
-
-                    // 4. Biên dạng bề ngang phi đối xứng:
-                    // Vuốt nhọn tuyệt đối ở cả 2 đầu (u=0 và u=1) như hình cánh lá / dải lụa mềm (ZERO FLAT CUTS!)
-                    float widthProfile = pow(sin(u * 3.14159265), 0.75);
-                    float edgeNoise = snoise3(vec3(u * 3.8, v * 1.8, t * 0.55)) * 0.45;
-                    float finalWidth = uMaxWidth * widthProfile * (1.0 + edgeNoise);
-
-                    // Mở rộng đỉnh mesh theo phương ngang dải
-                    vec3 localPos = pSpine + ribbonLateral * (v * finalWidth);
-                    // Độ vồng cong 3D nhẹ
-                    localPos += ribbonNormal * (sin(v * 3.14159) * 0.70 * widthProfile);
-
-                    vProgress = u;
-                    vEdgeGlow = 1.0 - smoothstep(0.08, 1.0, absV);
-                    vTurbulence = billowNoise + edgeNoise;
-
-                    vec4 worldPos = modelMatrix * vec4(localPos, 1.0);
-                    vWorldPosition = worldPos.xyz;
-                    gl_Position = projectionMatrix * viewMatrix * worldPos;
-                }
-            `;
-
-            const fluidStreamerFragShader = `
-                uniform float uTime;
-                uniform float uSpeed;
-                uniform float uFlowOffset;
-                uniform float uCoreEnergy;
-                uniform float uWarpIntensity;
-                uniform float uOpacityBase;
-                uniform float uShockwave;
-                uniform vec3 uColorDeep;
-                uniform vec3 uColorElectric;
-                uniform vec3 uColorNeon;
-                uniform vec3 uColorIce;
-
-                varying vec2 vUv;
-                varying float vProgress;
-                varying float vEdgeGlow;
-                varying float vTurbulence;
-                varying vec3 vWorldPosition;
-
-                float snoise3f(vec3 v) {
-                    const vec2 C = vec2(1.0/6.0, 1.0/3.0);
-                    const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
-                    vec3 i = floor(v + dot(v, C.yyy));
-                    vec3 x0 = v - i + dot(i, C.xxx);
-                    vec3 g = step(x0.yzx, x0.xyz); vec3 l = 1.0 - g;
-                    vec3 i1 = min(g, l.zxy); vec3 i2 = max(g, l.zxy);
-                    vec3 x1 = x0 - i1 + C.xxx; vec3 x2 = x0 - i2 + C.yyy; vec3 x3 = x0 - D.yyy;
-                    i = i - floor(i * (1.0 / 289.0)) * 289.0;
-                    vec4 pp = ((i.z+vec4(0.,i1.z,i2.z,1.))*34.0+1.0)*(i.z+vec4(0.,i1.z,i2.z,1.));
-                    pp = pp - floor(pp*(1.0/289.0))*289.0;
-                    pp = ((pp+i.y+vec4(0.,i1.y,i2.y,1.))*34.0+1.0)*(pp+i.y+vec4(0.,i1.y,i2.y,1.));
-                    pp = pp - floor(pp*(1.0/289.0))*289.0;
-                    pp = ((pp+i.x+vec4(0.,i1.x,i2.x,1.))*34.0+1.0)*(pp+i.x+vec4(0.,i1.x,i2.x,1.));
-                    pp = pp - floor(pp*(1.0/289.0))*289.0;
-                    float n_ = 0.142857142857; vec3 ns = n_ * D.wyz - D.xzx;
-                    vec4 j = pp - 49.0 * floor(pp * ns.z * ns.z);
-                    vec4 x_ = floor(j * ns.z); vec4 y_ = floor(j - 7.0 * x_);
-                    vec4 x = x_*ns.x + ns.yyyy; vec4 y = y_*ns.x + ns.yyyy;
-                    vec4 h = 1.0 - abs(x) - abs(y);
-                    vec4 b0 = vec4(x.xy, y.xy); vec4 b1 = vec4(x.zw, y.zw);
-                    vec4 s0 = floor(b0)*2.0+1.0; vec4 s1 = floor(b1)*2.0+1.0;
-                    vec4 sh = -step(h, vec4(0.0));
-                    vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy; vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
-                    vec3 p0 = vec3(a0.xy,h.x); vec3 p1 = vec3(a0.zw,h.y);
-                    vec3 p2 = vec3(a1.xy,h.z); vec3 p3 = vec3(a1.zw,h.w);
-                    vec4 norm = 1.79284291400159 - 0.85373472095314*vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3));
-                    p0*=norm.x; p1*=norm.y; p2*=norm.z; p3*=norm.w;
-                    vec4 m = max(0.6 - vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)), 0.0);
-                    m = m*m;
-                    return 42.0 * dot(m*m, vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
-                }
-
-                void main() {
-                    float u = vUv.x;
-                    float v = (vUv.y - 0.5) * 2.0;
-                    float absV = abs(v);
-
-                    // 1. Phân rã biên dải lụa - triệt tiêu 100% cạnh cứng hình học
-                    float lateralFade = 1.0 - smoothstep(0.12, 1.0, absV);
-                    // Làm nhạt dần êm dịu ở cả 2 đầu mút
-                    float longitudinalFade = pow(sin(u * 3.14159265), 0.65);
-                    float envelope = lateralFade * longitudinalFade;
-                    if (envelope < 0.002) discard;
-
-                    // 2. Dòng năng lượng plasma cuộn chảy dọc theo dải lụa
-                    float t = uTime * uSpeed + uFlowOffset;
-                    vec2 flowUv = vec2(u * 5.0 - t * 1.4, v * 1.6);
-
-                    // Dòng chính đa tầng
-                    float stream1 = snoise3f(vec3(flowUv.x, flowUv.y, t * 0.22));
-                    stream1 = pow(clamp(stream1 * 0.5 + 0.5, 0.0, 1.0), 1.6);
-
-                    float stream2 = snoise3f(vec3(flowUv.x * 2.2 + t * 0.5, flowUv.y * 2.2, -t * 0.30));
-                    stream2 = pow(clamp(stream2 * 0.5 + 0.5, 0.0, 1.0), 2.2);
-
-                    // 3. Sợi sét plasma mảnh sáng rực
-                    vec3 sparkCoord = vec3(flowUv.x * 3.6, flowUv.y * 3.0, t * 0.14);
-                    float sparkVein = pow(clamp(1.0 - abs(snoise3f(sparkCoord)), 0.0, 1.0), 5.5);
-
-                    // 4. Mật độ plasma và khoảng rãnh phân rã (fraying tendrils)
-                    float fray = snoise3f(vec3(u * 5.5, v * 2.6, t * 0.35));
-                    float density = clamp((stream1 * 0.65 + stream2 * 0.40) * (0.8 + 0.35 * fray), 0.0, 1.0);
-
-                    // 5. Cường độ sống lụa trung tâm (Luminous spine)
-                    float spine = pow(clamp(1.0 - absV, 0.0, 1.0), 3.0);
-
-                    // 6. Nhịp thở năng lượng đồng bộ với lõi
-                    float breath = (0.88 + 0.20 * sin(uTime * 1.5 + uFlowOffset) + 0.10 * cos(uTime * 2.4)) * uCoreEnergy;
-
-                    // 7. Sóng xung kích truyền qua dải lụa khi lõi bùng nổ
-                    float waveSurge = exp(-pow(u - uShockwave, 2.0) / 0.03) * (1.0 - uShockwave * 0.65);
-
-                    // Phối màu Electric Blue Cosmic Aurora với độ tương phản cao và chiều sâu
-                    vec3 col = uColorDeep;
-                    col = mix(col, uColorElectric, clamp(density * lateralFade, 0.0, 1.0));
-                    col = mix(col, uColorNeon, clamp(spine * 1.05 + density * 0.55 + waveSurge * 0.5, 0.0, 1.0));
-                    col += uColorIce * pow(spine, 3.8) * (0.80 + sparkVein * 2.0 + waveSurge * 0.7); // Sống lụa trắng rực
-                    col += uColorNeon * pow(lateralFade, 2.8) * (0.55 + waveSurge * 0.3);             // Vầng cực quang mềm rìa ngoài
-                    col += uColorIce * pow(sparkVein, 3.0) * 0.65;                                    // Hạt phóng điện lấp lánh
-
-                    // 8. Alpha bán trong suốt hòa quyện đa lớp
-                    float alpha = (spine * 0.70 + density * 0.48 + sparkVein * 0.52) * envelope * breath * uOpacityBase * uWarpIntensity;
-
-                    gl_FragColor = vec4(col * (1.1 + density * 0.5) * uWarpIntensity * envelope, clamp(alpha, 0.0, 1.0));
-                }
-            `;
-
-            // Hàm tạo một dải lụa cực quang uốn lượn hình cánh cung mở quanh quả cầu
-            function createFluidAuroraStreamer(params) {
-                const segsU = isMobile ? 64 : 96;
-                const segsV = isMobile ? 14 : 20;
-                const geo = new THREE.PlaneGeometry(1.0, 1.0, segsU, segsV);
-
-                const mat = new THREE.ShaderMaterial({
-                    uniforms: {
-                        uTime: { value: 0 },
-                        uSpeed: { value: params.speed || 0.65 },
-                        uFlowOffset: { value: params.flowOffset || 0.0 },
-                        uPhiStart: { value: params.phiStart || 0.0 },
-                        uPhiSweep: { value: params.phiSweep || Math.PI * 1.4 },
-                        uRStart: { value: params.rStart || 8.5 },
-                        uRMid: { value: params.rMid || 14.5 },
-                        uREnd: { value: params.rEnd || 18.5 },
-                        uTilt: { value: params.tilt || 0.2 },
-                        uYaw: { value: params.yaw || 0.0 },
-                        uMaxWidth: { value: params.maxWidth || 3.8 },
-                        uCoreEnergy: { value: 1.0 },
-                        uWarpIntensity: { value: 1.0 },
-                        uOpacityBase: { value: params.opacity || 0.72 },
-                        uColorDeep: { value: new THREE.Color(params.colorDeep || 0x01081f) },
-                        uColorElectric: { value: new THREE.Color(params.colorElectric || 0x0055ff) },
-                        uColorNeon: { value: new THREE.Color(params.colorNeon || 0x00e5ff) },
-                        uColorIce: { value: new THREE.Color(params.colorIce || 0xffffff) }
-                    },
-                    vertexShader: fluidStreamerVertShader,
-                    fragmentShader: fluidStreamerFragShader,
-                    transparent: true,
-                    blending: THREE.AdditiveBlending,
-                    depthWrite: false,
-                    side: THREE.DoubleSide
-                });
-
-                mat.uniforms.uShockwave = { value: 0.0 };
-                const mesh = new THREE.Mesh(geo, mat);
-                return { mesh, mat };
-            }
-
-            // ──────────────────────────────────────────────────────────
-            // [A2] SHADER SỢI PLASMA PHÂN NHÁNH LINH HOẠT (Branching Plasma Tendrils - LAYER 3)
-            // Sợi plasma mảnh, phân nhánh, tốc độ cao, đan xen giữa các dải cực quang lớn
-            // ──────────────────────────────────────────────────────────
-            const tendrilVertShader = `
-                uniform float uTime;
-                uniform float uSpeed;
-                uniform float uFlowOffset;
-                uniform float uWarpIntensity;
-                uniform float uPhiStart;
-                uniform float uPhiSweep;
-                uniform float uRStart;
-                uniform float uRMid;
-                uniform float uREnd;
-                uniform float uTilt;
-                uniform float uYaw;
-                uniform float uMaxWidth;
-
-                varying vec2 vUv;
-                varying float vProgress;
-
-                // Compact Simplex noise
-                vec3 mod289v(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-                vec4 mod289v4(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-                vec4 perm4(vec4 x) { return mod289v4(((x*34.0)+1.0)*x); }
-                vec4 tInvSq(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
-                float snoise3(vec3 v) {
-                    const vec2 C = vec2(1.0/6.0, 1.0/3.0);
-                    const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
-                    vec3 i = floor(v + dot(v, C.yyy));
-                    vec3 x0 = v - i + dot(i, C.xxx);
-                    vec3 g = step(x0.yzx, x0.xyz);
-                    vec3 l = 1.0 - g;
-                    vec3 i1 = min(g, l.zxy); vec3 i2 = max(g, l.zxy);
-                    vec3 x1 = x0 - i1 + C.xxx; vec3 x2 = x0 - i2 + C.yyy; vec3 x3 = x0 - D.yyy;
-                    i = mod289v(i);
-                    vec4 p = perm4(perm4(perm4(i.z+vec4(0.,i1.z,i2.z,1.))+i.y+vec4(0.,i1.y,i2.y,1.))+i.x+vec4(0.,i1.x,i2.x,1.));
-                    float n_ = 0.142857142857; vec3 ns = n_ * D.wyz - D.xzx;
-                    vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
-                    vec4 x_ = floor(j * ns.z); vec4 y_ = floor(j - 7.0 * x_);
-                    vec4 x = x_*ns.x + ns.yyyy; vec4 y = y_*ns.x + ns.yyyy;
-                    vec4 h = 1.0 - abs(x) - abs(y);
-                    vec4 b0 = vec4(x.xy, y.xy); vec4 b1 = vec4(x.zw, y.zw);
-                    vec4 s0 = floor(b0)*2.0+1.0; vec4 s1 = floor(b1)*2.0+1.0;
-                    vec4 sh = -step(h, vec4(0.0));
-                    vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy; vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
-                    vec3 p0 = vec3(a0.xy,h.x); vec3 p1 = vec3(a0.zw,h.y);
-                    vec3 p2 = vec3(a1.xy,h.z); vec3 p3 = vec3(a1.zw,h.w);
-                    vec4 norm = tInvSq(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
-                    p0*=norm.x; p1*=norm.y; p2*=norm.z; p3*=norm.w;
-                    vec4 m = max(0.6 - vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)), 0.0);
-                    m = m * m;
-                    return 42.0 * dot(m*m, vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
-                }
-
-                void main() {
-                    vUv = uv;
-                    float u = uv.x;
-                    float v = (uv.y - 0.5) * 2.0;
-
-                    float t = uTime * uSpeed + uFlowOffset;
-                    float phi = uPhiStart + u * uPhiSweep;
-                    float r = mix(uRStart, uREnd, u) + sin(u * 3.14159265) * (uRMid - mix(uRStart, uREnd, 0.5));
-
-                    float x0 = r * cos(phi);
-                    float y0 = r * sin(phi) * 0.90;
-                    float z0 = sin(u * 9.42 + t * 1.5) * 1.8 * sin(u * 3.14159265);
-
-                    float cosT = cos(uTilt), sinT = sin(uTilt);
-                    float cosY = cos(uYaw), sinY = sin(uYaw);
-
-                    vec3 pSpine = vec3(
-                        x0 * cosY - z0 * sinY,
-                        y0 * cosT - (x0 * sinY + z0 * cosY) * sinT,
-                        y0 * sinT + (x0 * sinY + z0 * cosY) * cosT
-                    );
-
-                    vec3 outDir = normalize(pSpine);
-                    vec3 tangentDir = vec3(-sin(phi), cos(phi) * cosT, cos(phi) * sinT);
-                    vec3 ribbonNormal = normalize(cross(tangentDir, outDir));
-                    vec3 ribbonLateral = normalize(cross(tangentDir, ribbonNormal));
-
-                    // Dao động tần số cao linh hoạt, luồn lách nhanh
-                    float twitch = snoise3(pSpine * 0.25 + vec3(t * 0.6, -t * 0.5, t * 0.4)) * 2.2 * sin(u * 3.14159265);
-                    pSpine += ribbonNormal * twitch * uWarpIntensity;
-
-                    float widthEnvelope = pow(sin(u * 3.14159265), 0.85);
-                    vec3 localPos = pSpine + ribbonLateral * (v * uMaxWidth * widthEnvelope);
-
-                    vProgress = u;
-                    vec4 worldPos = modelMatrix * vec4(localPos, 1.0);
-                    gl_Position = projectionMatrix * viewMatrix * worldPos;
-                }
-            `;
-
-            const tendrilFragShader = `
-                uniform float uTime;
-                uniform float uSpeed;
-                uniform float uFlowOffset;
-                uniform float uCoreEnergy;
-                uniform float uWarpIntensity;
-                uniform float uShockwave;
-                uniform vec3 uColorNeon;
-                uniform vec3 uColorIce;
-
-                varying vec2 vUv;
-                varying float vProgress;
-
-                float snoise3f(vec3 v) {
-                    const vec2 C = vec2(1.0/6.0, 1.0/3.0);
-                    const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
-                    vec3 i = floor(v + dot(v, C.yyy));
-                    vec3 x0 = v - i + dot(i, C.xxx);
-                    vec3 g = step(x0.yzx, x0.xyz); vec3 l = 1.0 - g;
-                    vec3 i1 = min(g, l.zxy); vec3 i2 = max(g, l.zxy);
-                    vec3 x1 = x0 - i1 + C.xxx; vec3 x2 = x0 - i2 + C.yyy; vec3 x3 = x0 - D.yyy;
-                    i = i - floor(i * (1.0 / 289.0)) * 289.0;
-                    vec4 pp = ((i.z+vec4(0.,i1.z,i2.z,1.))*34.0+1.0)*(i.z+vec4(0.,i1.z,i2.z,1.));
-                    pp = pp - floor(pp*(1.0/289.0))*289.0;
-                    pp = ((pp+i.y+vec4(0.,i1.y,i2.y,1.))*34.0+1.0)*(pp+i.y+vec4(0.,i1.y,i2.y,1.));
-                    pp = pp - floor(pp*(1.0/289.0))*289.0;
-                    pp = ((pp+i.x+vec4(0.,i1.x,i2.x,1.))*34.0+1.0)*(pp+i.x+vec4(0.,i1.x,i2.x,1.));
-                    pp = pp - floor(pp*(1.0/289.0))*289.0;
-                    float n_ = 0.142857142857; vec3 ns = n_ * D.wyz - D.xzx;
-                    vec4 j = pp - 49.0 * floor(pp * ns.z * ns.z);
-                    vec4 x_ = floor(j * ns.z); vec4 y_ = floor(j - 7.0 * x_);
-                    vec4 x = x_*ns.x + ns.yyyy; vec4 y = y_*ns.x + ns.yyyy;
-                    vec4 h = 1.0 - abs(x) - abs(y);
-                    vec4 b0 = vec4(x.xy, y.xy); vec4 b1 = vec4(x.zw, y.zw);
-                    vec4 s0 = floor(b0)*2.0+1.0; vec4 s1 = floor(b1)*2.0+1.0;
-                    vec4 sh = -step(h, vec4(0.0));
-                    vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy; vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
-                    vec3 p0 = vec3(a0.xy,h.x); vec3 p1 = vec3(a0.zw,h.y);
-                    vec3 p2 = vec3(a1.xy,h.z); vec3 p3 = vec3(a1.zw,h.w);
-                    vec4 norm = 1.79284291400159 - 0.85373472095314*vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3));
-                    p0*=norm.x; p1*=norm.y; p2*=norm.z; p3*=norm.w;
-                    vec4 m = max(0.6 - vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)), 0.0);
-                    m = m*m;
-                    return 42.0 * dot(m*m, vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
-                }
-
-                void main() {
-                    float u = vUv.x;
-                    float v = (vUv.y - 0.5) * 2.0;
-                    float absV = abs(v);
-
-                    float envelope = (1.0 - smoothstep(0.15, 1.0, absV)) * pow(sin(u * 3.14159265), 0.70);
-                    if (envelope < 0.003) discard;
-
-                    float t = uTime * uSpeed + uFlowOffset;
-                    vec2 flowUv = vec2(u * 8.0 - t * 2.5, v * 2.2);
-
-                    // Các nhánh tia sét phân nhánh đa tầng
-                    float b1 = pow(clamp(1.0 - abs(snoise3f(vec3(flowUv.x, flowUv.y * 1.5, t * 0.4))), 0.0, 1.0), 5.5);
-                    float b2 = pow(clamp(1.0 - abs(snoise3f(vec3(flowUv.x * 1.6 + 2.0, flowUv.y * 2.5, -t * 0.6))), 0.0, 1.0), 6.5);
-                    float fork = b1 * 0.75 + b2 * 0.65;
-
-                    // Tia chớp ngẫu nhiên lóe lên
-                    float flash = pow(0.5 + 0.5 * sin(uTime * 7.0 + u * 15.0 + uFlowOffset), 8.0);
-                    float surge = exp(-pow(u - uShockwave, 2.0) / 0.015) * (1.0 - uShockwave);
-
-                    vec3 col = mix(uColorNeon, uColorIce, clamp(fork * 1.2 + flash * 0.5 + surge, 0.0, 1.0));
-                    float alpha = (fork * 0.85 + flash * 0.45 + surge * 0.9) * envelope * uCoreEnergy * uWarpIntensity;
-
-                    gl_FragColor = vec4(col * (1.3 + surge * 1.5) * uWarpIntensity * envelope, clamp(alpha, 0.0, 1.0));
-                }
-            `;
-
-            function createBranchingTendril(params) {
-                const segsU = isMobile ? 48 : 72;
-                const segsV = isMobile ? 8 : 12;
-                const geo = new THREE.PlaneGeometry(1.0, 1.0, segsU, segsV);
-                const mat = new THREE.ShaderMaterial({
-                    uniforms: {
-                        uTime: { value: 0 },
-                        uSpeed: { value: params.speed || 1.2 },
-                        uFlowOffset: { value: params.flowOffset || 0.0 },
-                        uPhiStart: { value: params.phiStart || 0.0 },
-                        uPhiSweep: { value: params.phiSweep || Math.PI * 1.3 },
-                        uRStart: { value: params.rStart || 8.2 },
-                        uRMid: { value: params.rMid || 13.5 },
-                        uREnd: { value: params.rEnd || 17.5 },
-                        uTilt: { value: params.tilt || 0.3 },
-                        uYaw: { value: params.yaw || 0.0 },
-                        uMaxWidth: { value: params.maxWidth || 1.6 },
-                        uCoreEnergy: { value: 1.0 },
-                        uWarpIntensity: { value: 1.0 },
-                        uShockwave: { value: 0.0 },
-                        uColorNeon: { value: new THREE.Color(params.colorNeon || 0x00e5ff) },
-                        uColorIce: { value: new THREE.Color(0xffffff) }
-                    },
-                    vertexShader: tendrilVertShader,
-                    fragmentShader: tendrilFragShader,
-                    transparent: true,
-                    blending: THREE.AdditiveBlending,
-                    depthWrite: false,
-                    side: THREE.DoubleSide
-                });
-                const mesh = new THREE.Mesh(geo, mat);
-                return { mesh, mat };
-            }
-
-            // ── Khởi tạo 5 dải cực quang lụa uốn lượn đa chiều bao bọc quanh lõi (LAYER 2) ──
-            const streamerConfigs = [
-                // Dải 1: Cực quang ngang rộng lớn ôm trọn phía trước quả cầu, kéo dài sang hai bên
-                { phiStart: -Math.PI * 0.65, phiSweep: Math.PI * 1.42, rStart: 9.0, rMid: 15.2, rEnd: 19.5,
-                  tilt: 0.15, yaw: -0.08, maxWidth: 4.2, speed: 0.65, flowOffset: 0.0, opacity: 0.76,
-                  colorDeep: 0x01081f, colorElectric: 0x0055ff, colorNeon: 0x00e5ff, colorIce: 0xffffff },
-
-                // Dải 2: Cánh cực quang vươn cao từ góc trái dưới lên đỉnh góc phải
-                { phiStart: Math.PI * 0.75, phiSweep: Math.PI * 1.38, rStart: 8.6, rMid: 14.8, rEnd: 18.2,
-                  tilt: 0.65, yaw: 0.25, maxWidth: 3.8, speed: -0.58, flowOffset: 1.8, opacity: 0.72,
-                  colorDeep: 0x010c28, colorElectric: 0x0066ee, colorNeon: 0x00e5ff, colorIce: 0xeeffff },
-
-                // Dải 3: Cung lụa mềm uốn lượn sâu từ trên xuống dưới góc phải
-                { phiStart: Math.PI * 0.10, phiSweep: Math.PI * 1.48, rStart: 9.2, rMid: 16.0, rEnd: 20.5,
-                  tilt: -0.52, yaw: -0.30, maxWidth: 4.0, speed: 0.70, flowOffset: 3.2, opacity: 0.68,
-                  colorDeep: 0x01123a, colorElectric: 0x0044dd, colorNeon: 0x60e5ff, colorIce: 0xffffff },
-
-                // Dải 4: Luồng năng lượng xoắn nghiêng mạnh tạo chiều sâu không gian tiền/hậu cảnh
-                { phiStart: Math.PI * 1.55, phiSweep: Math.PI * 1.32, rStart: 8.5, rMid: 13.8, rEnd: 17.6,
-                  tilt: 1.20, yaw: -0.42, maxWidth: 3.5, speed: -0.48, flowOffset: 4.6, opacity: 0.65,
-                  colorDeep: 0x010926, colorElectric: 0x0070ee, colorNeon: 0x00e5ff, colorIce: 0xdfffff },
-
-                // Dải 5: Màn lụa cực quang mỏng thanh thoát vươn xa ở hậu cảnh
-                { phiStart: -Math.PI * 0.20, phiSweep: Math.PI * 1.45, rStart: 10.5, rMid: 18.2, rEnd: 22.5,
-                  tilt: -0.32, yaw: 0.50, maxWidth: 4.6, speed: 0.42, flowOffset: 5.4, opacity: 0.52,
-                  colorDeep: 0x000c22, colorElectric: 0x0044cc, colorNeon: 0x00e5ff, colorIce: 0xffffff }
-            ];
-
-            for (let i = 0; i < streamerConfigs.length; i++) {
-                const cfg = streamerConfigs[i];
-                const { mesh, mat } = createFluidAuroraStreamer(cfg);
-                plasmaWaveGroup.add(mesh);
-                fluidStreamers.push({ mesh, mat, baseCfg: cfg });
-                plasmaWaveMeshes.push(mesh);
-                plasmaWaveMats.push(mat);
-            }
-
-            // ── Khởi tạo 4 sợi plasma mảnh phân nhánh, biến đổi nhanh đan xen (LAYER 3) ──
-            const tendrilConfigs = [
-                // Sợi 1: Tia điện mảnh phóng nhanh phía trước lõi
-                { phiStart: -Math.PI * 0.4, phiSweep: Math.PI * 1.5, rStart: 8.4, rMid: 12.8, rEnd: 16.5,
-                  tilt: 0.28, yaw: 0.12, maxWidth: 1.8, speed: 1.5, flowOffset: 0.5, colorNeon: 0x00e5ff },
-                // Sợi 2: Nhánh điện phân tách vút ngược lên đỉnh
-                { phiStart: Math.PI * 0.5, phiSweep: Math.PI * 1.3, rStart: 8.6, rMid: 13.5, rEnd: 17.2,
-                  tilt: 0.82, yaw: -0.35, maxWidth: 1.5, speed: -1.6, flowOffset: 2.2, colorNeon: 0x80f0ff },
-                // Sợi 3: Tia sét lượn xuống đáy quả cầu
-                { phiStart: Math.PI * 1.3, phiSweep: Math.PI * 1.4, rStart: 8.2, rMid: 12.2, rEnd: 15.8,
-                  tilt: -0.65, yaw: 0.22, maxWidth: 1.6, speed: 1.4, flowOffset: 3.8, colorNeon: 0x00e5ff },
-                // Sợi 4: Sợi tơ điện mảnh luồn lách ở hậu cảnh
-                { phiStart: -Math.PI * 0.8, phiSweep: Math.PI * 1.6, rStart: 8.8, rMid: 14.5, rEnd: 18.0,
-                  tilt: -0.18, yaw: -0.45, maxWidth: 1.4, speed: -1.3, flowOffset: 5.1, colorNeon: 0xbfffff }
-            ];
-
-            for (let t = 0; t < tendrilConfigs.length; t++) {
-                const tc = tendrilConfigs[t];
-                const { mesh, mat } = createBranchingTendril(tc);
-                plasmaWaveGroup.add(mesh);
-                tendrilMeshes.push({ mesh, mat, baseCfg: tc });
-                plasmaWaveMeshes.push(mesh);
-                plasmaWaveMats.push(mat);
-            }
-
-                        // ──────────────────────────────────────────────────────────
-            // [B] MÀN SƯƠNG NĂNG LƯỢNG VŨ TRỤ (Volumetric Cosmic Nebula Mist)
-            // ──────────────────────────────────────────────────────────
-            const nebulaMistVertShader = `
-                varying vec2 vUv;
-                varying vec3 vWorldPosition;
-                void main() {
-                    vUv = uv;
-                    vec4 wp = modelMatrix * vec4(position, 1.0);
+                    vec3 displaced = position + normal * disp;
+                    vec4 wp = modelMatrix * vec4(displaced, 1.0);
                     vWorldPosition = wp.xyz;
                     gl_Position = projectionMatrix * viewMatrix * wp;
                 }
             `;
 
-            const nebulaMistFragShader = `
+            const cosmicSmokeFragShader = `
                 uniform float uTime;
+                uniform float uSpeed;
+                uniform float uFlowOffset;
                 uniform float uCoreEnergy;
                 uniform float uWarpIntensity;
                 uniform float uShockwave;
-                uniform float uTiltAngle;
+                uniform float uDensityThreshold;
+                uniform float uSoftness;
+                uniform float uNoiseScale;
+                uniform float uOuterRadius;
+                uniform float uOpacityBase;
                 uniform vec3 uColorDeep;
                 uniform vec3 uColorElectric;
                 uniform vec3 uColorNeon;
+                uniform vec3 uColorIce;
 
                 varying vec2 vUv;
                 varying vec3 vWorldPosition;
+                varying vec3 vLocalPosition;
 
-                // Simplex 3D noise
-                float snoise3m(vec3 v) {
+                // 3D Simplex noise fragment
+                vec3 mod289vf(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+                vec4 mod289vf4(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+                vec4 perm4f(vec4 x) { return mod289vf4(((x*34.0)+1.0)*x); }
+                vec4 tInvSqf(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+                float snoise3f(vec3 v) {
                     const vec2 C = vec2(1.0/6.0, 1.0/3.0);
                     const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
                     vec3 i = floor(v + dot(v, C.yyy));
                     vec3 x0 = v - i + dot(i, C.xxx);
-                    vec3 g = step(x0.yzx, x0.xyz); vec3 l = 1.0 - g;
+                    vec3 g = step(x0.yzx, x0.xyz);
+                    vec3 l = 1.0 - g;
                     vec3 i1 = min(g, l.zxy); vec3 i2 = max(g, l.zxy);
                     vec3 x1 = x0 - i1 + C.xxx; vec3 x2 = x0 - i2 + C.yyy; vec3 x3 = x0 - D.yyy;
-                    i = i - floor(i * (1.0 / 289.0)) * 289.0;
-                    vec4 pp = ((i.z+vec4(0.,i1.z,i2.z,1.))*34.0+1.0)*(i.z+vec4(0.,i1.z,i2.z,1.));
-                    pp = pp - floor(pp*(1.0/289.0))*289.0;
-                    pp = ((pp+i.y+vec4(0.,i1.y,i2.y,1.))*34.0+1.0)*(pp+i.y+vec4(0.,i1.y,i2.y,1.));
-                    pp = pp - floor(pp*(1.0/289.0))*289.0;
-                    pp = ((pp+i.x+vec4(0.,i1.x,i2.x,1.))*34.0+1.0)*(pp+i.x+vec4(0.,i1.x,i2.x,1.));
-                    pp = pp - floor(pp*(1.0/289.0))*289.0;
+                    i = mod289vf(i);
+                    vec4 p = perm4f(perm4f(perm4f(i.z+vec4(0.,i1.z,i2.z,1.))+i.y+vec4(0.,i1.y,i2.y,1.))+i.x+vec4(0.,i1.x,i2.x,1.));
                     float n_ = 0.142857142857; vec3 ns = n_ * D.wyz - D.xzx;
-                    vec4 j = pp - 49.0 * floor(pp * ns.z * ns.z);
+                    vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
                     vec4 x_ = floor(j * ns.z); vec4 y_ = floor(j - 7.0 * x_);
                     vec4 x = x_*ns.x + ns.yyyy; vec4 y = y_*ns.x + ns.yyyy;
                     vec4 h = 1.0 - abs(x) - abs(y);
@@ -3029,148 +2570,207 @@
                     vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy; vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
                     vec3 p0 = vec3(a0.xy,h.x); vec3 p1 = vec3(a0.zw,h.y);
                     vec3 p2 = vec3(a1.xy,h.z); vec3 p3 = vec3(a1.zw,h.w);
-                    vec4 norm = 1.79284291400159 - 0.85373472095314*vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3));
+                    vec4 norm = tInvSqf(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
                     p0*=norm.x; p1*=norm.y; p2*=norm.z; p3*=norm.w;
                     vec4 m = max(0.6 - vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)), 0.0);
-                    m = m*m;
+                    m = m * m;
                     return 42.0 * dot(m*m, vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
                 }
 
+                // 4-Octave FBM cho mây khói vũ trụ thể tích bồng bềnh
+                float fbm4(vec3 p) {
+                    float f = 0.0;
+                    float a = 0.52;
+                    for (int i = 0; i < 4; i++) {
+                        f += a * snoise3f(p);
+                        p = p * 2.05 + vec3(5.4, 9.8, 14.2);
+                        a *= 0.48;
+                    }
+                    return f;
+                }
+
                 void main() {
-                    vec2 uvC = vUv - 0.5;
-                    float r = length(uvC) * 2.0;
-                    float theta = atan(uvC.y, uvC.x) + uTiltAngle;
+                    float t = uTime * uSpeed + uFlowOffset;
 
-                    // Dòng xoáy logarit lan tỏa từ tâm
-                    float swirl = theta + 1.2 * sin(r * 2.6 - uTime * 0.35) + uTime * 0.10;
-                    vec2 mistCoord = vec2(cos(swirl) * r, sin(swirl) * r) * 2.2;
+                    // 1. BOUNDARY & APERTURE ENVELOPE (Triệt tiêu 100% cạnh cắt hình học)
+                    float dist2D = length(vWorldPosition.xy);
+                    float dist3D = length(vWorldPosition.xyz);
 
-                    float n1 = snoise3m(vec3(mistCoord + vec2(uTime * 0.12, -uTime * 0.08), uTime * 0.06));
-                    float n2 = snoise3m(vec3(mistCoord * 2.0 + vec2(-uTime * 0.10, uTime * 0.12), -uTime * 0.08 + 3.0));
-                    float mist = pow(clamp(n1 * 0.60 + n2 * 0.40 * 0.5 + 0.5, 0.0, 1.0), 2.2);
+                    // Khẩu độ tâm bảo vệ tuyệt đối ảnh chân dung (r < 2.5), cho phép khói ôm trọn quả cầu và lan tỏa
+                    float innerAperture = smoothstep(6.8, 7.8, dist2D);
+                    // Hòa tan êm dịu vào bóng đêm vũ trụ ở biên ngoài
+                    float outerFade = smoothstep(uOuterRadius * 1.15, uOuterRadius * 0.70, dist3D);
 
-                    // Cửa sổ bức xạ: 0 tại tâm ảnh đại diện (bảo vệ mặt), cực đại tại r = 0.45 - 0.75, tắt dần ở viền ngoài
-                    float apertureProtect = smoothstep(0.24, 0.42, r);
-                    float outerFade = 1.0 - smoothstep(0.72, 0.98, r);
-                    float window = apertureProtect * outerFade;
-                    if (window < 0.005) discard;
+                    // Làm mượt hình học cục bộ: biến tấm phẳng thành đám mây hình trứng / hữu cơ
+                    vec2 cuv = (vUv - 0.5) * 2.0;
+                    float uvDist = length(cuv);
+                    float meshBoundaryFade = smoothstep(1.0, 0.25, uvDist);
 
-                    // Sóng xung kích lan truyền từ lõi ra ngoài vũ trụ (Radial Energy Shockwave)
-                    float shockRing = exp(-pow(r - (0.28 + uShockwave * 0.70), 2.0) / 0.012) * (1.0 - uShockwave * 0.85);
+                    float envelope = innerAperture * outerFade * meshBoundaryFade;
+                    if (envelope < 0.001) discard;
 
-                    vec3 col = mix(uColorDeep, uColorElectric, mist);
-                    col = mix(col, uColorNeon, pow(mist, 2.5) * 0.85 + shockRing * 0.9);
-                    col += vec3(1.0) * shockRing * 0.8;
+                    // 2. DUAL DOMAIN WARPING FBM CHO ĐÁM MÂY KHÓI BỒNG BỀNH (Puffy Nebula Cloud Billows)
+                    vec3 p = vWorldPosition * uNoiseScale;
 
-                    float alpha = (mist * 0.36 + shockRing * 0.45) * window * uCoreEnergy * uWarpIntensity;
-                    gl_FragColor = vec4(col * (1.15 + shockRing * 1.2) * uWarpIntensity * window, clamp(alpha, 0.0, 1.0));
+                    // Dòng đối lưu cuộn xoáy 3D
+                    vec3 q = vec3(
+                        fbm4(p + vec3(0.0, -t * 0.16, t * 0.12)),
+                        fbm4(p + vec3(4.8, t * 0.14, -t * 0.15)),
+                        fbm4(p + vec3(-2.8, -t * 0.10, t * 0.08))
+                    );
+
+                    // Tầng cuộn xoáy thứ hai: Các búi khói cuộn ngược và bồng bềnh
+                    vec3 warpCoord = p + 2.0 * q + vec3(0.0, -t * 0.08, 0.0);
+                    vec3 rVec = vec3(
+                        fbm4(warpCoord + vec3(1.7, 3.8, -t * 0.12)),
+                        fbm4(warpCoord + vec3(-2.4, 6.2, t * 0.10)),
+                        fbm4(warpCoord + vec3(4.1, -1.6, -t * 0.09))
+                    );
+
+                    // Mật độ khói tích lũy đa tầng (Accumulated Smoke Density)
+                    float rawDensity = fbm4(p + 2.2 * rVec);
+                    rawDensity = clamp(rawDensity * 0.5 + 0.5, 0.0, 1.0);
+
+                    // Phân tách khối mây rõ ràng: có búi mây dày, có khoảng chân không sâu thẳm
+                    float smoke = smoothstep(uDensityThreshold, uDensityThreshold + uSoftness, rawDensity);
+                    // Lõi búi mây đậm đặc
+                    float puffCore = smoothstep(uDensityThreshold + uSoftness * 0.35, uDensityThreshold + uSoftness, rawDensity);
+
+                    // Các nhánh tơ khói nhỏ li ti phân nhánh tự nhiên (Micro-Wisps)
+                    float fineWisp = pow(clamp(fbm4(p * 2.8 + q * 1.8 + vec3(0.0, t * 0.20, 0.0)) * 0.5 + 0.5, 0.0, 1.0), 3.0);
+                    fineWisp *= smoothstep(0.20, 0.60, smoke);
+
+                    // 3. ÁNH SÁNG TỰ NHIÊN KHUẾCH TÁN TỪ LÕI NĂNG LƯỢNG (Core Light Diffusion)
+                    float coreLightScatter = exp(-dist3D * 0.040) * (0.95 + 0.35 * uCoreEnergy);
+
+                    // Gợn sóng xung kích truyền qua mây khói (Soft Shockwave Ripple)
+                    float shockRipple = exp(-pow(dist3D - (7.6 + uShockwave * (uOuterRadius - 7.6)), 2.0) / 5.2) * (1.0 - uShockwave * 0.70);
+
+                    // 4. PHỐI MÀU ELECTRIC BLUE ĐIỆN ẢNH RỰC RỠ VÀ THỂ TÍCH (Volumetric Shading)
+                    // Tầng mây sẫm màu chân không
+                    vec3 col = uColorDeep;
+                    // Tầng thân khói xanh điện rực rỡ
+                    col = mix(col, uColorElectric, smoothstep(0.05, 0.50, smoke));
+                    // Tầng hào quang Neon Cyan khuếch tán mạnh từ lõi
+                    col = mix(col, uColorNeon, smoothstep(0.35, 0.85, smoke) * (0.85 + coreLightScatter * 0.60));
+                    // Vùng lõi khói dày bắt sáng rực rỡ
+                    col += uColorNeon * puffCore * 0.55 * (0.90 + coreLightScatter * 0.65);
+                    // Gợn sóng xung kích làm bừng sáng nhẹ đám mây khói
+                    col += uColorNeon * shockRipple * 0.50 * uCoreEnergy;
+                    // Tinh tế điểm xuyết ánh trắng băng trên sợi tơ khói mỏng (KHÔNG GÂY LÓA TRẮNG!)
+                    col += uColorIce * fineWisp * 0.40 * (0.80 + coreLightScatter * 0.50);
+
+                    // 5. ĐỘ ĐỤC BÁN TRONG SUỐT (Soft Volumetric Alpha)
+                    float alpha = smoke * envelope * uOpacityBase * uWarpIntensity * (0.90 + 0.25 * uCoreEnergy);
+                    alpha += shockRipple * 0.22 * envelope * uWarpIntensity;
+                    alpha = clamp(alpha, 0.0, 0.88);
+
+                    gl_FragColor = vec4(col * (1.15 + shockRipple * 0.25) * uWarpIntensity, alpha);
                 }
             `;
 
-            // Tạo 2 lớp màn sương năng lượng khuếch tán đa chiều
-            function createNebulaMist(tiltX, tiltY, tiltZ, tiltAngle) {
-                const geo = new THREE.PlaneGeometry(36.0, 36.0, isMobile ? 32 : 48, isMobile ? 32 : 48);
+            function createCosmicSmokePlume(params) {
+                const segs = isMobile ? 32 : 48;
+                const geo = new THREE.PlaneGeometry(params.sizeX || params.size, params.sizeY || params.size, segs, segs);
+
                 const mat = new THREE.ShaderMaterial({
                     uniforms: {
                         uTime: { value: 0 },
-                        uCoreEnergy: { value: 1.0 },
+                        uSpeed: { value: params.speed || 0.20 },
+                        uFlowOffset: { value: params.flowOffset || 0.0 },
+                        uDisplacement: { value: params.displacement || 1.8 },
                         uWarpIntensity: { value: 1.0 },
-                        uTiltAngle: { value: tiltAngle },
+                        uCoreEnergy: { value: 1.0 },
                         uShockwave: { value: 0.0 },
-                        uColorDeep: { value: new THREE.Color(0x01081f) },
-                        uColorElectric: { value: new THREE.Color(0x0055ff) },
-                        uColorNeon: { value: new THREE.Color(0x00e5ff) }
+                        uDensityThreshold: { value: params.densityThreshold || 0.32 },
+                        uSoftness: { value: params.softness || 0.40 },
+                        uNoiseScale: { value: params.noiseScale || 0.035 },
+                        uOuterRadius: { value: params.outerRadius || 24.0 },
+                        uOpacityBase: { value: params.opacity || 0.60 },
+                        uColorDeep: { value: new THREE.Color(params.colorDeep || 0x001438) },
+                        uColorElectric: { value: new THREE.Color(params.colorElectric || 0x0055ff) },
+                        uColorNeon: { value: new THREE.Color(params.colorNeon || 0x00e5ff) },
+                        uColorIce: { value: new THREE.Color(0xbfffff) }
                     },
-                    vertexShader: nebulaMistVertShader,
-                    fragmentShader: nebulaMistFragShader,
+                    vertexShader: cosmicSmokeVertShader,
+                    fragmentShader: cosmicSmokeFragShader,
                     transparent: true,
                     blending: THREE.AdditiveBlending,
                     depthWrite: false,
                     side: THREE.DoubleSide
                 });
+
                 const mesh = new THREE.Mesh(geo, mat);
-                mesh.rotation.set(tiltX, tiltY, tiltZ);
-                return { mesh, mat };
+                mesh.position.set(params.pos[0], params.pos[1], params.pos[2]);
+                mesh.rotation.set(params.rot[0], params.rot[1], params.rot[2]);
+                return { mesh, mat, baseCfg: params };
             }
 
-            const mist1 = createNebulaMist(0.35, 0.15, -0.20, 0.0);
-            plasmaWaveGroup.add(mist1.mesh);
-            nebulaMistMeshes.push(mist1);
-            plasmaWaveMeshes.push(mist1.mesh);
-            plasmaWaveMats.push(mist1.mat);
+            // ══════════════════════════════════════════════════════════════
+            // HỆ THỐNG CÁC BÚI KHÓI VŨ TRỤ THỂ TÍCH BẤT ĐỐI XỨNG (3 Tầng Chiều Sâu)
+            // ══════════════════════════════════════════════════════════════
+            const plumeConfigs = [
+                // ── TẦNG 1: MÂY KHÓI GẦN LÕI (Near-Core Coronal Smoke Plumes) ──
+                // Búi 1: Cuộn sóng lớn vươn lên góc trên bên phải
+                { pos: [3.5, 3.0, 1.2], rot: [0.25, 0.18, -0.22], sizeX: 32.0, sizeY: 28.0,
+                  speed: 0.24, flowOffset: 0.0, displacement: 1.8, densityThreshold: 0.30, softness: 0.42,
+                  noiseScale: 0.036, outerRadius: 18.0, opacity: 0.68,
+                  colorDeep: 0x001438, colorElectric: 0x0055ff, colorNeon: 0x00e5ff },
 
-            const mist2 = createNebulaMist(-0.45, -0.30, 0.35, 1.8);
-            plasmaWaveGroup.add(mist2.mesh);
-            nebulaMistMeshes.push(mist2);
-            plasmaWaveMeshes.push(mist2.mesh);
-            plasmaWaveMats.push(mist2.mat);
+                // Búi 2: Đám mây khói cuộn ngược ở góc dưới bên trái
+                { pos: [-3.8, -2.8, -0.8], rot: [-0.30, -0.22, 0.32], sizeX: 30.0, sizeY: 30.0,
+                  speed: -0.22, flowOffset: 2.4, displacement: 1.9, densityThreshold: 0.32, softness: 0.40,
+                  noiseScale: 0.038, outerRadius: 18.5, opacity: 0.65,
+                  colorDeep: 0x001a45, colorElectric: 0x0066ee, colorNeon: 0x00e5ff },
 
-            const mist3 = createNebulaMist(1.10, -0.25, 0.45, 3.2);
-            plasmaWaveGroup.add(mist3.mesh);
-            nebulaMistMeshes.push(mist3);
-            plasmaWaveMeshes.push(mist3.mesh);
-            plasmaWaveMats.push(mist3.mat);
+                // Búi 3: Cung khói bồng bềnh vòm qua đỉnh quả cầu
+                { pos: [0.0, 4.5, 1.5], rot: [0.82, -0.12, 0.16], sizeX: 36.0, sizeY: 26.0,
+                  speed: 0.20, flowOffset: 4.8, displacement: 1.7, densityThreshold: 0.31, softness: 0.42,
+                  noiseScale: 0.035, outerRadius: 19.5, opacity: 0.62,
+                  colorDeep: 0x001840, colorElectric: 0x0050ee, colorNeon: 0x40e5ff },
 
-            // ──────────────────────────────────────────────────────────
-            // [C] SỢI LASER PLASMA SIÊU MẢNH (Hairline Cosmic Filaments)
-            // Thay vì ống cao su dày 0.70, đây là sợi tơ laser R = 0.045
-            // ──────────────────────────────────────────────────────────
-            const hairlineMat = new THREE.ShaderMaterial({
-                uniforms: {
-                    uTime: { value: 0 },
-                    uCoreEnergy: { value: 1.0 },
-                    uWarpIntensity: { value: 1.0 },
-                    uColorNeon: { value: new THREE.Color(0x00e5ff) },
-                    uColorIce: { value: new THREE.Color(0xffffff) }
-                },
-                vertexShader: `
-                    varying vec2 vUv;
-                    void main() {
-                        vUv = uv;
-                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                    }
-                `,
-                fragmentShader: `
-                    uniform float uTime;
-                    uniform float uCoreEnergy;
-                    uniform float uWarpIntensity;
-                    uniform vec3 uColorNeon;
-                    uniform vec3 uColorIce;
-                    varying vec2 vUv;
-                    void main() {
-                        // Sợi laser sáng tinh khiết ở tâm, mờ nhẹ ở biên
-                        float edge = abs(vUv.y - 0.5) * 2.0;
-                        float core = pow(1.0 - edge, 3.5);
-                        float pulse = 0.85 + 0.15 * sin(uTime * 2.5 + vUv.x * 6.28);
-                        vec3 col = mix(uColorNeon, uColorIce, core * 0.85);
-                        gl_FragColor = vec4(col * (1.2 + core * 0.8) * uWarpIntensity, core * 0.88 * pulse * uWarpIntensity);
-                    }
-                `,
-                transparent: true,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false
-            });
+                // Búi 4: Cánh khói xòe rộng sang mạn phải
+                { pos: [4.8, -2.8, -1.0], rot: [-0.38, 0.30, -0.14], sizeX: 34.0, sizeY: 28.0,
+                  speed: -0.18, flowOffset: 6.2, displacement: 2.0, densityThreshold: 0.32, softness: 0.40,
+                  noiseScale: 0.034, outerRadius: 20.0, opacity: 0.60,
+                  colorDeep: 0x001235, colorElectric: 0x0058ee, colorNeon: 0x00e5ff },
 
-            // 3 sợi laser plasma siêu mảnh ôm trọn không gian như sợi cáp quang vũ trụ
-            const filamentConfigs = [
-                { radius: 11.2, rot: [0.35, 0.25, -0.15] },
-                { radius: 14.5, rot: [-0.45, -0.38, 0.35] },
-                { radius: 16.8, rot: [1.25, -0.20, 0.45] }
+                // ── TẦNG 2: MÂY KHÓI TRUNG GIAN (Mid-Field Volumetric Nebula) ──
+                // Búi 5: Vệt khói vũ trụ dài uốn lượn bên cánh trái
+                { pos: [-6.5, 1.8, 0.6], rot: [0.15, -0.38, 0.26], sizeX: 42.0, sizeY: 32.0,
+                  speed: 0.16, flowOffset: 8.1, displacement: 2.3, densityThreshold: 0.28, softness: 0.44,
+                  noiseScale: 0.028, outerRadius: 26.0, opacity: 0.52,
+                  colorDeep: 0x000e28, colorElectric: 0x0040dd, colorNeon: 0x40e5ff },
+
+                // Búi 6: Luồng sương năng lượng nghiêng sâu tạo phối cảnh tiền/hậu cảnh
+                { pos: [1.5, -4.5, 1.8], rot: [1.10, 0.18, -0.28], sizeX: 38.0, sizeY: 30.0,
+                  speed: -0.15, flowOffset: 10.3, displacement: 2.1, densityThreshold: 0.30, softness: 0.42,
+                  noiseScale: 0.030, outerRadius: 25.0, opacity: 0.50,
+                  colorDeep: 0x00143a, colorElectric: 0x0048cc, colorNeon: 0x00e5ff },
+
+                // ── TẦNG 3: MÂY KHÓI BÊN NGOÀI & SƯƠNG VŨ TRỤ (Outer Cosmic Mist) ──
+                // Búi 7: Tầng sương tinh vân rộng lớn trôi chậm ở hậu cảnh sâu
+                { pos: [-2.0, 3.0, -4.5], rot: [-0.18, 0.15, 0.10], sizeX: 58.0, sizeY: 52.0,
+                  speed: 0.09, flowOffset: 3.5, displacement: 3.0, densityThreshold: 0.25, softness: 0.50,
+                  noiseScale: 0.022, outerRadius: 36.0, opacity: 0.36,
+                  colorDeep: 0x000618, colorElectric: 0x002888, colorNeon: 0x00ccee },
+
+                // Búi 8: Tinh vân khuếch tán bao bọc viền ngoài vào không gian vũ trụ
+                { pos: [3.0, -2.5, -5.5], rot: [0.22, -0.20, -0.15], sizeX: 60.0, sizeY: 54.0,
+                  speed: -0.08, flowOffset: 7.8, displacement: 2.8, densityThreshold: 0.26, softness: 0.48,
+                  noiseScale: 0.020, outerRadius: 38.0, opacity: 0.34,
+                  colorDeep: 0x000412, colorElectric: 0x002077, colorNeon: 0x00bbdd }
             ];
 
-            for (let i = 0; i < filamentConfigs.length; i++) {
-                const fc = filamentConfigs[i];
-                // Bán kính ống siêu mảnh 0.045 (thanh mảnh gấp 16 lần ống cũ)
-                const fGeo = new THREE.TorusGeometry(fc.radius, 0.045, 8, isMobile ? 64 : 96);
-                const fMesh = new THREE.Mesh(fGeo, hairlineMat);
-                fMesh.rotation.set(fc.rot[0], fc.rot[1], fc.rot[2]);
-                plasmaWaveGroup.add(fMesh);
-                hairlineFilamentMeshes.push(fMesh);
-                plasmaWaveMeshes.push(fMesh);
+            for (let i = 0; i < plumeConfigs.length; i++) {
+                const plume = createCosmicSmokePlume(plumeConfigs[i]);
+                plasmaWaveGroup.add(plume.mesh);
+                cosmicSmokeClouds.push(plume);
+                plasmaWaveMeshes.push(plume.mesh);
+                plasmaWaveMats.push(plume.mat);
+                cosmicSmokeMats.push(plume.mat);
             }
-            plasmaWaveMats.push(hairlineMat);
 
-            // ──────────────────────────────────────────────────────────
             // [D] HẠT NĂNG LƯỢNG LƯU CHUYỂN TỪ LÕI RA KHÔNG GIAN (Stardust Advection)
             // ──────────────────────────────────────────────────────────
             energyMotes = [];
@@ -3557,74 +3157,39 @@
                         orbMesh.rotation.x = Math.sin(elapsed * 0.22) * 0.040;
                     }
 
-                    // 3. CHUYỂN ĐỘNG HỮU CƠ ĐA TẦNG VÀ TƯƠNG TÁC NĂNG LƯỢNG (5-Layer Living System)
-                    
-                    // [LỚP 2] DẢI CỰC QUANG LỚN: Uốn lượn, phình to thu nhỏ theo nhịp thở của lõi
-                    for (let s = 0; s < fluidStreamers.length; s++) {
-                        const str = fluidStreamers[s];
-                        if (str.mat && str.mat.uniforms) {
-                            str.mat.uniforms.uTime.value = elapsed;
-                            str.mat.uniforms.uCoreEnergy.value = corePulse;
-                            str.mat.uniforms.uShockwave.value = shockwaveCycle;
+                    // 3. CHUYỂN ĐỘNG MÂY KHÓI VŨ TRỤ THỂ TÍCH (Volumetric Cosmic Smoke Flow)
 
-                            // Biến đổi hình dạng dải lụa mềm mại theo thời gian (tự co duỗi và đổi bề rộng)
-                            const cfg = str.baseCfg;
-                            const morphTime = elapsed * 0.4 + cfg.flowOffset;
-                            str.mat.uniforms.uMaxWidth.value = cfg.maxWidth * (1.0 + 0.20 * Math.sin(morphTime));
-                            str.mat.uniforms.uRMid.value = cfg.rMid + 1.2 * Math.cos(morphTime * 0.8);
+                    // [BÚI KHÓI THỂ TÍCH BẤT ĐỐI XỨNG] Cuộn sóng, lan tỏa và hòa tan tự nhiên
+                    for (let c = 0; c < cosmicSmokeClouds.length; c++) {
+                        const sc = cosmicSmokeClouds[c];
+                        if (sc.mat && sc.mat.uniforms) {
+                            sc.mat.uniforms.uTime.value = elapsed;
+                            sc.mat.uniforms.uCoreEnergy.value = corePulse;
+                            sc.mat.uniforms.uShockwave.value = shockwaveCycle;
+
+                            // Nhịp thở thể tích: đám mây phình to nhẹ theo nhịp năng lượng
+                            const cfg = sc.baseCfg;
+                            const billowPuff = 1.0 + 0.16 * Math.sin(elapsed * 0.75 + cfg.flowOffset);
+                            sc.mat.uniforms.uDisplacement.value = cfg.displacement * billowPuff;
                         }
+                        // Xoay đối lưu chậm tự nhiên với vận tốc khác nhau (giảm thiểu xoay cơ học)
+                        const dir = (c % 2 === 0 ? 1 : -1);
+                        sc.mesh.rotation.z += dir * (0.008 + (c % 3) * 0.005) * dt;
                     }
 
-                    // [LỚP 3] SỢI PLASMA PHÂN NHÁNH: Di chuyển nhanh, uốn lượn tần số cao
-                    for (let t = 0; t < tendrilMeshes.length; t++) {
-                        const tnd = tendrilMeshes[t];
-                        if (tnd.mat && tnd.mat.uniforms) {
-                            tnd.mat.uniforms.uTime.value = elapsed;
-                            tnd.mat.uniforms.uCoreEnergy.value = corePulse;
-                            tnd.mat.uniforms.uShockwave.value = shockwaveCycle;
-
-                            const tc = tnd.baseCfg;
-                            const fastMorph = elapsed * 0.9 + tc.flowOffset;
-                            tnd.mat.uniforms.uMaxWidth.value = tc.maxWidth * (0.85 + 0.35 * Math.sin(fastMorph * 1.5));
-                        }
-                    }
-
-                    // [LỚP 4] MÀN SƯƠNG NĂNG LƯỢNG & SÓNG XUNG KÍCH TỎA TRÒN: Chuyển động chậm ở hậu cảnh
-                    for (let n = 0; n < nebulaMistMeshes.length; n++) {
-                        const neb = nebulaMistMeshes[n];
-                        if (neb.mat && neb.mat.uniforms) {
-                            neb.mat.uniforms.uTime.value = elapsed;
-                            neb.mat.uniforms.uCoreEnergy.value = corePulse;
-                            neb.mat.uniforms.uShockwave.value = shockwaveCycle;
-                        }
-                        // Xoay đối lưu êm đềm với vận tốc khác nhau giữa các lớp
-                        const dir = (n % 2 === 0 ? 1 : -1);
-                        neb.mesh.rotation.z += dir * (0.025 + n * 0.015) * dt;
-                    }
-
-                    // Sợi laser plasma siêu mảnh ôm trọn không gian
-                    if (hairlineMat && hairlineMat.uniforms) {
-                        hairlineMat.uniforms.uTime.value = elapsed;
-                        hairlineMat.uniforms.uCoreEnergy.value = corePulse;
-                    }
-                    for (let f = 0; f < hairlineFilamentMeshes.length; f++) {
-                        const fm = hairlineFilamentMeshes[f];
-                        fm.rotation.z += (f % 2 === 0 ? 0.08 : -0.07) * dt;
-                    }
-
-                    // [LỚP 5] HẠT NĂNG LƯỢNG & TIA SÁNG LÓE LÊN GIỮA CÁC TẦNG:
+                    // [TẦNG 4] BỤI SAO CUỐN THEO DÒNG KHÓI & TIA LÓE TRONG MÂY DÀY:
                     for (let m = 0; m < energyMotes.length; m++) {
                         const em = energyMotes[m];
 
                         if (em.type === 'stream') {
-                            // Hạt bụi sao bị cuốn theo dòng năng lượng và gia tốc khi lõi cầu bùng nổ
-                            const speedBoost = 0.8 + 0.45 * corePulse;
+                            // Hạt bụi sao bị cuốn theo dòng xoáy khói vũ trụ
+                            const speedBoost = 0.85 + 0.35 * corePulse;
                             em.radius += em.driftSpeed * speedBoost * dt;
                             em.theta += em.orbitSpeed * dt;
                             em.phi += em.phiSpeed * dt;
 
                             if (em.radius > em.maxRadius) {
-                                em.radius = 7.6 + Math.random() * 0.8;
+                                em.radius = 8.0 + Math.random() * 1.0;
                                 em.theta = Math.random() * Math.PI * 2;
                                 em.phi = (Math.random() - 0.5) * Math.PI * 0.85;
                             }
@@ -3635,42 +3200,20 @@
                                 Math.sin(em.theta) * Math.cos(em.phi) * em.radius
                             );
 
-                            const life = (em.radius - 7.6) / (em.maxRadius - 7.6);
+                            const life = (em.radius - 8.0) / (em.maxRadius - 8.0);
                             const fade = Math.sin(life * Math.PI);
-                            const tw = 0.5 + 0.5 * Math.sin(elapsed * 3.5 + em.phase);
-                            const sc = em.baseScale * (0.8 + tw * 0.5) * (0.6 + fade * 0.7);
+                            const tw = 0.5 + 0.5 * Math.sin(elapsed * 3.2 + em.phase);
+                            const sc = em.baseScale * (0.75 + tw * 0.45) * (0.55 + fade * 0.65);
                             em.sprite.scale.set(sc, sc, 1);
-                            em.sprite.material.opacity = fade * (0.45 + tw * 0.55);
+                            em.sprite.material.opacity = fade * (0.35 + tw * 0.45);
 
                         } else if (em.type === 'spark') {
-                            // Tia sáng li ti lóe lên trong chớp mắt rồi biến mất
-                            const flashVal = Math.pow(0.5 + 0.5 * Math.sin(elapsed * em.flashSpeed + em.phase), 10.0);
-                            const sc = em.baseScale * (0.5 + flashVal * 1.5);
+                            // Tia sáng li ti lóe lên êm dịu trong đám mây dày
+                            const flashVal = Math.pow(0.5 + 0.5 * Math.sin(elapsed * em.flashSpeed + em.phase), 8.0);
+                            const sc = em.baseScale * (0.6 + flashVal * 1.2);
                             em.sprite.scale.set(sc, sc, 1);
-                            em.sprite.material.opacity = flashVal * 0.95;
+                            em.sprite.material.opacity = flashVal * 0.75;
                         }
-                    }
-
-                    // 4. CẬP NHẬT CÁC ĐIỂM NĂNG LƯỢNG QUỸ ĐẠO KÈM VỆT SÁNG (Orbital Nodes with Light Trails)
-                    for (let i = 0; i < orbitalEnergyNodes.length; i++) {
-                        const n = orbitalEnergyNodes[i];
-                        const tRel = elapsed * n.speed + n.phase;
-                        // Gia tốc phi tuyến tính (tăng tốc khi đi qua mặt trước năng lượng và giảm tốc khi ra sau)
-                        const harmonicAccel = n.eccentricity * Math.sin(tRel);
-                        const angle = tRel + harmonicAccel;
-                        const r = n.radius;
-
-                        // Cập nhật đầu hạt sáng
-                        n.head.position.set(Math.cos(angle) * r, Math.sin(angle) * r, 0.05);
-                        const velFactor = 1.0 + Math.abs(harmonicAccel) * 0.35;
-                        n.head.scale.set(1.3 * velFactor, 1.3 * velFactor, 1);
-
-                        // Cập nhật vệt sáng phía sau (Trail 1 & Trail 2)
-                        const trailAngle1 = angle - 0.07 * Math.sign(n.speed);
-                        n.trail1.position.set(Math.cos(trailAngle1) * r, Math.sin(trailAngle1) * r, 0.03);
-
-                        const trailAngle2 = angle - 0.14 * Math.sign(n.speed);
-                        n.trail2.position.set(Math.cos(trailAngle2) * r, Math.sin(trailAngle2) * r, 0.01);
                     }
 
                     // 5. HIỆU ỨNG ÁNH SÁNG & QUANG HỌC LIÊN KẾT LÕI
