@@ -2226,37 +2226,37 @@
                     rx: 7.2, ry: 6.8, rz: 0.35,
                     rotX: 0.48, rotY: 0.24, rotZ: 0.12,
                     tubeR: 0.055,
-                    color: 0x38bdf8, emissive: 0x0284c7, opacity: 0.75,
-                    rotSpeedZ: 0.0022, rotSpeedY: 0.0010,
-                    electronSpeed: 0.55, electronColor: 0xe0f2fe, electronSize: 0.32,
+                    color: 0x38bdf8, emissive: 0x0284c7, opacity: 0.78,
+                    rotSpeedX: 0.007, rotSpeedY: 0.012, rotSpeedZ: 0.009,
+                    electronSpeed: 0.48, electronColor: 0xe0f2fe, electronSize: 0.32,
                     dualElectrons: false
                 },
                 {
-                    rx: 8.8, ry: 9.2, rz: 0.45,
+                    rx: 9.0, ry: 8.6, rz: 0.45,
                     rotX: -0.65, rotY: 0.52, rotZ: 0.32,
                     tubeR: 0.048,
-                    color: 0x0ea5e9, emissive: 0x0369a1, opacity: 0.68,
-                    rotSpeedZ: -0.0018, rotSpeedY: 0.0008,
-                    electronSpeed: -0.42, electronColor: 0xbae6fd, electronSize: 0.28,
-                    dualElectrons: true // 2 hạt electron đối xứng trên quỹ đạo này
+                    color: 0x0ea5e9, emissive: 0x0369a1, opacity: 0.70,
+                    rotSpeedX: -0.008, rotSpeedY: -0.010, rotSpeedZ: 0.007,
+                    electronSpeed: -0.38, electronColor: 0xbae6fd, electronSize: 0.28,
+                    dualElectrons: true // 2 hạt electron đối xứng
                 },
                 {
-                    rx: 10.6, ry: 10.2, rz: 0.55,
+                    rx: 10.8, ry: 10.4, rz: 0.55,
                     rotX: 0.85, rotY: -0.38, rotZ: -0.45,
                     tubeR: 0.042,
-                    color: 0x60a5fa, emissive: 0x1d4ed8, opacity: 0.60,
-                    rotSpeedZ: 0.0015, rotSpeedY: -0.0007,
-                    electronSpeed: 0.34, electronColor: 0x7dd3fc, electronSize: 0.26,
+                    color: 0x60a5fa, emissive: 0x1d4ed8, opacity: 0.62,
+                    rotSpeedX: 0.005, rotSpeedY: 0.008, rotSpeedZ: -0.006,
+                    electronSpeed: 0.32, electronColor: 0x7dd3fc, electronSize: 0.26,
                     dualElectrons: false
                 },
                 {
-                    rx: 12.4, ry: 12.8, rz: 0.60,
+                    rx: 12.6, ry: 12.2, rz: 0.60,
                     rotX: -0.38, rotY: -0.72, rotZ: 0.65,
                     tubeR: 0.035,
-                    color: 0x93c5fd, emissive: 0x0284c7, opacity: 0.50,
-                    rotSpeedZ: -0.0011, rotSpeedY: -0.0005,
-                    electronSpeed: -0.26, electronColor: 0xa5f3fc, electronSize: 0.24,
-                    dualElectrons: false
+                    color: 0x93c5fd, emissive: 0x0284c7, opacity: 0.52,
+                    rotSpeedX: -0.004, rotSpeedY: 0.006, rotSpeedZ: 0.005,
+                    electronSpeed: -0.24, electronColor: 0xa5f3fc, electronSize: 0.24,
+                    dualElectrons: true // 2 hạt electron đối xứng
                 }
             ];
 
@@ -2436,7 +2436,7 @@
                 const elapsed = totalActiveTime;
 
                 // 1. Nhịp năng lượng Pulse nhẹ tự nhiên cho lõi cầu
-                const corePulse = 1.0 + Math.sin(elapsed * 1.5) * 0.045;
+                const corePulse = 1.0 + Math.sin(elapsed * 1.6) * 0.045;
 
                 if (!isWarping) {
                     // Cập nhật shader thời gian và nhịp năng lượng quả cầu
@@ -2447,18 +2447,20 @@
                     }
 
                     // Quả cầu và lồng Geodesic xoay nhẹ nhàng êm dịu
-                    innerEnergySphere.rotation.y = elapsed * 0.06;
+                    innerEnergySphere.rotation.y = elapsed * 0.10;
                     innerEnergySphere.scale.set(corePulse, corePulse, corePulse);
 
-                    innerIcoCage.rotation.y -= 0.0014 * dt * 60;
-                    innerIcoCage.rotation.z += 0.0008 * dt * 60;
+                    innerIcoCage.rotation.y -= 0.0020 * dt * 60;
+                    innerIcoCage.rotation.z += 0.0012 * dt * 60;
 
-                    outerLatticeMesh.rotation.y += 0.0006 * dt * 60;
-                    outerPointsMesh.rotation.y += 0.0006 * dt * 60;
+                    outerLatticeMesh.rotation.y += 0.0010 * dt * 60;
+                    outerLatticeMesh.rotation.x -= 0.0006 * dt * 60;
+                    outerPointsMesh.rotation.y += 0.0010 * dt * 60;
+                    outerPointsMesh.rotation.x -= 0.0006 * dt * 60;
 
                     // Hào quang phía sau nhịp thở nhẹ nhàng
                     if (backGlowMesh) {
-                        const glowSc = 15.0 + Math.sin(elapsed * 1.5) * 1.8;
+                        const glowSc = 15.0 + Math.sin(elapsed * 1.6) * 1.8;
                         backGlowMesh.scale.set(glowSc, glowSc, 1);
                     }
 
@@ -2475,22 +2477,30 @@
                     }
                     coreSparkPoints.geometry.attributes.position.needsUpdate = true;
 
-                    // Cập nhật 4 hệ thống quỹ đạo 3D: xoay độc lập và di chuyển các hạt electron
+                    // Cập nhật 4 hệ thống quỹ đạo 3D: xoay đa trục độc lập, dao động độ sâu & di chuyển các hạt electron
                     for (let i = 0; i < orbitalSystems.length; i++) {
                         const orb = orbitalSystems[i];
-                        orb.group.rotation.z += orb.cfg.rotSpeedZ * dt * 60;
+                        // 1. Khôi phục chuyển động xoay 3D đa trục rõ ràng (X, Y, Z) với tốc độ mềm mại, tự nhiên
+                        orb.group.rotation.x += orb.cfg.rotSpeedX * dt * 60;
                         orb.group.rotation.y += orb.cfg.rotSpeedY * dt * 60;
+                        orb.group.rotation.z += orb.cfg.rotSpeedZ * dt * 60;
 
-                        // Chạy các hạt electron và đuôi ánh sáng dọc theo đường cong 3D
+                        // 2. Dao động nhẹ độ sâu không gian và thay đổi nhịp phát quang
+                        orb.group.position.z = Math.sin(elapsed * 1.5 + i * 1.4) * 0.35;
+                        if (orb.mat) {
+                            orb.mat.emissiveIntensity = 0.85 + 0.30 * Math.sin(elapsed * 2.2 + i * 1.6);
+                        }
+
+                        // 3. Chạy các hạt electron và đuôi ánh sáng dọc theo đường cong 3D (tốc độ rõ ràng, mượt mà)
                         for (let e = 0; e < orb.electrons.length; e++) {
                             const elec = orb.electrons[e];
-                            const progress = ((elapsed * orb.cfg.electronSpeed * 0.25 + elec.offsetProgress) % 1.0 + 1.0) % 1.0;
+                            const progress = ((elapsed * orb.cfg.electronSpeed + elec.offsetProgress) % 1.0 + 1.0) % 1.0;
                             const headPos = orb.curve.getPointAt(progress);
                             elec.head.position.copy(headPos);
 
                             // Đuôi ánh sáng trôi ngay sau đầu electron
                             for (let t = 0; t < elec.trailMeshes.length; t++) {
-                                const trailProgress = ((progress - (t + 1) * 0.018 * Math.sign(orb.cfg.electronSpeed)) % 1.0 + 1.0) % 1.0;
+                                const trailProgress = ((progress - (t + 1) * 0.022 * Math.sign(orb.cfg.electronSpeed)) % 1.0 + 1.0) % 1.0;
                                 const trPos = orb.curve.getPointAt(trailProgress);
                                 elec.trailMeshes[t].position.copy(trPos);
                             }
@@ -2502,8 +2512,10 @@
                     spaceDustPoints.rotation.x += 0.00008 * dt * 60;
                     haloEnergyPoints.rotation.y -= 0.0010 * dt * 60;
 
-                    // Trọng tâm bồng bềnh nhẹ nhàng
-                    techCoreGroup.position.y = Math.sin(elapsed * 0.75) * 0.22;
+                    // Trọng tâm bồng bềnh và cụm lõi xoay nhẹ tự nhiên tạo chiều sâu không gian sống
+                    techCoreGroup.rotation.y += 0.0012 * dt * 60;
+                    techCoreGroup.rotation.x += 0.0006 * dt * 60;
+                    techCoreGroup.position.y = Math.sin(elapsed * 0.85) * 0.22;
 
                     // Phản hồi con trỏ chuột mượt mà (smooth parallax)
                     currentCamX += (targetCamX - currentCamX) * 0.035;
@@ -2514,11 +2526,11 @@
                     camera.lookAt(0, 0, 0);
 
                 } else {
-                    // ── 5. THIẾT KẾ LẠI HIỆU ỨNG CHUYỂN CẢNH – CINEMATIC LIGHT FLASH (1.5s - 2.5s) ──
+                    // ── HIỆU ỨNG CHUYỂN HƯỚNG VÀO CV: QUỸ ĐẠO VẪN TIẾP TỤC XOAY + LÓE SÁNG TÂM ĐIỂM + CV FADE-IN ──
                     const timeInWarp = now - warpStartTime;
 
-                    if (timeInWarp < 450) {
-                        // ── GIAI ĐOẠN 1: TÍCH TỤ ÁNH SÁNG & HỘI TỤ NĂNG LƯỢNG (0 -> 450ms) ──
+                    if (timeInWarp < 400) {
+                        // ── GIAI ĐOẠN 1: QUỸ ĐẠO TIẾP TỤC XOAY VÀ TĂNG TỐC NHẸ + TÍCH TỤ ÁNH SÁNG TÂM (0 -> 400ms) ──
                         if (warpPhase !== 1) {
                             warpPhase = 1;
                             if (cinematicOverlay) {
@@ -2530,42 +2542,43 @@
                             }
                         }
 
-                        const p1 = Math.min(1.0, timeInWarp / 450.0);
+                        const p1 = Math.min(1.0, timeInWarp / 400.0);
                         const ease1 = p1 * p1; // quadratic ease in
 
-                        // Quỹ đạo tăng tốc xoay và co nhẹ về tâm (Convergence)
-                        const contractScale = baseFrameScale * (1.0 - ease1 * 0.16);
-                        techCoreGroup.scale.set(contractScale, contractScale, contractScale);
-
+                        // CÁC QUỸ ĐẠO VẪN TIẾP TỤC XOAY VÀ TĂNG TỐC NHẸ (KHÔNG HỀ BỊ DỪNG LẠI)
                         for (let orb of orbitalSystems) {
-                            orb.group.rotation.z += orb.cfg.rotSpeedZ * (1.0 + ease1 * 3.5) * dt * 60;
-                            orb.group.rotation.y += orb.cfg.rotSpeedY * (1.0 + ease1 * 3.0) * dt * 60;
-                            if (orb.mat) orb.mat.emissiveIntensity = 0.85 + ease1 * 1.8;
+                            orb.group.rotation.x += orb.cfg.rotSpeedX * (1.0 + ease1 * 1.5) * dt * 60;
+                            orb.group.rotation.y += orb.cfg.rotSpeedY * (1.0 + ease1 * 1.5) * dt * 60;
+                            orb.group.rotation.z += orb.cfg.rotSpeedZ * (1.0 + ease1 * 1.5) * dt * 60;
+                            if (orb.mat) orb.mat.emissiveIntensity = 0.85 + ease1 * 1.6;
 
-                            // Electron di chuyển nhanh dần theo nhịp hội tụ
                             for (let elec of orb.electrons) {
-                                const prog = ((elapsed * orb.cfg.electronSpeed * (1.0 + ease1 * 3.0) * 0.25 + elec.offsetProgress) % 1.0 + 1.0) % 1.0;
+                                const prog = ((elapsed * orb.cfg.electronSpeed * (1.0 + ease1 * 1.8) + elec.offsetProgress) % 1.0 + 1.0) % 1.0;
                                 elec.head.position.copy(orb.curve.getPointAt(prog));
+                                for (let t = 0; t < elec.trailMeshes.length; t++) {
+                                    const trProg = ((prog - (t + 1) * 0.022 * Math.sign(orb.cfg.electronSpeed)) % 1.0 + 1.0) % 1.0;
+                                    elec.trailMeshes[t].position.copy(orb.curve.getPointAt(trProg));
+                                }
                             }
                         }
 
-                        // Lõi năng lượng tăng cường độ phát quang Electric Blue
+                        // Nhịp lóe sáng năng lượng ngắn, tập trung quanh lõi trung tâm
                         if (orbMaterial && orbMaterial.uniforms) {
-                            orbMaterial.uniforms.uIntensity.value = 1.0 + ease1 * 2.8;
-                            orbMaterial.uniforms.uTime.value += dt * (1.0 + ease1 * 2.5);
+                            orbMaterial.uniforms.uIntensity.value = 1.0 + ease1 * 2.5;
+                            orbMaterial.uniforms.uTime.value += dt * (1.0 + ease1 * 2.0);
                         }
-                        if (coreLight) coreLight.intensity = 3.8 + ease1 * 8.0;
+                        if (coreLight) coreLight.intensity = 3.8 + ease1 * 7.5;
 
-                        // Camera tiến nhẹ về tâm để tăng độ tập trung
+                        // Camera trôi nhẹ về phía tâm tăng sự tập trung
                         currentCamX += (0 - currentCamX) * 0.08;
                         currentCamY += (0 - currentCamY) * 0.08;
                         camera.position.x = currentCamX;
                         camera.position.y = currentCamY;
-                        camera.position.z = 24.0 - ease1 * 1.5;
+                        camera.position.z = 24.0 - ease1 * 1.2;
                         camera.lookAt(0, 0, 0);
 
-                    } else if (timeInWarp < 950) {
-                        // ── GIAI ĐOẠN 2: FLASH TRANSITION – LÓE SÁNG TỎA TRÒN RADIAL BLOOM (450ms -> 950ms) ──
+                    } else if (timeInWarp < 850) {
+                        // ── GIAI ĐOẠN 2: LÓE SÁNG TÂM ĐIỂM NGẮN & QUỸ ĐẠO TIẾP TỤC VẬN HÀNH HÒA TAN MỀM (400ms -> 850ms) ──
                         if (warpPhase !== 2) {
                             warpPhase = 2;
                             if (cinematicOverlay) {
@@ -2577,23 +2590,39 @@
                             }
                         }
 
-                        const p2 = Math.min(1.0, (timeInWarp - 450.0) / 500.0);
-                        const easeBlast = p2 * p2 * (3.0 - 2.0 * p2); // smoothstep
+                        const p2 = Math.min(1.0, (timeInWarp - 400.0) / 450.0);
+                        const easeBlast = p2 * p2 * (3.0 - 2.0 * p2);
 
-                        // Ánh sáng lõi đạt đỉnh lóe sáng tinh tế rồi lan tỏa mềm mại
-                        if (orbMaterial && orbMaterial.uniforms) {
-                            orbMaterial.uniforms.uIntensity.value = 3.8 + (1.0 - easeBlast) * 1.2;
-                            orbMaterial.uniforms.uTime.value += dt * 3.0;
+                        // CÁC QUỸ ĐẠO VẪN TIẾP TỤC CHUYỂN ĐỘNG TRONG GIAI ĐOẠN FLASH VÀ MỜ DẦN MỀM MẠI
+                        for (let orb of orbitalSystems) {
+                            orb.group.rotation.x += orb.cfg.rotSpeedX * 2.2 * dt * 60;
+                            orb.group.rotation.y += orb.cfg.rotSpeedY * 2.2 * dt * 60;
+                            orb.group.rotation.z += orb.cfg.rotSpeedZ * 2.2 * dt * 60;
+                            if (orb.mat) {
+                                orb.mat.opacity = orb.cfg.opacity * Math.max(0.0, 1.0 - easeBlast);
+                                orb.mat.emissiveIntensity = 2.4 * Math.max(0.0, 1.0 - easeBlast);
+                            }
+                            for (let elec of orb.electrons) {
+                                const prog = ((elapsed * orb.cfg.electronSpeed * 2.2 + elec.offsetProgress) % 1.0 + 1.0) % 1.0;
+                                elec.head.position.copy(orb.curve.getPointAt(prog));
+                                if (elec.head.material) elec.head.material.opacity = Math.max(0.0, 1.0 - easeBlast);
+                                for (let t = 0; t < elec.trailMeshes.length; t++) {
+                                    const trProg = ((prog - (t + 1) * 0.022 * Math.sign(orb.cfg.electronSpeed)) % 1.0 + 1.0) % 1.0;
+                                    elec.trailMeshes[t].position.copy(orb.curve.getPointAt(trProg));
+                                    if (elec.trailMeshes[t].material) elec.trailMeshes[t].material.opacity = Math.max(0.0, 1.0 - easeBlast);
+                                }
+                            }
                         }
-                        if (coreLight) coreLight.intensity = 11.8 + (1.0 - easeBlast) * 6.0;
 
-                        // Cụm 3D mở rộng nhẹ nhàng vào quầng sáng
-                        const expandScale = baseFrameScale * (0.84 + easeBlast * 0.65);
-                        techCoreGroup.scale.set(expandScale, expandScale, expandScale);
-                        camera.position.z = 22.5 - easeBlast * 2.5;
+                        // Nhịp lóe sáng năng lượng tại tâm đạt đỉnh ngắn rồi dịu đi
+                        if (orbMaterial && orbMaterial.uniforms) {
+                            orbMaterial.uniforms.uIntensity.value = 3.5 * Math.max(0.0, 1.0 - easeBlast * 0.7);
+                            orbMaterial.uniforms.uTime.value += dt * 2.5;
+                        }
+                        if (coreLight) coreLight.intensity = 11.3 * Math.max(0.0, 1.0 - easeBlast * 0.7);
 
-                    } else if (timeInWarp < 2000) {
-                        // ── GIAI ĐOẠN 3: CV XUẤT HIỆN SẮC NÉT & ÁNH SÁNG TẢN DẦN (950ms -> 2000ms) ──
+                    } else if (timeInWarp < 1800) {
+                        // ── GIAI ĐOẠN 3: CV XUẤT HIỆN FADE-IN KẾT HỢP SCALE NHẸ (850ms -> 1800ms) ──
                         if (warpPhase !== 3) {
                             warpPhase = 3;
                             if (welcomeScreen) {
@@ -2608,13 +2637,13 @@
                         }
 
                         // Hé lộ các card CV theo thứ tự so le mềm mại
-                        if (timeInWarp >= 1050 && !cvStaggerTriggered) {
+                        if (timeInWarp >= 950 && !cvStaggerTriggered) {
                             cvStaggerTriggered = true;
                             triggerCvStaggerReveal();
                         }
 
                     } else {
-                        // ── HOÀN TẤT CHUYỂN CẢNH KHI >= 2000ms: GIẢI PHÓNG 100% TÀI NGUYÊN THREE.JS ──
+                        // ── HOÀN TẤT CHUYỂN CẢNH KHI >= 1800ms: GIẢI PHÓNG TOÀN BỘ THREE.JS ──
                         completeIntroTransition();
                         resetScrollToTop();
                         if (!mascotGreeted) {
