@@ -76,7 +76,7 @@
             radial-gradient(circle at 50% 50%, rgba(0, 229, 255, 0.12) 0%, transparent 50%);
         overflow: hidden;
         cursor: pointer;
-        transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: opacity 1.1s cubic-bezier(0.16, 1, 0.3, 1), visibility 1.1s cubic-bezier(0.16, 1, 0.3, 1), transform 1.1s cubic-bezier(0.16, 1, 0.3, 1);
         will-change: opacity, transform;
         contain: strict;
     }
@@ -90,20 +90,20 @@
         display: none !important;
     }
     .welcome-screen-3d.energy-buildup #welcome3dCard {
-        transform: perspective(1000px) scale(0.96) translateZ(0);
-        filter: brightness(1.3);
-        transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), filter 0.55s ease;
+        transform: perspective(1000px) scale(0.95) translateZ(0);
+        filter: brightness(1.35) drop-shadow(0 0 25px rgba(0, 229, 255, 0.75));
+        transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s ease;
     }
     .welcome-screen-3d.warping #welcome3dCard {
-        transform: perspective(1000px) scale(2.8) translateY(-10px) translateZ(0);
+        transform: perspective(1000px) scale(3.5) translateY(-8px) translateZ(0);
         opacity: 0;
-        filter: brightness(2.2);
-        transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.7s ease, filter 0.75s ease;
-        will-change: transform, opacity;
+        filter: brightness(2.2) blur(6px) drop-shadow(0 0 45px rgba(0, 229, 255, 1.0));
+        transition: transform 1.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.3s cubic-bezier(0.16, 1, 0.3, 1), filter 1.3s ease;
+        will-change: transform, opacity, filter;
     }
     .welcome-screen-3d.hidden {
         opacity: 0; visibility: hidden; pointer-events: none;
-        transform: scale(1.08) translateZ(0);
+        transform: scale(1.05) translateZ(0);
     }
     #threeWelcomeCanvas {
         position: absolute; inset: 0; width: 100%; height: 100%;
@@ -186,143 +186,139 @@
         pointer-events: none; opacity: 0;
         display: flex; align-items: center; justify-content: center;
         overflow: hidden;
-        transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1);
         will-change: opacity;
         contain: strict;
         transform: translateZ(0);
     }
     .cinematic-transition-overlay.stage-buildup {
-        opacity: 0.55;
+        opacity: 0.45;
     }
     .cinematic-transition-overlay.stage-bloom {
-        opacity: 1;
-        transition: opacity 0.5s ease-out;
+        opacity: 0.96;
+        transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .cinematic-transition-overlay.stage-dissolve {
         opacity: 0;
-        transition: opacity 0.95s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: opacity 1.15s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .cinematic-core-flare {
         position: absolute;
-        width: 420px; height: 420px;
+        width: 440px; height: 440px;
         border-radius: 50%;
-        background: radial-gradient(circle, #ffffff 0%, rgba(255, 255, 255, 0.98) 8%, rgba(191, 255, 255, 0.92) 20%, rgba(0, 191, 255, 0.75) 40%, rgba(0, 123, 255, 0.35) 60%, rgba(3, 8, 20, 0.1) 75%, transparent 85%);
+        background: radial-gradient(circle, #ffffff 0%, rgba(255, 255, 255, 0.96) 10%, rgba(191, 255, 255, 0.90) 22%, rgba(0, 210, 255, 0.70) 42%, rgba(0, 100, 255, 0.30) 65%, transparent 80%);
         transform: scale(0.3) translateZ(0);
         opacity: 0;
         will-change: transform, opacity;
-        transition: transform 1.1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.55s ease;
+        transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.7s ease;
     }
     .cinematic-transition-overlay.stage-buildup .cinematic-core-flare {
-        opacity: 0.75;
-        transform: scale(0.75) translateZ(0);
+        opacity: 0.7;
+        transform: scale(0.8) translateZ(0);
     }
     .cinematic-transition-overlay.stage-bloom .cinematic-core-flare {
         opacity: 1;
-        transform: scale(3.5) translateZ(0);
+        transform: scale(4.2) translateZ(0);
     }
     .cinematic-transition-overlay.stage-dissolve .cinematic-core-flare {
         opacity: 0;
-        transform: scale(4.8) translateZ(0);
-        transition: transform 1.0s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.85s ease;
+        transform: scale(5.5) translateZ(0);
+        transition: transform 1.1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.95s ease;
     }
     .cinematic-bloom-corona {
         position: absolute;
         width: 100vmax; height: 100vmax;
         border-radius: 50%;
-        background: radial-gradient(circle, rgba(0, 191, 255, 0.60) 0%, rgba(0, 229, 255, 0.40) 28%, rgba(0, 123, 255, 0.18) 52%, transparent 72%);
+        background: radial-gradient(circle, rgba(0, 225, 255, 0.65) 0%, rgba(0, 140, 255, 0.45) 30%, rgba(0, 45, 180, 0.22) 55%, transparent 75%);
         transform: scale(0.2) translateZ(0);
         opacity: 0;
         will-change: transform, opacity;
-        transition: transform 1.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.65s ease;
+        transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
     }
     .cinematic-transition-overlay.stage-buildup .cinematic-bloom-corona {
-        opacity: 0.4;
-        transform: scale(0.5) translateZ(0);
+        opacity: 0.35;
+        transform: scale(0.55) translateZ(0);
     }
     .cinematic-transition-overlay.stage-bloom .cinematic-bloom-corona {
         opacity: 0.95;
-        transform: scale(1.35) translateZ(0);
+        transform: scale(1.6) translateZ(0);
     }
     .cinematic-transition-overlay.stage-dissolve .cinematic-bloom-corona {
         opacity: 0;
-        transform: scale(1.8) translateZ(0);
-        transition: transform 1.0s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.85s ease;
+        transform: scale(2.2) translateZ(0);
+        transition: transform 1.1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.95s ease;
     }
     .cinematic-anamorphic-streak {
-        position: absolute;
-        width: 220%; height: 2px;
-        background: linear-gradient(90deg, transparent 0%, rgba(0, 191, 255, 0.4) 20%, rgba(255, 255, 255, 0.98) 50%, rgba(0, 191, 255, 0.4) 80%, transparent 100%);
-        box-shadow: 0 0 18px 5px rgba(0, 229, 255, 0.85), 0 0 40px 10px rgba(0, 123, 255, 0.45);
-        transform: scaleX(0.1) rotate(-8deg) translateZ(0);
-        opacity: 0;
-        will-change: transform, opacity;
-        transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.65s ease;
-    }
-    .cinematic-transition-overlay.stage-buildup .cinematic-anamorphic-streak {
-        opacity: 0.6;
-        transform: scaleX(0.5) rotate(-6deg) translateZ(0);
-    }
-    .cinematic-transition-overlay.stage-bloom .cinematic-anamorphic-streak {
-        opacity: 1;
-        transform: scaleX(1.4) rotate(0deg) translateZ(0);
-    }
-    .cinematic-transition-overlay.stage-dissolve .cinematic-anamorphic-streak {
-        opacity: 0;
-        transform: scaleX(1.7) rotate(6deg) translateZ(0);
-        transition: transform 1.0s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.85s ease;
+        display: none !important; /* Loại bỏ hoàn toàn vệt sáng ngang theo yêu cầu thẩm mỹ */
     }
     .cinematic-radial-rays {
         position: absolute;
         width: 100vmax; height: 100vmax;
         border-radius: 50%;
         background: repeating-conic-gradient(from 0deg,
-            rgba(56, 189, 248, 0.22) 0deg 6deg,
-            rgba(56, 189, 248, 0.05) 10deg,
-            transparent 14deg 22deg,
-            rgba(125, 211, 252, 0.26) 26deg 32deg,
-            transparent 36deg 48deg
+            rgba(56, 189, 248, 0.18) 0deg 8deg,
+            rgba(56, 189, 248, 0.04) 14deg,
+            transparent 18deg 30deg,
+            rgba(125, 211, 252, 0.20) 34deg 42deg,
+            transparent 48deg 60deg
         );
-        -webkit-mask-image: radial-gradient(circle at center, black 16%, transparent 70%);
-        mask-image: radial-gradient(circle at center, black 16%, transparent 70%);
+        -webkit-mask-image: radial-gradient(circle at center, black 15%, transparent 72%);
+        mask-image: radial-gradient(circle at center, black 15%, transparent 72%);
         opacity: 0;
         transform: scale(0.35) rotate(0deg) translateZ(0);
         will-change: transform, opacity;
-        transition: transform 1.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.65s ease;
+        transition: transform 1.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
     }
     .cinematic-transition-overlay.stage-buildup .cinematic-radial-rays {
-        opacity: 0.65;
+        opacity: 0.5;
         transform: scale(0.7) rotate(22deg) translateZ(0);
     }
     .cinematic-transition-overlay.stage-bloom .cinematic-radial-rays {
-        opacity: 1;
-        transform: scale(1.65) rotate(60deg) translateZ(0);
+        opacity: 0.85;
+        transform: scale(1.8) rotate(75deg) translateZ(0);
     }
     .cinematic-transition-overlay.stage-dissolve .cinematic-radial-rays {
         opacity: 0;
-        transform: scale(2.4) rotate(90deg) translateZ(0);
-        transition: transform 1.0s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.85s ease;
+        transform: scale(2.6) rotate(110deg) translateZ(0);
+        transition: transform 1.1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.95s ease;
     }
     .cinematic-ambient-wash {
         position: absolute; inset: 0;
-        background: radial-gradient(circle at center, rgba(224, 242, 254, 0.95) 0%, rgba(56, 189, 248, 0.78) 32%, rgba(14, 116, 144, 0.58) 60%, rgba(6, 9, 19, 0.95) 100%);
+        background: radial-gradient(circle at center, rgba(220, 245, 255, 0.95) 0%, rgba(0, 195, 255, 0.82) 28%, rgba(0, 75, 220, 0.60) 58%, rgba(1, 8, 31, 0.95) 100%);
         opacity: 0;
         transform: translateZ(0);
         will-change: opacity;
-        transition: opacity 0.75s ease;
+        transition: opacity 0.85s ease;
     }
     .cinematic-transition-overlay.stage-bloom .cinematic-ambient-wash {
         opacity: 0.96;
-        transition: opacity 0.45s ease-out;
+        transition: opacity 0.7s ease-out;
     }
     .cinematic-transition-overlay.stage-dissolve .cinematic-ambient-wash {
         opacity: 0;
-        transition: opacity 0.95s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: opacity 1.15s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* ── CASCADE STAGGER REVEAL CHO CV CARDS ── */
+    /* ── CASCADE STAGGER REVEAL & ZOOM CHO GIAO DIỆN CV ── */
+    body.intro-active .container {
+        opacity: 0;
+        transform: translateY(20px) scale(0.96);
+        pointer-events: none;
+    }
+    body.cv-revealing .container {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+    }
+    body.cv-settled .container {
+        opacity: 1;
+        transform: none !important;
+        transition: none !important;
+    }
+
     .cv-stagger-item {
         opacity: 0;
-        transform: translateY(30px) scale(0.985);
+        transform: translateY(28px) scale(0.975);
         filter: blur(8px);
         transition: opacity 0.95s cubic-bezier(0.16, 1, 0.3, 1),
                     transform 0.95s cubic-bezier(0.16, 1, 0.3, 1),
@@ -337,17 +333,23 @@
     .cv-stagger-item.settled {
         filter: none !important;
         transform: none !important;
+        transition: none !important;
         will-change: auto;
     }
 
     @media (prefers-reduced-motion: reduce) {
         .cinematic-core-flare,
         .cinematic-bloom-corona,
-        .cinematic-anamorphic-streak {
+        .cinematic-anamorphic-streak,
+        .cinematic-radial-rays {
             display: none !important;
         }
         .cinematic-ambient-wash {
             opacity: 0.9 !important;
+        }
+        .container {
+            transform: none !important;
+            transition: opacity 0.35s ease !important;
         }
         .cv-stagger-item {
             transform: none !important;
@@ -790,6 +792,8 @@
         gap: 22px; width: calc(100% - 60px);
         max-width: 1200px; margin: 40px auto 0;
         position: relative; z-index: 1;
+        transform: translateY(0) scale(1);
+        transition: transform 1.1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.95s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .sidebar-left {
         grid-area: sidebar; display: flex; flex-direction: column; gap: 16px;
@@ -1521,7 +1525,7 @@
     }
 </style>
 </head>
-<body>
+<body class="intro-active">
 
 <div class="bg-overlay"></div>
 <canvas id="particleCanvas"></canvas>
@@ -2246,7 +2250,7 @@
                         alpha = max(alpha, innerGlow * 0.65);
                     }
 
-                    gl_FragColor = vec4(col * (0.95 + coreBreath * 0.18), clamp(alpha * uIntensity, 0.0, 1.0));
+                    gl_FragColor = vec4(col * (0.95 + coreBreath * 0.18) * uIntensity, clamp(alpha * min(1.0, uIntensity), 0.0, 1.0));
                 }
             `;
 
@@ -2973,23 +2977,23 @@
                 const corePulse = 0.90 + 0.12 * Math.sin(elapsed * 0.75) + 0.06 * Math.cos(elapsed * 0.42);
                 const shockwaveCycle = (elapsed * 0.24) % 1.0; // Sóng xung kích tỏa tròn mỗi ~4.1 giây
 
-                // Cập nhật shader thời gian, nhịp năng lượng và sóng xung kích cho quả cầu
-                if (orbMaterial && orbMaterial.uniforms) {
-                    if (orbMaterial.uniforms.uTime) orbMaterial.uniforms.uTime.value = elapsed;
-                    if (orbMaterial.uniforms.uCoreEnergy) orbMaterial.uniforms.uCoreEnergy.value = corePulse;
-                    if (orbMaterial.uniforms.uShockwave) orbMaterial.uniforms.uShockwave.value = shockwaveCycle;
-                }
-
-                // Cập nhật nhịp năng lượng cho tất cả dải plasma cực quang
-                for (let k = 0; k < plasmaWaveMats.length; k++) {
-                    const pm = plasmaWaveMats[k];
-                    if (pm && pm.uniforms) {
-                        pm.uniforms.uTime.value = elapsed;
-                        pm.uniforms.uCoreEnergy.value = corePulse;
-                    }
-                }
-
                 if (!isWarping) {
+                    // Cập nhật shader thời gian, nhịp năng lượng và sóng xung kích cho quả cầu
+                    if (orbMaterial && orbMaterial.uniforms) {
+                        if (orbMaterial.uniforms.uTime) orbMaterial.uniforms.uTime.value = elapsed;
+                        if (orbMaterial.uniforms.uCoreEnergy) orbMaterial.uniforms.uCoreEnergy.value = corePulse;
+                        if (orbMaterial.uniforms.uShockwave) orbMaterial.uniforms.uShockwave.value = shockwaveCycle;
+                    }
+
+                    // Cập nhật nhịp năng lượng cho tất cả dải plasma cực quang
+                    for (let k = 0; k < plasmaWaveMats.length; k++) {
+                        const pm = plasmaWaveMats[k];
+                        if (pm && pm.uniforms) {
+                            pm.uniforms.uTime.value = elapsed;
+                            pm.uniforms.uCoreEnergy.value = corePulse;
+                        }
+                    }
+
                     // 2. CHUYỂN ĐỘNG QUẢ CẦU PLASMA HỮU CƠ (Organic Core Orientation)
                     if (orbMesh) {
                         orbMesh.rotation.y = elapsed * 0.08 + Math.sin(elapsed * 0.35) * 0.035;
@@ -3127,111 +3131,213 @@
                     techCoreGroup.position.y = Math.sin(elapsed * 0.55) * 0.12;
 
                 } else {
-                    // ── 9. HIỆU ỨNG CHUYỂN CẢNH ĐIỆN ẢNH CÓ TẦNG BẬC (Staggered Cinematic Warp) ──
+                    // ── 9. CƠN BÃO PLASMA VŨ TRỤ CHUYỂN CẢNH (Electric Blue Plasma Storm Transition) ──
                     const timeInWarp = now - warpStartTime;
 
                     if (warpPhase === 1) {
-                        // Giai đoạn 1: Tích tụ năng lượng với độ trễ chuyển động phân tầng (0 -> 550ms)
-                        const p1 = Math.min(1, timeInWarp / 550);
-                        const ease1 = p1 * p1;
+                        // ── GIAI ĐOẠN 1: TÍCH TỤ NĂNG LƯỢNG (0 -> 800ms) ──
+                        // Lõi năng lượng tăng sáng, các dòng plasma xoáy mạnh và tụ về tâm trước khi bùng nổ
+                        const p1 = Math.min(1.0, timeInWarp / 800.0);
+                        const ease1 = p1 * p1 * (3.0 - 2.0 * p1); // Smoothstep
 
-                        // Độ trễ tăng tốc giữa các vành đai (Staggered acceleration)
-                        const p1_ring1 = Math.min(1, Math.max(0, timeInWarp / 500));
-                        const p1_ring2 = Math.min(1, Math.max(0, (timeInWarp - 80) / 470));
-                        const p1_ring3 = Math.min(1, Math.max(0, (timeInWarp - 160) / 390));
+                        // 1. Quả cầu năng lượng tăng độ phát sáng & tốc độ dòng plasma bên trong
+                        if (orbMaterial && orbMaterial.uniforms) {
+                            if (orbMaterial.uniforms.uIntensity) orbMaterial.uniforms.uIntensity.value = 1.0 + ease1 * 2.2;
+                            if (orbMaterial.uniforms.uCoreEnergy) orbMaterial.uniforms.uCoreEnergy.value = 1.0 + ease1 * 2.2;
+                            if (orbMaterial.uniforms.uTime) orbMaterial.uniforms.uTime.value += dt * (1.0 + ease1 * 2.0);
+                        }
 
-                        const scale1 = baseFrameScale * (1.0 + ease1 * 0.40);
+                        // 2. Cụm lõi nở nhẹ thể tích với độ êm tự nhiên
+                        const scale1 = baseFrameScale * (1.0 + ease1 * 0.15);
                         techCoreGroup.scale.set(scale1, scale1, scale1);
-                        camera.position.z = 24 - ease1 * 3.5;
 
-                        // Gia tốc dải plasma hội tụ về tâm (Plasma convergence acceleration)
-                        for (let w = 0; w < plasmaWaveMeshes.length; w++) {
-                            const wm = plasmaWaveMeshes[w];
-                            if (!wm) continue;
-                            const pW = Math.min(1, Math.max(0, (timeInWarp - w * 40) / (500 - w * 30)));
-                            wm.rotation.z += (0.004 + pW * pW * 0.04) * (w % 2 === 0 ? 1 : -1);
-                            const rcW = 1.0 - pW * 0.30;
-                            wm.scale.set(rcW, rcW, rcW);
-                        }
+                        // 3. Camera giữ vị trí và căn đều về tâm
+                        currentCamX += (0 - currentCamX) * 0.06;
+                        currentCamY += (0 - currentCamY) * 0.06;
+                        camera.position.x = currentCamX;
+                        camera.position.y = currentCamY;
+                        camera.position.z = 24.0 - ease1 * 1.2;
+                        camera.lookAt(0, 0, 0);
 
-                        // Tăng độ sáng năng lượng toàn bộ dải plasma
-                        if (orbMaterial && orbMaterial.uniforms && orbMaterial.uniforms.uIntensity) {
-                            orbMaterial.uniforms.uIntensity.value = 1.0 + ease1 * 1.8;
-                        }
-                        for (let k = 0; k < plasmaWaveMats.length; k++) {
-                            if (plasmaWaveMats[k] && plasmaWaveMats[k].uniforms) plasmaWaveMats[k].uniforms.uWarpIntensity.value = 1.0 + ease1 * 1.6;
+                        // 4. Vầng hào quang khuếch tán sau quả cầu nở nhẹ
+                        if (diffuseCoreGlowMesh && diffuseCoreGlowMesh.material && diffuseCoreGlowMesh.material.uniforms) {
+                            diffuseCoreGlowMesh.material.uniforms.uCoreEnergy.value = 1.0 + ease1 * 2.2;
+                            diffuseCoreGlowMesh.material.uniforms.uWarpIntensity.value = 1.0 + ease1 * 1.2;
+                            const glowSc = 1.0 + ease1 * 0.35;
+                            diffuseCoreGlowMesh.scale.set(glowSc, glowSc, 1.0);
                         }
 
-                        if (volumetricRaysMaterial && volumetricRaysMaterial.uniforms && volumetricRaysMaterial.uniforms.uIntensity) {
-                            volumetricRaysMaterial.uniforms.uIntensity.value = 1.0 + ease1 * 3.0;
+                        // 5. Các đám mây khói năng lượng xoáy nhanh hơn và co nhẹ về tâm (Anticipation Influx)
+                        const contractScale = 1.0 - ease1 * 0.10;
+                        for (let c = 0; c < cosmicSmokeClouds.length; c++) {
+                            const sc = cosmicSmokeClouds[c];
+                            if (!sc) continue;
+                            sc.mesh.scale.set(contractScale, contractScale, contractScale);
+
+                            const dir = (c % 2 === 0 ? 1 : -1);
+                            sc.mesh.rotation.z += dir * (0.012 + ease1 * 0.045) * dt * 60;
+
+                            if (sc.mat && sc.mat.uniforms) {
+                                sc.mat.uniforms.uTime.value += dt * (1.0 + ease1 * 2.0);
+                                sc.mat.uniforms.uSpeed.value = sc.baseCfg.speed * (1.0 + ease1 * 2.2);
+                                sc.mat.uniforms.uDisplacement.value = sc.baseCfg.displacement * (1.0 + ease1 * 0.5);
+                                sc.mat.uniforms.uCoreEnergy.value = 1.0 + ease1 * 2.2;
+                                sc.mat.uniforms.uWarpIntensity.value = 1.0 + ease1 * 1.2;
+                            }
                         }
-                        if (anamorphicFlareMaterial && anamorphicFlareMaterial.uniforms && anamorphicFlareMaterial.uniforms.uIntensity) {
-                            anamorphicFlareMaterial.uniforms.uIntensity.value = 1.0 + ease1 * 3.5;
+
+                        // 6. Bụi sao và tia sáng gia tốc xoáy quanh tâm
+                        for (let m = 0; m < energyMotes.length; m++) {
+                            const em = energyMotes[m];
+                            if (!em) continue;
+                            em.theta += (em.orbitSpeed * (1.0 + ease1 * 2.8)) * dt;
+                            em.phi += em.phiSpeed * (1.0 + ease1 * 2.0) * dt;
+                            const currentR = em.radius * contractScale;
+                            em.sprite.position.set(
+                                Math.cos(em.theta) * Math.cos(em.phi) * currentR,
+                                Math.sin(em.phi) * currentR,
+                                Math.sin(em.theta) * Math.cos(em.phi) * currentR
+                            );
+                            const tw = 1.0 + 0.35 * Math.sin(now * 0.008 + em.phase);
+                            const motSc = em.baseScale * (1.0 + ease1 * 0.5) * tw;
+                            em.sprite.scale.set(motSc, motSc, 1);
+                            em.sprite.material.opacity = Math.min(1.0, 0.6 + ease1 * 0.4);
                         }
-                        if (anamorphicGlowMaterial && anamorphicGlowMaterial.uniforms && anamorphicGlowMaterial.uniforms.uIntensity) {
-                            anamorphicGlowMaterial.uniforms.uIntensity.value = 1.0 + ease1 * 3.0;
-                        }
-                        if (anamorphicFlareMesh) anamorphicFlareMesh.scale.x = 1.0 + ease1 * 0.6;
-                        if (coreLight) coreLight.intensity = 3.8 + ease1 * 8.5;
-                        if (flareLightLeft) flareLightLeft.intensity = 2.0 + ease1 * 6.0;
-                        if (flareLightRight) flareLightRight.intensity = 2.0 + ease1 * 6.0;
+
+                        // 7. Cường độ ánh sáng tăng dần
+                        if (coreLight) coreLight.intensity = 3.6 + ease1 * 8.4;
+                        if (flareLightLeft) flareLightLeft.intensity = 1.5 + ease1 * 4.5;
+                        if (flareLightRight) flareLightRight.intensity = 1.5 + ease1 * 4.5;
 
                     } else if (warpPhase === 2) {
-                        // Giai đoạn 2: Tăng tốc cực đại, camera lao xuyên tâm (550ms -> 1350ms)
-                        const p2 = Math.min(1, (timeInWarp - 550) / 800);
-                        const ease2 = p2 * p2 * (3 - 2 * p2);
-                        const accel2 = Math.pow(p2, 1.8);
+                        // ── GIAI ĐOẠN 2: BÃO PLASMA BÙNG NỔ (800ms -> 2400ms, tổng 1600ms) ──
+                        // Bão plasma quy mô lớn bùng tỏa ra toàn màn hình, mây khói cuộn xoáy 3D đa tầng,
+                        // camera bay xuyên qua tâm bão, tia điện và bụi sao bắn tỏa tốc độ cao
+                        const p2 = Math.min(1.0, (timeInWarp - 800.0) / 1600.0);
+                        const easeBlast = p2 * p2 * (3.0 - 2.0 * p2); // Cubic smoothstep
+                        const surgeCurve = Math.sin(p2 * Math.PI * 0.5); // Organic surge
 
-                        const scale2 = baseFrameScale * (1.40 + ease2 * 5.5);
-                        techCoreGroup.scale.set(scale2, scale2, scale2);
-
-                        camera.position.z = 20.5 - ease2 * 34.5;
-                        camera.fov = 60 + ease2 * 24;
+                        // 1. Camera chuyển động xuyên qua tâm bão (Fly-through: z từ 22.8 -> 3.5)
+                        currentCamX += (0 - currentCamX) * 0.10;
+                        currentCamY += (0 - currentCamY) * 0.10;
+                        camera.position.x = currentCamX;
+                        camera.position.y = currentCamY;
+                        camera.position.z = 22.8 - surgeCurve * 19.3;
+                        camera.fov = 60.0 + easeBlast * 22.0;
                         camera.updateProjectionMatrix();
+                        camera.lookAt(0, 0, 0);
 
-                        // Dải plasma co nhanh xoáy mạnh hội tụ vào singularity
-                        const plasmaContract = Math.max(0.02, 0.68 - ease2 * 0.66);
-                        for (let w = 0; w < plasmaWaveMeshes.length; w++) {
-                            const wm = plasmaWaveMeshes[w];
-                            if (!wm) continue;
-                            wm.rotation.z += (0.04 + accel2 * 0.15) * (w % 2 === 0 ? 1 : -1);
-                            wm.scale.set(plasmaContract, plasmaContract, plasmaContract);
-                        }
+                        // 2. Cụm năng lượng mở rộng quy mô lớn bao phủ không gian
+                        const stormScale = baseFrameScale * (1.15 + easeBlast * 4.2);
+                        techCoreGroup.scale.set(stormScale, stormScale, stormScale);
+                        techCoreGroup.rotation.z += 0.003 * (1.0 + easeBlast * 3.0);
 
-                        // Quả cầu năng lượng đạt đỉnh phát sáng
-                        if (orbMaterial && orbMaterial.uniforms && orbMaterial.uniforms.uIntensity) {
-                            orbMaterial.uniforms.uIntensity.value = 2.8 + ease2 * 4.0;
-                        }
-                        for (let k = 0; k < plasmaWaveMats.length; k++) {
-                            if (plasmaWaveMats[k] && plasmaWaveMats[k].uniforms) plasmaWaveMats[k].uniforms.uWarpIntensity.value = 2.6 + ease2 * 3.5;
+                        // 3. Quả cầu năng lượng đạt đỉnh phát sáng rực rỡ Electric Blue
+                        if (orbMaterial && orbMaterial.uniforms) {
+                            if (orbMaterial.uniforms.uIntensity) orbMaterial.uniforms.uIntensity.value = 3.2 + easeBlast * 3.5;
+                            if (orbMaterial.uniforms.uCoreEnergy) orbMaterial.uniforms.uCoreEnergy.value = 3.2 + easeBlast * 4.0;
+                            if (orbMaterial.uniforms.uTime) orbMaterial.uniforms.uTime.value += dt * (2.8 + easeBlast * 4.0);
                         }
 
-                        if (volumetricRaysMaterial && volumetricRaysMaterial.uniforms && volumetricRaysMaterial.uniforms.uIntensity) {
-                            volumetricRaysMaterial.uniforms.uIntensity.value = 4.0 + ease2 * 8.0;
+                        // 4. Hào quang khuếch tán lan tỏa thành màn sáng xanh sapphire & cyan
+                        if (diffuseCoreGlowMesh && diffuseCoreGlowMesh.material && diffuseCoreGlowMesh.material.uniforms) {
+                            diffuseCoreGlowMesh.material.uniforms.uCoreEnergy.value = 3.2 + easeBlast * 4.2;
+                            diffuseCoreGlowMesh.material.uniforms.uWarpIntensity.value = 2.2 + easeBlast * 2.8;
+                            const glowSc2 = 1.35 + easeBlast * 4.5;
+                            diffuseCoreGlowMesh.scale.set(glowSc2, glowSc2, 1.0);
                         }
-                        if (anamorphicFlareMaterial && anamorphicFlareMaterial.uniforms && anamorphicFlareMaterial.uniforms.uIntensity) {
-                            anamorphicFlareMaterial.uniforms.uIntensity.value = 4.5 + ease2 * 8.0;
-                        }
-                        if (anamorphicGlowMaterial && anamorphicGlowMaterial.uniforms && anamorphicGlowMaterial.uniforms.uIntensity) {
-                            anamorphicGlowMaterial.uniforms.uIntensity.value = 4.0 + ease2 * 7.0;
-                        }
-                        if (coreLight) coreLight.intensity = 12.3 + ease2 * 22.0;
-                        if (flareLightLeft) flareLightLeft.intensity = 8.0 + ease2 * 15.0;
-                        if (flareLightRight) flareLightRight.intensity = 8.0 + ease2 * 15.0;
 
-                        // Các hạt sao tầng gần và trung lao nhanh
+                        // 5. Các đám mây khói năng lượng cuộn xoáy, uốn lượn và bùng tỏa ra toàn màn hình (Scale 0.9 -> 8.7)
+                        const smokeExpansion = 0.90 + easeBlast * 7.80;
+                        for (let c = 0; c < cosmicSmokeClouds.length; c++) {
+                            const sc = cosmicSmokeClouds[c];
+                            if (!sc) continue;
+                            sc.mesh.scale.set(smokeExpansion, smokeExpansion, smokeExpansion);
+
+                            // Vận tốc xoáy bất đối xứng đa tầng 3D
+                            const dir = (c % 2 === 0 ? 1 : -1);
+                            const layerSpeed = 0.025 + (c % 3) * 0.015;
+                            sc.mesh.rotation.z += dir * (layerSpeed + easeBlast * 0.08) * dt * 60;
+                            sc.mesh.rotation.x += (c % 2 === 0 ? 0.012 : -0.012) * easeBlast * dt * 60;
+                            sc.mesh.rotation.y += (c % 3 === 0 ? 0.010 : -0.010) * easeBlast * dt * 60;
+
+                            if (sc.mat && sc.mat.uniforms) {
+                                sc.mat.uniforms.uTime.value += dt * (2.5 + easeBlast * 4.0);
+                                sc.mat.uniforms.uSpeed.value = sc.baseCfg.speed * (3.0 + easeBlast * 3.5);
+                                sc.mat.uniforms.uDisplacement.value = sc.baseCfg.displacement * (1.5 + easeBlast * 1.8);
+                                sc.mat.uniforms.uCoreEnergy.value = 3.2 + easeBlast * 4.0;
+                                sc.mat.uniforms.uShockwave.value = p2; // Sóng xung kích lan tỏa từ tâm
+                                sc.mat.uniforms.uWarpIntensity.value = 1.8 + easeBlast * 1.6;
+                            }
+                        }
+
+                        // 6. Bụi sao và tia điện bắn tỏa ra ngoài với tốc độ cao (Cosmic sparks)
+                        for (let m = 0; m < energyMotes.length; m++) {
+                            const em = energyMotes[m];
+                            if (!em) continue;
+                            em.radius += (em.driftSpeed * 8.0 + easeBlast * 38.0) * dt;
+                            em.theta += (em.orbitSpeed * 2.5 + (m % 2 === 0 ? 0.05 : -0.05)) * dt;
+                            em.sprite.position.set(
+                                Math.cos(em.theta) * Math.cos(em.phi) * em.radius,
+                                Math.sin(em.phi) * em.radius,
+                                Math.sin(em.theta) * Math.cos(em.phi) * em.radius
+                            );
+                            const motSc = em.baseScale * (1.5 + easeBlast * 3.2);
+                            em.sprite.scale.set(motSc, motSc, 1);
+                            em.sprite.material.opacity = Math.max(0.0, 1.0 - p2 * 0.45);
+                        }
+
+                        // 7. Sao nền và bụi vũ trụ lao nhanh về phía người xem
                         if (spaceNearDust) {
-                            spaceNearDust.position.z += 1.8 + accel2 * 8.0;
-                            if (spaceNearDust.position.z > 35) spaceNearDust.position.z = -20;
+                            spaceNearDust.position.z += (3.5 + easeBlast * 16.0) * dt * 60;
+                            if (spaceNearDust.position.z > 45) spaceNearDust.position.z = -25;
                         }
                         if (spaceMidStars) {
-                            spaceMidStars.position.z += 1.0 + accel2 * 4.5;
-                            if (spaceMidStars.position.z > 25) spaceMidStars.position.z = -45;
+                            spaceMidStars.position.z += (2.0 + easeBlast * 9.0) * dt * 60;
+                            if (spaceMidStars.position.z > 35) spaceMidStars.position.z = -45;
                         }
 
+                        // 8. Nguồn sáng đạt đỉnh
+                        if (coreLight) coreLight.intensity = 12.0 + easeBlast * 22.0;
+                        if (flareLightLeft) flareLightLeft.intensity = 6.0 + easeBlast * 14.0;
+                        if (flareLightRight) flareLightRight.intensity = 6.0 + easeBlast * 14.0;
+
                     } else if (warpPhase === 3) {
-                        camera.position.z -= 0.04;
-                        techCoreGroup.rotation.y += 0.002;
+                        // ── GIAI ĐOẠN 3: PHÂN TÁN MỀM & HÉ LỘ CV (2400ms -> 3600ms, tổng 1200ms) ──
+                        // Khói plasma tản dần về các cạnh màn hình và tan biến như hơi nước,
+                        // lõi năng lượng dịu dần, tạo điều kiện cho giao diện CV hiện rõ
+                        const p3 = Math.min(1.0, (timeInWarp - 2400.0) / 1200.0);
+                        const ease3 = p3 * p3 * (3.0 - 2.0 * p3);
+                        const fadeFactor = Math.max(0.0, 1.0 - ease3);
+
+                        // 1. Khói tiếp tục tản rộng ra các biên và tan biến như hơi nước
+                        const disperseScale = 8.7 + ease3 * 4.5;
+                        for (let c = 0; c < cosmicSmokeClouds.length; c++) {
+                            const sc = cosmicSmokeClouds[c];
+                            if (!sc) continue;
+                            sc.mesh.scale.set(disperseScale, disperseScale, disperseScale);
+                            const dir = (c % 2 === 0 ? 1 : -1);
+                            sc.mesh.rotation.z += dir * 0.02 * fadeFactor * dt * 60;
+
+                            if (sc.mat && sc.mat.uniforms) {
+                                sc.mat.uniforms.uOpacityBase.value = sc.baseCfg.opacity * fadeFactor;
+                                sc.mat.uniforms.uWarpIntensity.value = Math.max(0.0, 3.4 * fadeFactor);
+                            }
+                        }
+
+                        // 2. Quả cầu và ánh sáng lõi mờ dần mềm mại
+                        if (orbMaterial && orbMaterial.uniforms && orbMaterial.uniforms.uIntensity) {
+                            orbMaterial.uniforms.uIntensity.value = 6.7 * fadeFactor;
+                        }
+                        if (diffuseCoreGlowMesh && diffuseCoreGlowMesh.material && diffuseCoreGlowMesh.material.uniforms) {
+                            diffuseCoreGlowMesh.material.uniforms.uCoreEnergy.value = 7.4 * fadeFactor;
+                            diffuseCoreGlowMesh.material.uniforms.uWarpIntensity.value = 5.0 * fadeFactor;
+                        }
+
+                        // 3. Camera trôi nhẹ cực êm
+                        camera.position.z = 3.5 - ease3 * 0.5;
+                        techCoreGroup.rotation.y += 0.001 * fadeFactor;
+                        if (coreLight) coreLight.intensity = 34.0 * fadeFactor;
                     }
                 }
 
@@ -3262,13 +3368,36 @@
         warpPhase = 1;
 
         const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const totalDuration = isReducedMotion ? 750 : 2450;
-
+        
         // Bắt đầu phát nhạc ngay khi người dùng tương tác
         playTrack(currentTrackIdx);
         resetScrollToTop();
 
-        // 1. GIAI ĐOẠN 1: TÍCH TỤ NĂNG LƯỢNG, BẮT ĐẦU XOAY ĐA TRỤC & THU HẸP QUỸ ĐẠO (0 -> 550ms)
+        if (isReducedMotion) {
+            // Chuyển cảnh nhanh cho chế độ giảm chuyển động (650ms)
+            if (cinematicOverlay) {
+                cinematicOverlay.style.display = 'flex';
+                cinematicOverlay.className = 'cinematic-transition-overlay stage-bloom';
+            }
+            setTimeout(() => {
+                if (welcomeScreen) {
+                    welcomeScreen.classList.add('hidden');
+                }
+                if (cinematicOverlay) {
+                    cinematicOverlay.className = 'cinematic-transition-overlay stage-dissolve';
+                }
+                document.body.classList.remove('intro-active');
+                document.body.classList.add('cv-revealing');
+                triggerCvStaggerReveal();
+            }, 300);
+            setTimeout(() => {
+                completeIntroTransition();
+                resetScrollToTop();
+            }, 650);
+            return;
+        }
+
+        // 1. GIAI ĐOẠN 1: TÍCH TỤ NĂNG LƯỢNG (0 -> 800ms)
         if (cinematicOverlay) {
             cinematicOverlay.style.display = 'flex';
             cinematicOverlay.className = 'cinematic-transition-overlay stage-buildup';
@@ -3277,7 +3406,7 @@
             welcomeScreen.classList.add('energy-buildup');
         }
 
-        // 2. GIAI ĐOẠN 2: BÙNG NỔ TỐC ĐỘ, XOAY ĐA TRỤC CỰC ĐẠI, QUỸ ĐẠO HÚT VÀO TÂM & ZOOM TOÀN CẢNH (sau ~550ms)
+        // 2. GIAI ĐOẠN 2: BÃO PLASMA BÙNG NỔ (sau 800ms, kéo dài đến 2400ms)
         setTimeout(() => {
             warpPhase = 2;
             if (cinematicOverlay) {
@@ -3287,35 +3416,38 @@
                 welcomeScreen.classList.remove('energy-buildup');
                 welcomeScreen.classList.add('warping');
             }
-        }, isReducedMotion ? 120 : 550);
+        }, 800);
 
-        // 3. GIAI ĐOẠN 3: ĐỈNH LÓE SÁNG HOÀN HẢO & GIỮ KHOẢNH KHẮC ĐIỆN ẢNH (sau ~1350ms)
+        // 3. GIAI ĐOẠN 3: PHÂN TÁN MỀM & BẮT ĐẦU HÉ LỘ CV (sau 2400ms)
         setTimeout(() => {
             warpPhase = 3;
             if (welcomeScreen) {
                 welcomeScreen.classList.add('hidden');
             }
-            resetScrollToTop();
-        }, isReducedMotion ? 350 : 1350);
-
-        // 4. GIAI ĐOẠN 4: ÁNH SÁNG TẢN DẦN MỀM MẠI, GIAO DIỆN CV HIỆN SẮC NÉT (sau ~1650ms)
-        setTimeout(() => {
             if (cinematicOverlay) {
                 cinematicOverlay.className = 'cinematic-transition-overlay stage-dissolve';
             }
-            triggerCvStaggerReveal();
-        }, isReducedMotion ? 420 : 1650);
+            document.body.classList.remove('intro-active');
+            document.body.classList.add('cv-revealing');
+            resetScrollToTop();
+        }, 2400);
 
-        // 5. GIAI ĐOẠN 5: HOÀN TẤT, SẮC NÉT TUYỆT ĐỐI & GIẢI PHÓNG TÀI NGUYÊN (sau ~2450ms)
+        // Hé lộ so le các thẻ CV từ phía sau màn năng lượng với vi trễ tự nhiên (sau 2520ms)
+        setTimeout(() => {
+            triggerCvStaggerReveal();
+        }, 2520);
+
+        // 4. HOÀN TẤT CHUYỂN CẢNH, DỪNG THREE.JS ĐỂ TIẾT KIỆM 100% CPU/GPU (sau 3600ms)
+        const totalDuration = 3600;
         setTimeout(() => {
             completeIntroTransition();
             resetScrollToTop();
         }, totalDuration);
 
-        // Lời chào mừng linh vật sau khi CV ổn định hoàn toàn
+        // Lời chào mừng linh vật sau khi CV ổn định hoàn toàn (sau 3850ms)
         setTimeout(() => {
             showClaudeAttitude('happy', "Chào mừng bạn đã đến với CV của Tiến! Chúc bạn có trải nghiệm tuyệt vời! 🎶✨");
-        }, totalDuration + 300);
+        }, totalDuration + 250);
     }
 
     function skipToCV(immediate = false) {
@@ -3331,6 +3463,9 @@
                 cinematicOverlay.className = 'cinematic-transition-overlay';
                 cinematicOverlay.style.display = 'none';
             }
+            document.body.classList.remove('intro-active');
+            document.body.classList.remove('cv-revealing');
+            document.body.classList.add('cv-settled');
             completeIntroTransition();
             return;
         }
@@ -3348,6 +3483,8 @@
 
         setTimeout(() => {
             if (cinematicOverlay) cinematicOverlay.className = 'cinematic-transition-overlay stage-dissolve';
+            document.body.classList.remove('intro-active');
+            document.body.classList.add('cv-revealing');
             triggerCvStaggerReveal();
         }, 220);
 
@@ -3376,6 +3513,10 @@
             cinematicOverlay.className = 'cinematic-transition-overlay';
             cinematicOverlay.style.display = 'none';
         }
+        document.body.classList.remove('intro-active');
+        document.body.classList.remove('cv-revealing');
+        document.body.classList.add('cv-settled');
+
         // Khởi động particle nền của CV sau khi intro kết thúc (tránh tải trùng lặp)
         if (!particleAnimId && typeof animateParticles === 'function') {
             animateParticles();
@@ -3388,14 +3529,29 @@
     }
 
     function triggerCvStaggerReveal() {
-        const staggerCards = document.querySelectorAll('.cv-stagger-item');
-        staggerCards.forEach((card, idx) => {
+        const profileHeader = document.querySelector('.profile-header');
+        const clockCard = document.querySelector('.clock-card');
+        const quickCard = document.querySelector('.quick-card');
+        const aboutCard = document.querySelector('.about-card');
+        const projectsCard = document.querySelector('.projects-card');
+
+        const orderedSequence = [profileHeader, clockCard, quickCard, aboutCard, projectsCard].filter(Boolean);
+        orderedSequence.forEach((card, idx) => {
             setTimeout(() => {
                 card.classList.add('revealed');
                 setTimeout(() => {
                     card.classList.add('settled');
-                }, 950);
-            }, idx * 95);
+                }, 1050);
+            }, idx * 110);
+        });
+
+        document.querySelectorAll('.cv-stagger-item').forEach(card => {
+            if (!orderedSequence.includes(card)) {
+                setTimeout(() => {
+                    card.classList.add('revealed');
+                    setTimeout(() => card.classList.add('settled'), 1050);
+                }, 550);
+            }
         });
     }
 
