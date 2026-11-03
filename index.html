@@ -1974,14 +1974,15 @@
     let orbMesh, orbMaterial;
     let orbCoronaMesh, orbCoronaMaterial;
     let orbInnerMesh, orbInnerMaterial;
-    // ── Organic Cosmic Plasma & Fluid Aurora System ──
+    // ── Living Cosmic Energy System (5 Interactive Layers) ──
     let plasmaWaveMeshes = [];      // Toàn bộ các mesh cực quang, dải lụa và sợi plasma
     let plasmaWaveMats = [];        // Shader materials tương ứng
-    let fluidStreamers = [];        // Các dải cực quang lụa uốn lượn tự nhiên
-    let nebulaMistMeshes = [];      // Màn sương năng lượng khuếch tán vũ trụ
+    let fluidStreamers = [];        // Lớp 2: Các dải cực quang lớn uốn lượn tự do
+    let tendrilMeshes = [];         // Lớp 3: Các sợi plasma mảnh phân nhánh, biến đổi nhanh
+    let nebulaMistMeshes = [];      // Lớp 4: Màn sương năng lượng và sóng xung kích tỏa tròn
     let hairlineFilamentMeshes = [];// Sợi laser plasma siêu mảnh ôm trọn không gian
-    let energyMotes = [];           // Hạt năng lượng trôi từ lõi ra cực quang
-    let plasmaWaveGroup;            // Group Three.js chứa toàn bộ hiệu ứng cực quang
+    let energyMotes = [];           // Lớp 5: Bụi sao và tia điện nhỏ trôi từ lõi ra ngoài
+    let plasmaWaveGroup;            // Group Three.js chứa toàn bộ hệ thống năng lượng
     // Tương thích ngược cho chuyển cảnh
     let thickRing1 = null, thickRing2Group = null, thickRing3 = null;
     let thickRing1Mat = null, thickRing2Mat = null, thickRing3Mat = null;
@@ -2119,6 +2120,7 @@
                 uniform vec3 uColorIce;      // Pure Diamond White
                 uniform float uIntensity;
                 uniform float uCoreEnergy;
+                uniform float uShockwave;
 
                 varying vec3 vNormal;
                 varying vec3 vPosition;
@@ -2239,6 +2241,11 @@
                     col += uColorNeon * apertureFlare * 1.8 * coreBreath;
                     col += uColorIce * pow(apertureFlare, 2.5) * 1.2;
 
+                    // Sóng xung kích năng lượng tỏa ra từ viền lõi cầu (thanh thoát, không làm cháy sáng chi tiết plasma)
+                    float pulseRing = exp(-pow(centerRadius - (2.9 + uShockwave * 4.8), 2.0) / 0.06) * (1.0 - uShockwave);
+                    col += uColorNeon * pulseRing * 0.75 * coreBreath;
+                    col += uColorIce * pow(pulseRing, 2.0) * 0.45;
+
                     float alpha = mix(0.88, 1.0, rimGlow);
                     if (NdotV > 0.0) {
                         alpha = mix(0.0, alpha, faceAperture);
@@ -2261,7 +2268,8 @@
                     uColorNeon: { value: new THREE.Color(0x00e5ff) },     // Neon Cyan
                     uColorIce: { value: new THREE.Color(0xffffff) },      // Pure Diamond White
                     uIntensity: { value: 1.0 },
-                    uCoreEnergy: { value: 1.0 }
+                    uCoreEnergy: { value: 1.0 },
+                    uShockwave: { value: 0.0 }
                 },
                 transparent: true,
                 blending: THREE.NormalBlending,
@@ -2563,6 +2571,7 @@
                 uniform float uCoreEnergy;
                 uniform float uWarpIntensity;
                 uniform float uOpacityBase;
+                uniform float uShockwave;
                 uniform vec3 uColorDeep;
                 uniform vec3 uColorElectric;
                 uniform vec3 uColorNeon;
@@ -2644,13 +2653,16 @@
                     // 6. Nhịp thở năng lượng đồng bộ với lõi
                     float breath = (0.88 + 0.20 * sin(uTime * 1.5 + uFlowOffset) + 0.10 * cos(uTime * 2.4)) * uCoreEnergy;
 
-                    // 7. Phối màu Electric Blue Cosmic Aurora
+                    // 7. Sóng xung kích truyền qua dải lụa khi lõi bùng nổ
+                    float waveSurge = exp(-pow(u - uShockwave, 2.0) / 0.03) * (1.0 - uShockwave * 0.65);
+
+                    // Phối màu Electric Blue Cosmic Aurora với độ tương phản cao và chiều sâu
                     vec3 col = uColorDeep;
                     col = mix(col, uColorElectric, clamp(density * lateralFade, 0.0, 1.0));
-                    col = mix(col, uColorNeon, clamp(spine * 1.15 + density * 0.60, 0.0, 1.0));
-                    col += uColorIce * pow(spine, 3.8) * (0.88 + sparkVein * 2.4); // Sống lụa trắng rực
-                    col += uColorNeon * pow(lateralFade, 2.8) * 0.65;             // Vầng cực quang mềm rìa ngoài
-                    col += uColorIce * pow(sparkVein, 3.0) * 0.75;                // Hạt phóng điện lấp lánh
+                    col = mix(col, uColorNeon, clamp(spine * 1.05 + density * 0.55 + waveSurge * 0.5, 0.0, 1.0));
+                    col += uColorIce * pow(spine, 3.8) * (0.80 + sparkVein * 2.0 + waveSurge * 0.7); // Sống lụa trắng rực
+                    col += uColorNeon * pow(lateralFade, 2.8) * (0.55 + waveSurge * 0.3);             // Vầng cực quang mềm rìa ngoài
+                    col += uColorIce * pow(sparkVein, 3.0) * 0.65;                                    // Hạt phóng điện lấp lánh
 
                     // 8. Alpha bán trong suốt hòa quyện đa lớp
                     float alpha = (spine * 0.70 + density * 0.48 + sparkVein * 0.52) * envelope * breath * uOpacityBase * uWarpIntensity;
@@ -2694,11 +2706,214 @@
                     side: THREE.DoubleSide
                 });
 
+                mat.uniforms.uShockwave = { value: 0.0 };
                 const mesh = new THREE.Mesh(geo, mat);
                 return { mesh, mat };
             }
 
-            // ── Khởi tạo 5 dải cực quang lụa uốn lượn đa chiều bao bọc quanh lõi ──
+            // ──────────────────────────────────────────────────────────
+            // [A2] SHADER SỢI PLASMA PHÂN NHÁNH LINH HOẠT (Branching Plasma Tendrils - LAYER 3)
+            // Sợi plasma mảnh, phân nhánh, tốc độ cao, đan xen giữa các dải cực quang lớn
+            // ──────────────────────────────────────────────────────────
+            const tendrilVertShader = `
+                uniform float uTime;
+                uniform float uSpeed;
+                uniform float uFlowOffset;
+                uniform float uWarpIntensity;
+                uniform float uPhiStart;
+                uniform float uPhiSweep;
+                uniform float uRStart;
+                uniform float uRMid;
+                uniform float uREnd;
+                uniform float uTilt;
+                uniform float uYaw;
+                uniform float uMaxWidth;
+
+                varying vec2 vUv;
+                varying float vProgress;
+
+                // Compact Simplex noise
+                vec3 mod289v(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+                vec4 mod289v4(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+                vec4 perm4(vec4 x) { return mod289v4(((x*34.0)+1.0)*x); }
+                vec4 tInvSq(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+                float snoise3(vec3 v) {
+                    const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+                    const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+                    vec3 i = floor(v + dot(v, C.yyy));
+                    vec3 x0 = v - i + dot(i, C.xxx);
+                    vec3 g = step(x0.yzx, x0.xyz);
+                    vec3 l = 1.0 - g;
+                    vec3 i1 = min(g, l.zxy); vec3 i2 = max(g, l.zxy);
+                    vec3 x1 = x0 - i1 + C.xxx; vec3 x2 = x0 - i2 + C.yyy; vec3 x3 = x0 - D.yyy;
+                    i = mod289v(i);
+                    vec4 p = perm4(perm4(perm4(i.z+vec4(0.,i1.z,i2.z,1.))+i.y+vec4(0.,i1.y,i2.y,1.))+i.x+vec4(0.,i1.x,i2.x,1.));
+                    float n_ = 0.142857142857; vec3 ns = n_ * D.wyz - D.xzx;
+                    vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+                    vec4 x_ = floor(j * ns.z); vec4 y_ = floor(j - 7.0 * x_);
+                    vec4 x = x_*ns.x + ns.yyyy; vec4 y = y_*ns.x + ns.yyyy;
+                    vec4 h = 1.0 - abs(x) - abs(y);
+                    vec4 b0 = vec4(x.xy, y.xy); vec4 b1 = vec4(x.zw, y.zw);
+                    vec4 s0 = floor(b0)*2.0+1.0; vec4 s1 = floor(b1)*2.0+1.0;
+                    vec4 sh = -step(h, vec4(0.0));
+                    vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy; vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+                    vec3 p0 = vec3(a0.xy,h.x); vec3 p1 = vec3(a0.zw,h.y);
+                    vec3 p2 = vec3(a1.xy,h.z); vec3 p3 = vec3(a1.zw,h.w);
+                    vec4 norm = tInvSq(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+                    p0*=norm.x; p1*=norm.y; p2*=norm.z; p3*=norm.w;
+                    vec4 m = max(0.6 - vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)), 0.0);
+                    m = m * m;
+                    return 42.0 * dot(m*m, vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
+                }
+
+                void main() {
+                    vUv = uv;
+                    float u = uv.x;
+                    float v = (uv.y - 0.5) * 2.0;
+
+                    float t = uTime * uSpeed + uFlowOffset;
+                    float phi = uPhiStart + u * uPhiSweep;
+                    float r = mix(uRStart, uREnd, u) + sin(u * 3.14159265) * (uRMid - mix(uRStart, uREnd, 0.5));
+
+                    float x0 = r * cos(phi);
+                    float y0 = r * sin(phi) * 0.90;
+                    float z0 = sin(u * 9.42 + t * 1.5) * 1.8 * sin(u * 3.14159265);
+
+                    float cosT = cos(uTilt), sinT = sin(uTilt);
+                    float cosY = cos(uYaw), sinY = sin(uYaw);
+
+                    vec3 pSpine = vec3(
+                        x0 * cosY - z0 * sinY,
+                        y0 * cosT - (x0 * sinY + z0 * cosY) * sinT,
+                        y0 * sinT + (x0 * sinY + z0 * cosY) * cosT
+                    );
+
+                    vec3 outDir = normalize(pSpine);
+                    vec3 tangentDir = vec3(-sin(phi), cos(phi) * cosT, cos(phi) * sinT);
+                    vec3 ribbonNormal = normalize(cross(tangentDir, outDir));
+                    vec3 ribbonLateral = normalize(cross(tangentDir, ribbonNormal));
+
+                    // Dao động tần số cao linh hoạt, luồn lách nhanh
+                    float twitch = snoise3(pSpine * 0.25 + vec3(t * 0.6, -t * 0.5, t * 0.4)) * 2.2 * sin(u * 3.14159265);
+                    pSpine += ribbonNormal * twitch * uWarpIntensity;
+
+                    float widthEnvelope = pow(sin(u * 3.14159265), 0.85);
+                    vec3 localPos = pSpine + ribbonLateral * (v * uMaxWidth * widthEnvelope);
+
+                    vProgress = u;
+                    vec4 worldPos = modelMatrix * vec4(localPos, 1.0);
+                    gl_Position = projectionMatrix * viewMatrix * worldPos;
+                }
+            `;
+
+            const tendrilFragShader = `
+                uniform float uTime;
+                uniform float uSpeed;
+                uniform float uFlowOffset;
+                uniform float uCoreEnergy;
+                uniform float uWarpIntensity;
+                uniform float uShockwave;
+                uniform vec3 uColorNeon;
+                uniform vec3 uColorIce;
+
+                varying vec2 vUv;
+                varying float vProgress;
+
+                float snoise3f(vec3 v) {
+                    const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+                    const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+                    vec3 i = floor(v + dot(v, C.yyy));
+                    vec3 x0 = v - i + dot(i, C.xxx);
+                    vec3 g = step(x0.yzx, x0.xyz); vec3 l = 1.0 - g;
+                    vec3 i1 = min(g, l.zxy); vec3 i2 = max(g, l.zxy);
+                    vec3 x1 = x0 - i1 + C.xxx; vec3 x2 = x0 - i2 + C.yyy; vec3 x3 = x0 - D.yyy;
+                    i = i - floor(i * (1.0 / 289.0)) * 289.0;
+                    vec4 pp = ((i.z+vec4(0.,i1.z,i2.z,1.))*34.0+1.0)*(i.z+vec4(0.,i1.z,i2.z,1.));
+                    pp = pp - floor(pp*(1.0/289.0))*289.0;
+                    pp = ((pp+i.y+vec4(0.,i1.y,i2.y,1.))*34.0+1.0)*(pp+i.y+vec4(0.,i1.y,i2.y,1.));
+                    pp = pp - floor(pp*(1.0/289.0))*289.0;
+                    pp = ((pp+i.x+vec4(0.,i1.x,i2.x,1.))*34.0+1.0)*(pp+i.x+vec4(0.,i1.x,i2.x,1.));
+                    pp = pp - floor(pp*(1.0/289.0))*289.0;
+                    float n_ = 0.142857142857; vec3 ns = n_ * D.wyz - D.xzx;
+                    vec4 j = pp - 49.0 * floor(pp * ns.z * ns.z);
+                    vec4 x_ = floor(j * ns.z); vec4 y_ = floor(j - 7.0 * x_);
+                    vec4 x = x_*ns.x + ns.yyyy; vec4 y = y_*ns.x + ns.yyyy;
+                    vec4 h = 1.0 - abs(x) - abs(y);
+                    vec4 b0 = vec4(x.xy, y.xy); vec4 b1 = vec4(x.zw, y.zw);
+                    vec4 s0 = floor(b0)*2.0+1.0; vec4 s1 = floor(b1)*2.0+1.0;
+                    vec4 sh = -step(h, vec4(0.0));
+                    vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy; vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+                    vec3 p0 = vec3(a0.xy,h.x); vec3 p1 = vec3(a0.zw,h.y);
+                    vec3 p2 = vec3(a1.xy,h.z); vec3 p3 = vec3(a1.zw,h.w);
+                    vec4 norm = 1.79284291400159 - 0.85373472095314*vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3));
+                    p0*=norm.x; p1*=norm.y; p2*=norm.z; p3*=norm.w;
+                    vec4 m = max(0.6 - vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)), 0.0);
+                    m = m*m;
+                    return 42.0 * dot(m*m, vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
+                }
+
+                void main() {
+                    float u = vUv.x;
+                    float v = (vUv.y - 0.5) * 2.0;
+                    float absV = abs(v);
+
+                    float envelope = (1.0 - smoothstep(0.15, 1.0, absV)) * pow(sin(u * 3.14159265), 0.70);
+                    if (envelope < 0.003) discard;
+
+                    float t = uTime * uSpeed + uFlowOffset;
+                    vec2 flowUv = vec2(u * 8.0 - t * 2.5, v * 2.2);
+
+                    // Các nhánh tia sét phân nhánh đa tầng
+                    float b1 = pow(clamp(1.0 - abs(snoise3f(vec3(flowUv.x, flowUv.y * 1.5, t * 0.4))), 0.0, 1.0), 5.5);
+                    float b2 = pow(clamp(1.0 - abs(snoise3f(vec3(flowUv.x * 1.6 + 2.0, flowUv.y * 2.5, -t * 0.6))), 0.0, 1.0), 6.5);
+                    float fork = b1 * 0.75 + b2 * 0.65;
+
+                    // Tia chớp ngẫu nhiên lóe lên
+                    float flash = pow(0.5 + 0.5 * sin(uTime * 7.0 + u * 15.0 + uFlowOffset), 8.0);
+                    float surge = exp(-pow(u - uShockwave, 2.0) / 0.015) * (1.0 - uShockwave);
+
+                    vec3 col = mix(uColorNeon, uColorIce, clamp(fork * 1.2 + flash * 0.5 + surge, 0.0, 1.0));
+                    float alpha = (fork * 0.85 + flash * 0.45 + surge * 0.9) * envelope * uCoreEnergy * uWarpIntensity;
+
+                    gl_FragColor = vec4(col * (1.3 + surge * 1.5) * uWarpIntensity * envelope, clamp(alpha, 0.0, 1.0));
+                }
+            `;
+
+            function createBranchingTendril(params) {
+                const segsU = isMobile ? 48 : 72;
+                const segsV = isMobile ? 8 : 12;
+                const geo = new THREE.PlaneGeometry(1.0, 1.0, segsU, segsV);
+                const mat = new THREE.ShaderMaterial({
+                    uniforms: {
+                        uTime: { value: 0 },
+                        uSpeed: { value: params.speed || 1.2 },
+                        uFlowOffset: { value: params.flowOffset || 0.0 },
+                        uPhiStart: { value: params.phiStart || 0.0 },
+                        uPhiSweep: { value: params.phiSweep || Math.PI * 1.3 },
+                        uRStart: { value: params.rStart || 8.2 },
+                        uRMid: { value: params.rMid || 13.5 },
+                        uREnd: { value: params.rEnd || 17.5 },
+                        uTilt: { value: params.tilt || 0.3 },
+                        uYaw: { value: params.yaw || 0.0 },
+                        uMaxWidth: { value: params.maxWidth || 1.6 },
+                        uCoreEnergy: { value: 1.0 },
+                        uWarpIntensity: { value: 1.0 },
+                        uShockwave: { value: 0.0 },
+                        uColorNeon: { value: new THREE.Color(params.colorNeon || 0x00e5ff) },
+                        uColorIce: { value: new THREE.Color(0xffffff) }
+                    },
+                    vertexShader: tendrilVertShader,
+                    fragmentShader: tendrilFragShader,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false,
+                    side: THREE.DoubleSide
+                });
+                const mesh = new THREE.Mesh(geo, mat);
+                return { mesh, mat };
+            }
+
+            // ── Khởi tạo 5 dải cực quang lụa uốn lượn đa chiều bao bọc quanh lõi (LAYER 2) ──
             const streamerConfigs = [
                 // Dải 1: Cực quang ngang rộng lớn ôm trọn phía trước quả cầu, kéo dài sang hai bên
                 { phiStart: -Math.PI * 0.65, phiSweep: Math.PI * 1.42, rStart: 9.0, rMid: 15.2, rEnd: 19.5,
@@ -2730,7 +2945,32 @@
                 const cfg = streamerConfigs[i];
                 const { mesh, mat } = createFluidAuroraStreamer(cfg);
                 plasmaWaveGroup.add(mesh);
-                fluidStreamers.push({ mesh, mat });
+                fluidStreamers.push({ mesh, mat, baseCfg: cfg });
+                plasmaWaveMeshes.push(mesh);
+                plasmaWaveMats.push(mat);
+            }
+
+            // ── Khởi tạo 4 sợi plasma mảnh phân nhánh, biến đổi nhanh đan xen (LAYER 3) ──
+            const tendrilConfigs = [
+                // Sợi 1: Tia điện mảnh phóng nhanh phía trước lõi
+                { phiStart: -Math.PI * 0.4, phiSweep: Math.PI * 1.5, rStart: 8.4, rMid: 12.8, rEnd: 16.5,
+                  tilt: 0.28, yaw: 0.12, maxWidth: 1.8, speed: 1.5, flowOffset: 0.5, colorNeon: 0x00e5ff },
+                // Sợi 2: Nhánh điện phân tách vút ngược lên đỉnh
+                { phiStart: Math.PI * 0.5, phiSweep: Math.PI * 1.3, rStart: 8.6, rMid: 13.5, rEnd: 17.2,
+                  tilt: 0.82, yaw: -0.35, maxWidth: 1.5, speed: -1.6, flowOffset: 2.2, colorNeon: 0x80f0ff },
+                // Sợi 3: Tia sét lượn xuống đáy quả cầu
+                { phiStart: Math.PI * 1.3, phiSweep: Math.PI * 1.4, rStart: 8.2, rMid: 12.2, rEnd: 15.8,
+                  tilt: -0.65, yaw: 0.22, maxWidth: 1.6, speed: 1.4, flowOffset: 3.8, colorNeon: 0x00e5ff },
+                // Sợi 4: Sợi tơ điện mảnh luồn lách ở hậu cảnh
+                { phiStart: -Math.PI * 0.8, phiSweep: Math.PI * 1.6, rStart: 8.8, rMid: 14.5, rEnd: 18.0,
+                  tilt: -0.18, yaw: -0.45, maxWidth: 1.4, speed: -1.3, flowOffset: 5.1, colorNeon: 0xbfffff }
+            ];
+
+            for (let t = 0; t < tendrilConfigs.length; t++) {
+                const tc = tendrilConfigs[t];
+                const { mesh, mat } = createBranchingTendril(tc);
+                plasmaWaveGroup.add(mesh);
+                tendrilMeshes.push({ mesh, mat, baseCfg: tc });
                 plasmaWaveMeshes.push(mesh);
                 plasmaWaveMats.push(mat);
             }
@@ -2753,6 +2993,7 @@
                 uniform float uTime;
                 uniform float uCoreEnergy;
                 uniform float uWarpIntensity;
+                uniform float uShockwave;
                 uniform float uTiltAngle;
                 uniform vec3 uColorDeep;
                 uniform vec3 uColorElectric;
@@ -2814,11 +3055,15 @@
                     float window = apertureProtect * outerFade;
                     if (window < 0.005) discard;
 
-                    vec3 col = mix(uColorDeep, uColorElectric, mist);
-                    col = mix(col, uColorNeon, pow(mist, 2.5) * 0.85);
+                    // Sóng xung kích lan truyền từ lõi ra ngoài vũ trụ (Radial Energy Shockwave)
+                    float shockRing = exp(-pow(r - (0.28 + uShockwave * 0.70), 2.0) / 0.012) * (1.0 - uShockwave * 0.85);
 
-                    float alpha = mist * window * 0.36 * uCoreEnergy * uWarpIntensity;
-                    gl_FragColor = vec4(col * 1.15 * uWarpIntensity * window, clamp(alpha, 0.0, 1.0));
+                    vec3 col = mix(uColorDeep, uColorElectric, mist);
+                    col = mix(col, uColorNeon, pow(mist, 2.5) * 0.85 + shockRing * 0.9);
+                    col += vec3(1.0) * shockRing * 0.8;
+
+                    float alpha = (mist * 0.36 + shockRing * 0.45) * window * uCoreEnergy * uWarpIntensity;
+                    gl_FragColor = vec4(col * (1.15 + shockRing * 1.2) * uWarpIntensity * window, clamp(alpha, 0.0, 1.0));
                 }
             `;
 
@@ -2831,6 +3076,7 @@
                         uCoreEnergy: { value: 1.0 },
                         uWarpIntensity: { value: 1.0 },
                         uTiltAngle: { value: tiltAngle },
+                        uShockwave: { value: 0.0 },
                         uColorDeep: { value: new THREE.Color(0x01081f) },
                         uColorElectric: { value: new THREE.Color(0x0055ff) },
                         uColorNeon: { value: new THREE.Color(0x00e5ff) }
@@ -2858,6 +3104,12 @@
             nebulaMistMeshes.push(mist2);
             plasmaWaveMeshes.push(mist2.mesh);
             plasmaWaveMats.push(mist2.mat);
+
+            const mist3 = createNebulaMist(1.10, -0.25, 0.45, 3.2);
+            plasmaWaveGroup.add(mist3.mesh);
+            nebulaMistMeshes.push(mist3);
+            plasmaWaveMeshes.push(mist3.mesh);
+            plasmaWaveMats.push(mist3.mat);
 
             // ──────────────────────────────────────────────────────────
             // [C] SỢI LASER PLASMA SIÊU MẢNH (Hairline Cosmic Filaments)
@@ -3096,12 +3348,12 @@
                 createOrbitalNode(hairlineFilamentMeshes[2], 16.8, 1.8 + Math.PI, 0.42, 0.25, 2.8 + Math.PI);
             }
 
-            // Tạo 32 hạt bụi sao năng lượng liên tục xuất phát từ lõi quả cầu và trôi dạt ra xa
-            for (let i = 0; i < (isMobile ? 20 : 32); i++) {
+            // Tạo 36 hạt bụi sao liên tục xuất phát từ lõi quả cầu và trôi theo dòng chảy (Stream Motes)
+            for (let i = 0; i < (isMobile ? 22 : 36); i++) {
                 const mote = new THREE.Sprite(nodeMatHead.clone());
                 const theta = Math.random() * Math.PI * 2;
                 const phi = (Math.random() - 0.5) * Math.PI * 0.85;
-                const initialRadius = 7.6 + Math.random() * 1.5; // Xuất phát sát bề mặt lõi
+                const initialRadius = 7.6 + Math.random() * 1.2;
                 mote.position.set(
                     Math.cos(theta) * Math.cos(phi) * initialRadius,
                     Math.sin(phi) * initialRadius,
@@ -3111,15 +3363,42 @@
                 mote.scale.set(sc, sc, 1);
                 plasmaWaveGroup.add(mote);
                 energyMotes.push({
+                    type: 'stream',
                     sprite: mote,
                     baseScale: sc,
                     theta: theta,
                     phi: phi,
                     radius: initialRadius,
-                    maxRadius: 18.0 + Math.random() * 6.0,
-                    driftSpeed: 1.2 + Math.random() * 2.2, // Tốc độ trôi từ lõi ra xa
-                    orbitSpeed: 0.25 + Math.random() * 0.45,
-                    phiSpeed: (Math.random() - 0.5) * 0.12,
+                    maxRadius: 19.0 + Math.random() * 6.0,
+                    driftSpeed: 1.4 + Math.random() * 2.4,
+                    orbitSpeed: 0.28 + Math.random() * 0.48,
+                    phiSpeed: (Math.random() - 0.5) * 0.14,
+                    phase: Math.random() * Math.PI * 2
+                });
+            }
+
+            // Tạo 16 tia sáng nhỏ và đốm sáng lóe lên ngẫu nhiên giữa các tầng năng lượng (Fleeting Micro-Sparks)
+            for (let j = 0; j < (isMobile ? 10 : 16); j++) {
+                const spark = new THREE.Sprite(nodeMatTrail1.clone());
+                const theta = Math.random() * Math.PI * 2;
+                const phi = (Math.random() - 0.5) * Math.PI * 0.80;
+                const rDist = 9.0 + Math.random() * 8.0;
+                spark.position.set(
+                    Math.cos(theta) * Math.cos(phi) * rDist,
+                    Math.sin(phi) * rDist,
+                    Math.sin(theta) * Math.cos(phi) * rDist
+                );
+                const sc = 0.4 + Math.random() * 0.5;
+                spark.scale.set(sc, sc, 1);
+                plasmaWaveGroup.add(spark);
+                energyMotes.push({
+                    type: 'spark',
+                    sprite: spark,
+                    baseScale: sc,
+                    theta: theta,
+                    phi: phi,
+                    radius: rDist,
+                    flashSpeed: 2.5 + Math.random() * 4.0,
                     phase: Math.random() * Math.PI * 2
                 });
             }
@@ -3251,13 +3530,15 @@
                 const dt = threeClock ? Math.min(0.05, threeClock.getDelta()) : 0.016;
 
                 // 1. TÍNH TOÁN XUNG NĂNG LƯỢNG LÕI THỐNG NHẤT (Harmonic Core Energy Coupling)
-                // Nhịp thở năng lượng bất đối xứng, không nhấp nháy cơ học tuần hoàn đơn giản
-                const corePulse = 0.90 + 0.18 * Math.sin(elapsed * 1.6) + 0.08 * Math.cos(elapsed * 2.7);
+                // Nhịp thở năng lượng hữu cơ bất quy tắc & chu kỳ sóng xung kích tỏa tròn
+                const corePulse = 0.88 + 0.26 * Math.sin(elapsed * 1.45) + 0.14 * Math.sin(elapsed * 2.8 + 1.2) + 0.06 * Math.cos(elapsed * 0.75);
+                const shockwaveCycle = (elapsed * 0.24) % 1.0; // Sóng xung kích tỏa tròn mỗi ~4.1 giây
 
-                // Cập nhật shader thời gian và nhịp năng lượng cho quả cầu
+                // Cập nhật shader thời gian, nhịp năng lượng và sóng xung kích cho quả cầu
                 if (orbMaterial && orbMaterial.uniforms) {
                     if (orbMaterial.uniforms.uTime) orbMaterial.uniforms.uTime.value = elapsed;
                     if (orbMaterial.uniforms.uCoreEnergy) orbMaterial.uniforms.uCoreEnergy.value = corePulse;
+                    if (orbMaterial.uniforms.uShockwave) orbMaterial.uniforms.uShockwave.value = shockwaveCycle;
                 }
 
                 // Cập nhật nhịp năng lượng cho tất cả dải plasma cực quang
@@ -3276,65 +3557,98 @@
                         orbMesh.rotation.x = Math.sin(elapsed * 0.22) * 0.040;
                     }
 
-                    // 3. CHUYỂN ĐỘNG HỮU CƠ CỰC QUANG LỤA, MÀN SƯƠNG & BỤI SAO NĂNG LƯỢNG
-                    // Cập nhật thời gian cho shader dải cực quang lụa
+                    // 3. CHUYỂN ĐỘNG HỮU CƠ ĐA TẦNG VÀ TƯƠNG TÁC NĂNG LƯỢNG (5-Layer Living System)
+                    
+                    // [LỚP 2] DẢI CỰC QUANG LỚN: Uốn lượn, phình to thu nhỏ theo nhịp thở của lõi
                     for (let s = 0; s < fluidStreamers.length; s++) {
                         const str = fluidStreamers[s];
                         if (str.mat && str.mat.uniforms) {
                             str.mat.uniforms.uTime.value = elapsed;
                             str.mat.uniforms.uCoreEnergy.value = corePulse;
+                            str.mat.uniforms.uShockwave.value = shockwaveCycle;
+
+                            // Biến đổi hình dạng dải lụa mềm mại theo thời gian (tự co duỗi và đổi bề rộng)
+                            const cfg = str.baseCfg;
+                            const morphTime = elapsed * 0.4 + cfg.flowOffset;
+                            str.mat.uniforms.uMaxWidth.value = cfg.maxWidth * (1.0 + 0.20 * Math.sin(morphTime));
+                            str.mat.uniforms.uRMid.value = cfg.rMid + 1.2 * Math.cos(morphTime * 0.8);
                         }
                     }
 
-                    // Cập nhật thời gian cho màn sương năng lượng khuếch tán
+                    // [LỚP 3] SỢI PLASMA PHÂN NHÁNH: Di chuyển nhanh, uốn lượn tần số cao
+                    for (let t = 0; t < tendrilMeshes.length; t++) {
+                        const tnd = tendrilMeshes[t];
+                        if (tnd.mat && tnd.mat.uniforms) {
+                            tnd.mat.uniforms.uTime.value = elapsed;
+                            tnd.mat.uniforms.uCoreEnergy.value = corePulse;
+                            tnd.mat.uniforms.uShockwave.value = shockwaveCycle;
+
+                            const tc = tnd.baseCfg;
+                            const fastMorph = elapsed * 0.9 + tc.flowOffset;
+                            tnd.mat.uniforms.uMaxWidth.value = tc.maxWidth * (0.85 + 0.35 * Math.sin(fastMorph * 1.5));
+                        }
+                    }
+
+                    // [LỚP 4] MÀN SƯƠNG NĂNG LƯỢNG & SÓNG XUNG KÍCH TỎA TRÒN: Chuyển động chậm ở hậu cảnh
                     for (let n = 0; n < nebulaMistMeshes.length; n++) {
                         const neb = nebulaMistMeshes[n];
                         if (neb.mat && neb.mat.uniforms) {
                             neb.mat.uniforms.uTime.value = elapsed;
                             neb.mat.uniforms.uCoreEnergy.value = corePulse;
+                            neb.mat.uniforms.uShockwave.value = shockwaveCycle;
                         }
-                        // Chuyển động xoay cực chậm và êm ái
-                        neb.mesh.rotation.z += (n === 0 ? 0.04 : -0.03) * dt;
+                        // Xoay đối lưu êm đềm với vận tốc khác nhau giữa các lớp
+                        const dir = (n % 2 === 0 ? 1 : -1);
+                        neb.mesh.rotation.z += dir * (0.025 + n * 0.015) * dt;
                     }
 
-                    // Cập nhật sợi laser plasma siêu mảnh
+                    // Sợi laser plasma siêu mảnh ôm trọn không gian
                     if (hairlineMat && hairlineMat.uniforms) {
                         hairlineMat.uniforms.uTime.value = elapsed;
                         hairlineMat.uniforms.uCoreEnergy.value = corePulse;
                     }
                     for (let f = 0; f < hairlineFilamentMeshes.length; f++) {
                         const fm = hairlineFilamentMeshes[f];
-                        fm.rotation.z += (f % 2 === 0 ? 0.12 : -0.10) * dt;
+                        fm.rotation.z += (f % 2 === 0 ? 0.08 : -0.07) * dt;
                     }
 
-                    // Cập nhật bụi sao năng lượng di chuyển từ lõi ra xa (Outward Advection)
+                    // [LỚP 5] HẠT NĂNG LƯỢNG & TIA SÁNG LÓE LÊN GIỮA CÁC TẦNG:
                     for (let m = 0; m < energyMotes.length; m++) {
                         const em = energyMotes[m];
-                        // Tăng bán kính (trôi từ lõi quả cầu ra không gian)
-                        em.radius += em.driftSpeed * dt;
-                        em.theta += em.orbitSpeed * dt;
-                        em.phi += em.phiSpeed * dt;
 
-                        // Nếu trôi quá xa, hồi sinh trở lại ngay sát bề mặt quả cầu
-                        if (em.radius > em.maxRadius) {
-                            em.radius = 7.6 + Math.random() * 0.8;
-                            em.theta = Math.random() * Math.PI * 2;
-                            em.phi = (Math.random() - 0.5) * Math.PI * 0.85;
+                        if (em.type === 'stream') {
+                            // Hạt bụi sao bị cuốn theo dòng năng lượng và gia tốc khi lõi cầu bùng nổ
+                            const speedBoost = 0.8 + 0.45 * corePulse;
+                            em.radius += em.driftSpeed * speedBoost * dt;
+                            em.theta += em.orbitSpeed * dt;
+                            em.phi += em.phiSpeed * dt;
+
+                            if (em.radius > em.maxRadius) {
+                                em.radius = 7.6 + Math.random() * 0.8;
+                                em.theta = Math.random() * Math.PI * 2;
+                                em.phi = (Math.random() - 0.5) * Math.PI * 0.85;
+                            }
+
+                            em.sprite.position.set(
+                                Math.cos(em.theta) * Math.cos(em.phi) * em.radius,
+                                Math.sin(em.phi) * em.radius,
+                                Math.sin(em.theta) * Math.cos(em.phi) * em.radius
+                            );
+
+                            const life = (em.radius - 7.6) / (em.maxRadius - 7.6);
+                            const fade = Math.sin(life * Math.PI);
+                            const tw = 0.5 + 0.5 * Math.sin(elapsed * 3.5 + em.phase);
+                            const sc = em.baseScale * (0.8 + tw * 0.5) * (0.6 + fade * 0.7);
+                            em.sprite.scale.set(sc, sc, 1);
+                            em.sprite.material.opacity = fade * (0.45 + tw * 0.55);
+
+                        } else if (em.type === 'spark') {
+                            // Tia sáng li ti lóe lên trong chớp mắt rồi biến mất
+                            const flashVal = Math.pow(0.5 + 0.5 * Math.sin(elapsed * em.flashSpeed + em.phase), 10.0);
+                            const sc = em.baseScale * (0.5 + flashVal * 1.5);
+                            em.sprite.scale.set(sc, sc, 1);
+                            em.sprite.material.opacity = flashVal * 0.95;
                         }
-
-                        em.sprite.position.set(
-                            Math.cos(em.theta) * Math.cos(em.phi) * em.radius,
-                            Math.sin(em.phi) * em.radius,
-                            Math.sin(em.theta) * Math.cos(em.phi) * em.radius
-                        );
-
-                        // Độ sáng tăng dần khi rời lõi và mờ dần khi ra rìa vũ trụ
-                        const lifeProgress = (em.radius - 7.6) / (em.maxRadius - 7.6);
-                        const fade = Math.sin(lifeProgress * Math.PI);
-                        const tw = 0.5 + 0.5 * Math.sin(elapsed * 3.0 + em.phase);
-                        const sc = em.baseScale * (0.8 + tw * 0.5) * (0.5 + fade * 0.8);
-                        em.sprite.scale.set(sc, sc, 1);
-                        em.sprite.material.opacity = fade * (0.4 + tw * 0.6);
                     }
 
                     // 4. CẬP NHẬT CÁC ĐIỂM NĂNG LƯỢNG QUỸ ĐẠO KÈM VỆT SÁNG (Orbital Nodes with Light Trails)
