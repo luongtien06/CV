@@ -138,32 +138,28 @@
         100% { opacity: 1; transform: perspective(1000px) scale(1); }
     }
     .avatar-3d-glow {
-        position: relative; width: 122px; height: 122px;
+        position: relative; width: 120px; height: 120px;
         margin: 0;
     }
     .welcome-avatar-img {
         width: 100%; height: 100%; border-radius: 50%;
-        object-fit: cover; border: 2.5px solid #00E5FF;
-        box-shadow: 0 0 25px rgba(0, 229, 255, 0.85), 0 0 50px rgba(0, 123, 255, 0.52), inset 0 0 16px rgba(0, 229, 255, 0.40);
+        object-fit: cover;
+        border: none !important;
+        box-shadow: 0 0 28px rgba(0, 229, 255, 0.60), 0 0 55px rgba(0, 100, 255, 0.32);
+        mask-image: radial-gradient(circle at center, #000 82%, rgba(0,0,0,0.6) 92%, transparent 100%);
+        -webkit-mask-image: radial-gradient(circle at center, #000 82%, rgba(0,0,0,0.6) 92%, transparent 100%);
         display: block;
     }
     .avatar-3d-ring {
-        position: absolute; inset: -9px; border-radius: 50%;
-        border: 1.8px solid rgba(0, 229, 255, 0.80);
-        box-shadow: 0 0 18px rgba(0, 229, 255, 0.60), inset 0 0 12px rgba(0, 229, 255, 0.28);
-        animation: spinRing 24s linear infinite;
-        pointer-events: none;
+        display: none !important;
     }
     .avatar-3d-ring::after {
-        content: ''; position: absolute; top: -4px; left: calc(50% - 4px);
-        width: 8px; height: 8px; border-radius: 50%;
-        background: #BFFFFF;
-        box-shadow: 0 0 10px #00E5FF, 0 0 20px #00E5FF;
+        display: none !important;
     }
     .avatar-3d-core-pulse {
-        position: absolute; inset: -20px; border-radius: 50%;
-        background: radial-gradient(circle, rgba(0, 229, 255, 0.38) 0%, rgba(0, 123, 255, 0.20) 50%, transparent 72%);
-        animation: pulseCore 3.8s ease-in-out infinite alternate;
+        position: absolute; inset: -24px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(0, 229, 255, 0.25) 0%, rgba(0, 80, 220, 0.12) 50%, transparent 72%);
+        animation: pulseCore 5.5s ease-in-out infinite alternate;
         pointer-events: none;
     }
     @keyframes pulseCore {
@@ -2003,6 +1999,7 @@
     let coreLight, rimLight1, rimLight2, flareLightLeft, flareLightRight;
     let introAnimId = null;
     let isIntroActive = true;
+    let isTabVisible = true;
     let isWarping = false;
     let warpPhase = 0; // 0 = idle, 1 = buildup (tích tụ), 2 = bloom & warp dive, 3 = dissolve
     let warpStartTime = 0;
@@ -2195,69 +2192,61 @@
                     vec3 norm = normalize(vNormal);
                     float NdotV = dot(norm, viewDir);
                     float fresnel = 1.0 - clamp(abs(NdotV), 0.0, 1.0);
-                    float rimGlow = pow(fresnel, 2.2);
 
                     // 1. DOMAIN WARPING: DÒNG XOÁY PLASMA HỮU CƠ CUỘN CHẢY TỰ NHIÊN
                     vec3 p = vPosition * 0.28;
                     vec3 q = vec3(
-                        fbm(p + vec3(0.0, -uTime * 0.18, uTime * 0.12)),
-                        fbm(p + vec3(4.3, uTime * 0.15, -uTime * 0.16)),
-                        fbm(p + vec3(-2.8, -uTime * 0.11, uTime * 0.10))
+                        fbm(p + vec3(0.0, -uTime * 0.16, uTime * 0.10)),
+                        fbm(p + vec3(4.3, uTime * 0.13, -uTime * 0.14)),
+                        fbm(p + vec3(-2.8, -uTime * 0.09, uTime * 0.08))
                     );
                     vec3 r = vec3(
-                        fbm(p + 1.8 * q + vec3(1.7, 9.2, -uTime * 0.22)),
-                        fbm(p + 1.8 * q + vec3(8.3, 2.8, uTime * 0.19)),
-                        fbm(p + 1.8 * q + vec3(-5.1, -3.4, uTime * 0.14))
+                        fbm(p + 1.8 * q + vec3(1.7, 9.2, -uTime * 0.18)),
+                        fbm(p + 1.8 * q + vec3(8.3, 2.8, uTime * 0.15)),
+                        fbm(p + 1.8 * q + vec3(-5.1, -3.4, uTime * 0.11))
                     );
                     float plasma = clamp(fbm(p + 2.2 * r) * 0.85 + 0.35, 0.0, 1.0);
 
                     // 2. TIA SÉT NĂNG LƯỢNG UỐN LƯỢN THEO DÒNG PLASMA (Warped Lightning Veins)
-                    vec3 lp1 = (p + 1.2 * q) * 1.8 + vec3(uTime * 0.08, -uTime * 0.10, uTime * 0.07);
-                    float ridge1 = pow(clamp(1.0 - abs(snoise(lp1)), 0.0, 1.0), 5.2);
+                    vec3 lp1 = (p + 1.2 * q) * 1.8 + vec3(uTime * 0.07, -uTime * 0.09, uTime * 0.06);
+                    float ridge1 = pow(clamp(1.0 - abs(snoise(lp1)), 0.0, 1.0), 5.0);
 
-                    vec3 lp2 = (p + 1.5 * r) * 3.2 + vec3(-uTime * 0.11, uTime * 0.13, -uTime * 0.09);
-                    float ridge2 = pow(clamp(1.0 - abs(snoise(lp2)), 0.0, 1.0), 6.0);
+                    vec3 lp2 = (p + 1.5 * r) * 3.2 + vec3(-uTime * 0.09, uTime * 0.11, -uTime * 0.08);
+                    float ridge2 = pow(clamp(1.0 - abs(snoise(lp2)), 0.0, 1.0), 5.8);
 
                     float lightning = ridge1 * 0.65 + ridge2 * 0.50;
 
-                    // 3. NHỊP DAO ĐỘNG HỮU CƠ TƯƠNG TÁC (Coupled Energy Breath)
-                    float coreBreath = (0.90 + 0.18 * sin(uTime * 1.6) + 0.08 * cos(uTime * 2.7)) * uCoreEnergy;
+                    // 3. NHỊP DAO ĐỘNG HỮU CƠ TỰ NHIÊN (Chậm rãi, không nhấp nháy giật cục)
+                    float coreBreath = (0.92 + 0.12 * sin(uTime * 0.85) + 0.06 * cos(uTime * 1.4)) * uCoreEnergy;
 
-                    // 4. PHỐI MÀU ELECTRIC BLUE ĐIỆN ẢNH VỚI ĐỘ TƯƠNG PHẢN CAO
+                    // 4. PHỐI MÀU ELECTRIC BLUE ĐIỆN ẢNH VỚI ĐỘ SÂU THỂ TÍCH
                     vec3 col = mix(uColorDeep, uColorElectric, clamp(plasma * 0.75, 0.0, 1.0));
-                    col = mix(col, uColorNeon, smoothstep(0.18, 0.70, lightning) * coreBreath);
-                    col += uColorIce * pow(clamp(lightning, 0.0, 1.0), 3.0) * 1.35 * coreBreath; // Điểm phóng điện trắng
-                    col += uColorNeon * pow(rimGlow, 2.0) * 1.25;                               // Hào quang viền khí quyển
-                    col += uColorIce * pow(fresnel, 4.5) * 0.90;                                // Tia sáng mép ngoài
+                    col = mix(col, uColorNeon, smoothstep(0.18, 0.68, lightning) * coreBreath);
+                    col += uColorIce * pow(clamp(lightning, 0.0, 1.0), 3.0) * 0.95 * coreBreath; // Điểm phóng điện xanh trắng tinh tế
 
-                    // 5. VÀNH HOA LỬA MẶT TRỜI TẠI VIỀN KHẨU ĐỘ (Solar Prominence Aperture Crown)
+                    // 5. VIỀN NGOÀI HỮU CƠ MỀM MẠI (Không còn đường viền tròn hình học cứng nhắc)
+                    float rimNoise = snoise(vPosition * 0.32 + vec3(0.0, -uTime * 0.14, uTime * 0.10)) * 0.20;
+                    float softRim = pow(clamp(fresnel + rimNoise, 0.0, 1.0), 2.2);
+                    col = mix(col, uColorNeon, softRim * 0.65);
+
+                    // 6. KHẨU ĐỘ TÂM BẢO VỆ ẢNH CHÂN DUNG (Không tạo viền cứng)
                     float centerRadius = length(vWorldPosition.xy);
-                    float faceAperture = smoothstep(1.9, 2.9, centerRadius);
+                    float faceAperture = smoothstep(1.8, 2.7, centerRadius);
 
-                    // Các lưỡi lửa plasma liếm từ viền ảnh chân dung ra bề mặt quả cầu
+                    // Vầng lửa plasma mềm mại liếm quanh viền trong
                     float apertureAngle = atan(vWorldPosition.y, vWorldPosition.x);
-                    float flareSpikes = sin(apertureAngle * 12.0 + uTime * 2.2) * 0.5 + 0.5;
-                    float flareVein = pow(clamp(1.0 - abs(snoise(vec3(cos(apertureAngle)*4.0, sin(apertureAngle)*4.0, uTime * 0.8))), 0.0, 1.0), 3.5);
-                    float apertureFlare = smoothstep(2.9, 2.1, centerRadius) * smoothstep(1.85, 2.2, centerRadius);
-                    apertureFlare *= (flareSpikes * 0.6 + flareVein * 0.8);
+                    float flareVein = pow(clamp(1.0 - abs(snoise(vec3(cos(apertureAngle)*3.5, sin(apertureAngle)*3.5, uTime * 0.5))), 0.0, 1.0), 3.2);
+                    float innerGlow = smoothstep(2.8, 2.0, centerRadius) * smoothstep(1.75, 2.15, centerRadius) * flareVein;
+                    col += uColorNeon * innerGlow * 1.2 * coreBreath;
 
-                    col += uColorNeon * apertureFlare * 1.8 * coreBreath;
-                    col += uColorIce * pow(apertureFlare, 2.5) * 1.2;
-
-                    // Sóng xung kích năng lượng tỏa ra từ viền lõi cầu (thanh thoát, không làm cháy sáng chi tiết plasma)
-                    float pulseRing = exp(-pow(centerRadius - (2.9 + uShockwave * 4.8), 2.0) / 0.06) * (1.0 - uShockwave);
-                    col += uColorNeon * pulseRing * 0.75 * coreBreath;
-                    col += uColorIce * pow(pulseRing, 2.0) * 0.45;
-
-                    float alpha = mix(0.88, 1.0, rimGlow);
+                    // Độ trong suốt phân rã êm dịu ở mép ngoài để hòa vào khói vũ trụ
+                    float alpha = mix(0.94, 0.45, pow(fresnel, 2.6));
                     if (NdotV > 0.0) {
-                        alpha = mix(0.0, alpha, faceAperture);
-                        alpha = max(alpha, apertureFlare * 0.85); // Vầng lửa viền rực rỡ
-                        col *= mix(0.05, 1.0, faceAperture);
-                        col += uColorNeon * apertureFlare * 1.5;
+                        alpha *= faceAperture;
+                        alpha = max(alpha, innerGlow * 0.65);
                     }
 
-                    gl_FragColor = vec4(col * (0.95 + coreBreath * 0.20), clamp(alpha * uIntensity, 0.0, 1.0));
+                    gl_FragColor = vec4(col * (0.95 + coreBreath * 0.18), clamp(alpha * uIntensity, 0.0, 1.0));
                 }
             `;
 
@@ -2286,59 +2275,25 @@
             orbMesh.position.set(0, 0, -0.5);
             techCoreGroup.add(orbMesh);
 
-            // 2. Lớp vầng hào quang khí quyển thể tích bên ngoài (Volumetric Atmosphere Corona R = 8.1)
-            const coronaVertexShader = `
-                varying vec3 vNormal;
-                varying vec3 vWorldPosition;
-                void main() {
-                    vNormal = normalize(normalMatrix * normal);
-                    vec4 worldPos = modelMatrix * vec4(position, 1.0);
-                    vWorldPosition = worldPos.xyz;
-                    gl_Position = projectionMatrix * viewMatrix * worldPos;
-                }
-            `;
-            const coronaFragmentShader = `
-                uniform vec3 uColorElectric;
-                uniform vec3 uColorNeon;
-                uniform float uIntensity;
-                varying vec3 vNormal;
-                varying vec3 vWorldPosition;
-                void main() {
-                    vec3 viewDir = normalize(cameraPosition - vWorldPosition);
-                    float fresnel = pow(1.0 - clamp(dot(normalize(vNormal), viewDir), 0.0, 1.0), 3.2);
-                    vec3 col = mix(uColorElectric, uColorNeon, fresnel);
-                    gl_FragColor = vec4(col * 1.6, fresnel * 0.65 * uIntensity);
-                }
-            `;
-            orbCoronaMaterial = new THREE.ShaderMaterial({
-                vertexShader: coronaVertexShader,
-                fragmentShader: coronaFragmentShader,
-                uniforms: {
-                    uColorElectric: { value: new THREE.Color(0x0066ff) },
-                    uColorNeon: { value: new THREE.Color(0x00e5ff) },
-                    uIntensity: { value: 1.0 }
-                },
-                transparent: true,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false,
-                side: THREE.FrontSide
-            });
-            const coronaGeo = new THREE.SphereGeometry(8.1, isMobile ? 36 : 48, isMobile ? 36 : 48);
-            orbCoronaMesh = new THREE.Mesh(coronaGeo, orbCoronaMaterial);
-            orbCoronaMesh.position.set(0, 0, -0.5);
-            techCoreGroup.add(orbCoronaMesh);
+            // 2. KHỬ 100% VÒNG CORONA TRÒN CỨNG & VỆT SÁNG NGANG (Horizontal Lens Flare)
+            orbCoronaMesh = null;
+            orbCoronaMaterial = null;
+            volumetricRaysMesh = null;
+            volumetricRaysMaterial = null;
+            anamorphicFlareMesh = null;
+            anamorphicFlareMaterial = null;
+            anamorphicGlowMesh = null;
+            anamorphicGlowMaterial = null;
 
-            // 3. Khử hoàn toàn các khối sáng đè bên trong để giữ nền xanh sẫm Sapphire có chiều sâu
-            orbInnerMesh = null;
-            orbInnerMaterial = null;
-
-            // ── 2. HỆ THỐNG HIỆU ỨNG ÁNH SÁNG & CÁC VÀNH ĐAI NĂNG LƯỢNG MỞ RỘNG ──
-            // 2A. Luồng tia sáng toả tròn năng lượng phía sau quả cầu (Volumetric Radial Light Rays)
-            const raysGeo = new THREE.PlaneGeometry(38.0, 38.0);
-            volumetricRaysMaterial = new THREE.ShaderMaterial({
+            // 3. VẦNG HÀO QUANG KHUẾCH TÁN TỰ NHIÊN SAU LÕI CẦU (Soft Ambient Cosmic Core Glow)
+            // Tỏa sáng êm dịu 3D, không có tia cứng hay vệt sáng ngang
+            const coreGlowGeo = new THREE.PlaneGeometry(36.0, 36.0);
+            const coreGlowMat = new THREE.ShaderMaterial({
                 uniforms: {
-                    uTime: { value: 0 },
-                    uIntensity: { value: 1.0 }
+                    uCoreEnergy: { value: 1.0 },
+                    uWarpIntensity: { value: 1.0 },
+                    uColorDeep: { value: new THREE.Color(0x001a55) },
+                    uColorNeon: { value: new THREE.Color(0x00e5ff) }
                 },
                 vertexShader: `
                     varying vec2 vUv;
@@ -2348,81 +2303,17 @@
                     }
                 `,
                 fragmentShader: `
-                    uniform float uTime;
-                    uniform float uIntensity;
-                    varying vec2 vUv;
-                    void main() {
-                        vec2 uv = (vUv - 0.5) * 2.0;
-                        float r = length(uv);
-                        float angle = atan(uv.y, uv.x);
-                        float beam1 = pow(clamp(0.5 + 0.5 * sin(angle * 14.0 + uTime * 0.22), 0.0, 1.0), 3.2);
-                        float beam2 = pow(clamp(0.5 + 0.5 * cos(angle * 9.0 - uTime * 0.16), 0.0, 1.0), 2.8);
-                        float beams = beam1 * 0.65 + beam2 * 0.45;
-                        float falloff = smoothstep(1.0, 0.25, r) * smoothstep(0.12, 0.35, r);
-                        vec3 col = mix(vec3(0.0, 0.55, 1.0), vec3(0.0, 0.95, 1.0), beams);
-                        float alpha = beams * falloff * 0.52 * uIntensity;
-                        gl_FragColor = vec4(col * 1.6, alpha);
-                    }
-                `,
-                transparent: true,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false,
-                side: THREE.DoubleSide
-            });
-            volumetricRaysMesh = new THREE.Mesh(raysGeo, volumetricRaysMaterial);
-            volumetricRaysMesh.position.set(0, 0, -1.0);
-            techCoreGroup.add(volumetricRaysMesh);
-
-            // 2B. Tia lóe sáng điện ảnh nằm ngang siêu rộng (Horizontal Anamorphic Lens Flare Beam)
-            const flareGeo = new THREE.PlaneGeometry(50.0, 2.2);
-            anamorphicFlareMaterial = new THREE.ShaderMaterial({
-                uniforms: {
-                    uIntensity: { value: 1.0 }
-                },
-                vertexShader: `
-                    varying vec2 vUv;
-                    void main() {
-                        vUv = uv;
-                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                    }
-                `,
-                fragmentShader: `
-                    uniform float uIntensity;
-                    varying vec2 vUv;
-                    void main() {
-                        float distY = abs(vUv.y - 0.5) * 2.0;
-                        float distX = abs(vUv.x - 0.5) * 2.0;
-                        float core = pow(clamp(1.0 - distY, 0.0, 1.0), 36.0);
-                        float halo = pow(clamp(1.0 - distY, 0.0, 1.0), 3.6);
-                        float fade = pow(clamp(1.0 - distX, 0.0, 1.0), 1.3);
-                        vec3 col = mix(vec3(0.0, 0.90, 1.0), vec3(1.0, 1.0, 1.0), core);
-                        float alpha = (core * 0.98 + halo * 0.70) * fade * uIntensity;
-                        gl_FragColor = vec4(col * (1.3 + core * 2.5), alpha);
-                    }
-                `,
-                transparent: true,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false,
-                side: THREE.DoubleSide
-            });
-            anamorphicFlareMesh = new THREE.Mesh(flareGeo, anamorphicFlareMaterial);
-            anamorphicFlareMesh.position.set(0, 0, 0.05);
-            techCoreGroup.add(anamorphicFlareMesh);
-
-            // 2C. Quầng quang học tâm (Core Bloom Halo)
-            const glowGeo = new THREE.PlaneGeometry(16.0, 4.5);
-            anamorphicGlowMaterial = new THREE.ShaderMaterial({
-                uniforms: { uIntensity: { value: 1.0 } },
-                vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-                fragmentShader: `
-                    uniform float uIntensity;
+                    uniform float uCoreEnergy;
+                    uniform float uWarpIntensity;
+                    uniform vec3 uColorDeep;
+                    uniform vec3 uColorNeon;
                     varying vec2 vUv;
                     void main() {
                         vec2 p = (vUv - 0.5) * 2.0;
-                        float r = length(vec2(p.x * 0.45, p.y));
-                        float glow = pow(clamp(1.0 - r, 0.0, 1.0), 2.2);
-                        vec3 col = mix(vec3(0.0, 0.75, 1.0), vec3(0.85, 1.0, 1.0), glow);
-                        gl_FragColor = vec4(col * 1.5, glow * 0.45 * uIntensity);
+                        float r = length(p);
+                        float glow = exp(-r * r * 3.2);
+                        vec3 col = mix(uColorDeep, uColorNeon, glow * 0.75);
+                        gl_FragColor = vec4(col * (1.1 + uCoreEnergy * 0.25) * uWarpIntensity, glow * 0.35 * uCoreEnergy * uWarpIntensity);
                     }
                 `,
                 transparent: true,
@@ -2430,16 +2321,10 @@
                 depthWrite: false,
                 side: THREE.DoubleSide
             });
-            anamorphicGlowMesh = new THREE.Mesh(glowGeo, anamorphicGlowMaterial);
-            anamorphicGlowMesh.position.set(0, 0, 0.04);
-            techCoreGroup.add(anamorphicGlowMesh);
+            const diffuseCoreGlowMesh = new THREE.Mesh(coreGlowGeo, coreGlowMat);
+            diffuseCoreGlowMesh.position.set(0, 0, -1.2);
+            techCoreGroup.add(diffuseCoreGlowMesh);
 
-            // ══════════════════════════════════════════════════════════════
-            // ORGANIC COSMIC PLASMA & FLUID AURORA SYSTEM
-            // 1. Dải cực quang lụa uốn lượn tự nhiên (Open Fluid Aurora Streamers)
-            // 2. Màn sương năng lượng khuếch tán vũ trụ (Volumetric Nebula Mist)
-            // 3. Sợi laser plasma siêu mảnh bao bọc không gian (Hairline Filaments)
-            // ══════════════════════════════════════════════════════════════
             plasmaWaveGroup = new THREE.Group();
             techCoreGroup.add(plasmaWaveGroup);
             plasmaWaveMeshes = [];
@@ -2596,21 +2481,25 @@
                     float dist2D = length(vWorldPosition.xy);
                     float dist3D = length(vWorldPosition.xyz);
 
-                    // Khẩu độ tâm bảo vệ tuyệt đối ảnh chân dung (r < 2.5), cho phép khói ôm trọn quả cầu và lan tỏa
-                    float innerAperture = smoothstep(6.8, 7.8, dist2D);
-                    // Hòa tan êm dịu vào bóng đêm vũ trụ ở biên ngoài
-                    float outerFade = smoothstep(uOuterRadius * 1.15, uOuterRadius * 0.70, dist3D);
+                    // Khẩu độ tâm lượn sóng tự nhiên bảo vệ ảnh chân dung (r < 2.5), không tạo đường cắt tròn cứng
+                    float photoAngle = atan(vWorldPosition.y, vWorldPosition.x);
+                    float apertureWobble = snoise3f(vec3(cos(photoAngle) * 3.0, sin(photoAngle) * 3.0, uTime * 0.2)) * 0.35;
+                    float centerAperture = smoothstep(1.9, 3.4, dist2D + apertureWobble);
 
-                    // Làm mượt hình học cục bộ: biến tấm phẳng thành đám mây hình trứng / hữu cơ
+                    // Hòa tan êm dịu vào bóng đêm vũ trụ ở biên ngoài
+                    float outerFade = smoothstep(uOuterRadius * 1.15, uOuterRadius * 0.72, dist3D);
+
+                    // Làm mượt hình học cục bộ: biến tấm phẳng thành đám mây hình trứng hữu cơ
                     vec2 cuv = (vUv - 0.5) * 2.0;
                     float uvDist = length(cuv);
                     float meshBoundaryFade = smoothstep(1.0, 0.25, uvDist);
 
-                    float envelope = innerAperture * outerFade * meshBoundaryFade;
+                    float envelope = centerAperture * outerFade * meshBoundaryFade;
                     if (envelope < 0.001) discard;
 
-                    // 2. DUAL DOMAIN WARPING FBM CHO ĐÁM MÂY KHÓI BỒNG BỀNH (Puffy Nebula Cloud Billows)
-                    vec3 p = vWorldPosition * uNoiseScale;
+                    // 2. DUAL DOMAIN WARPING FBM VỚI VECTOR LAN TỎA LY TÂM (Outward Radial Surge)
+                    vec3 outward = normalize(vec3(vWorldPosition.xy, 0.0) + vec3(0.001));
+                    vec3 p = vWorldPosition * uNoiseScale - outward * (t * 0.045);
 
                     // Dòng đối lưu cuộn xoáy 3D
                     vec3 q = vec3(
@@ -2633,7 +2522,6 @@
 
                     // Phân tách khối mây rõ ràng: có búi mây dày, có khoảng chân không sâu thẳm
                     float smoke = smoothstep(uDensityThreshold, uDensityThreshold + uSoftness, rawDensity);
-                    // Lõi búi mây đậm đặc
                     float puffCore = smoothstep(uDensityThreshold + uSoftness * 0.35, uDensityThreshold + uSoftness, rawDensity);
 
                     // Các nhánh tơ khói nhỏ li ti phân nhánh tự nhiên (Micro-Wisps)
@@ -2647,25 +2535,19 @@
                     float shockRipple = exp(-pow(dist3D - (7.6 + uShockwave * (uOuterRadius - 7.6)), 2.0) / 5.2) * (1.0 - uShockwave * 0.70);
 
                     // 4. PHỐI MÀU ELECTRIC BLUE ĐIỆN ẢNH RỰC RỠ VÀ THỂ TÍCH (Volumetric Shading)
-                    // Tầng mây sẫm màu chân không
                     vec3 col = uColorDeep;
-                    // Tầng thân khói xanh điện rực rỡ
                     col = mix(col, uColorElectric, smoothstep(0.05, 0.50, smoke));
-                    // Tầng hào quang Neon Cyan khuếch tán mạnh từ lõi
                     col = mix(col, uColorNeon, smoothstep(0.35, 0.85, smoke) * (0.85 + coreLightScatter * 0.60));
-                    // Vùng lõi khói dày bắt sáng rực rỡ
                     col += uColorNeon * puffCore * 0.55 * (0.90 + coreLightScatter * 0.65);
-                    // Gợn sóng xung kích làm bừng sáng nhẹ đám mây khói
                     col += uColorNeon * shockRipple * 0.50 * uCoreEnergy;
-                    // Tinh tế điểm xuyết ánh trắng băng trên sợi tơ khói mỏng (KHÔNG GÂY LÓA TRẮNG!)
                     col += uColorIce * fineWisp * 0.40 * (0.80 + coreLightScatter * 0.50);
 
                     // 5. ĐỘ ĐỤC BÁN TRONG SUỐT (Soft Volumetric Alpha)
                     float alpha = smoke * envelope * uOpacityBase * uWarpIntensity * (0.90 + 0.25 * uCoreEnergy);
                     alpha += shockRipple * 0.22 * envelope * uWarpIntensity;
-                    alpha = clamp(alpha, 0.0, 0.88);
+                    alpha = clamp(alpha, 0.0, 0.85);
 
-                    gl_FragColor = vec4(col * (1.15 + shockRipple * 0.25) * uWarpIntensity, alpha);
+                    gl_FragColor = vec4(col * (1.12 + shockRipple * 0.25) * uWarpIntensity, alpha);
                 }
             `;
 
@@ -2796,48 +2678,19 @@
             // Texture tia sáng sao 4 cánh nhiễu xạ độ phân giải cao 256x256
             function createStarFlareTexture() {
                 const canvas = document.createElement('canvas');
-                canvas.width = 256;
-                canvas.height = 256;
+                canvas.width = 128;
+                canvas.height = 128;
                 const ctx = canvas.getContext('2d');
-                const cx = 128, cy = 128;
+                const cx = 64, cy = 64;
 
-                const rad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 70);
+                // Tinh tú tự nhiên mềm mại, không có vệt sáng ngang/dọc chạy qua màn hình
+                const rad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 56);
                 rad.addColorStop(0, 'rgba(255, 255, 255, 1)');
-                rad.addColorStop(0.15, 'rgba(0, 229, 255, 0.95)');
-                rad.addColorStop(0.45, 'rgba(0, 123, 255, 0.35)');
+                rad.addColorStop(0.18, 'rgba(0, 229, 255, 0.90)');
+                rad.addColorStop(0.48, 'rgba(0, 100, 255, 0.30)');
                 rad.addColorStop(1, 'rgba(0, 0, 0, 0)');
                 ctx.fillStyle = rad;
-                ctx.fillRect(0, 0, 256, 256);
-
-                const hGrad = ctx.createLinearGradient(0, cy, 256, cy);
-                hGrad.addColorStop(0, 'rgba(0, 229, 255, 0)');
-                hGrad.addColorStop(0.38, 'rgba(0, 229, 255, 0.7)');
-                hGrad.addColorStop(0.5, 'rgba(255, 255, 255, 1)');
-                hGrad.addColorStop(0.62, 'rgba(0, 229, 255, 0.7)');
-                hGrad.addColorStop(1, 'rgba(0, 229, 255, 0)');
-                ctx.fillStyle = hGrad;
-                ctx.fillRect(0, cy - 2, 256, 4);
-
-                const vGrad = ctx.createLinearGradient(cx, 0, cx, 256);
-                vGrad.addColorStop(0, 'rgba(0, 229, 255, 0)');
-                vGrad.addColorStop(0.38, 'rgba(0, 229, 255, 0.7)');
-                vGrad.addColorStop(0.5, 'rgba(255, 255, 255, 1)');
-                vGrad.addColorStop(0.62, 'rgba(0, 229, 255, 0.7)');
-                vGrad.addColorStop(1, 'rgba(0, 229, 255, 0)');
-                ctx.fillStyle = vGrad;
-                ctx.fillRect(cx - 2, 0, 4, 256);
-
-                ctx.save();
-                ctx.translate(cx, cy);
-                ctx.rotate(Math.PI / 4);
-                const dGrad = ctx.createLinearGradient(-60, 0, 60, 0);
-                dGrad.addColorStop(0, 'rgba(0, 229, 255, 0)');
-                dGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.85)');
-                dGrad.addColorStop(1, 'rgba(0, 229, 255, 0)');
-                ctx.fillStyle = dGrad;
-                ctx.fillRect(-60, -1, 120, 2);
-                ctx.fillRect(-1, -60, 2, 120);
-                ctx.restore();
+                ctx.fillRect(0, 0, 128, 128);
 
                 const tex = new THREE.Texture(canvas);
                 tex.needsUpdate = true;
@@ -2845,30 +2698,16 @@
             }
             const starFlareTexture = createStarFlareTexture();
 
-            // 4 điểm lóe sao chính tại các giao điểm hội tụ quang học
+            // Khử hoàn toàn các điểm lóe sáng ngang (horizontal star flares)
             starFlares = [];
+
             const starMat = new THREE.SpriteMaterial({
                 map: starFlareTexture,
                 blending: THREE.AdditiveBlending,
                 transparent: true,
-                opacity: 0.98,
+                opacity: 0.95,
                 depthWrite: false
             });
-
-            function addStarFlare(x, y, z, baseScale, phase) {
-                const sprite = new THREE.Sprite(starMat.clone());
-                sprite.position.set(x, y, z);
-                sprite.scale.set(baseScale, baseScale, 1);
-                techCoreGroup.add(sprite);
-                starFlares.push({ sprite, baseScale, phase });
-            }
-
-            addStarFlare(-10.6, 0, 0.35, 6.0, 0.0);      // Nút ngoài trái xích đạo
-            addStarFlare(10.6, 0, 0.35, 6.0, 1.2);       // Nút ngoài phải xích đạo
-            addStarFlare(-7.6, 0, 0.25, 4.8, 0.6);       // Điểm giao cắt mép trái quả cầu & chùm tia
-            addStarFlare(7.6, 0, 0.25, 4.8, 1.8);        // Điểm giao cắt mép phải quả cầu & chùm tia
-            addStarFlare(4.8, 9.6, -1.8, 4.2, 2.4);      // Đỉnh trên vành chéo Alpha
-            addStarFlare(-6.5, 5.8, 3.2, 3.8, 3.6);      // Nhánh giao cắt trái
 
             // 18 ngôi sao kim cương lấp lánh rải rác nền vũ trụ
             bgStarSprites = [];
@@ -3097,7 +2936,7 @@
             }
 
             window.addEventListener('mousemove', (e) => {
-                if (!isIntroActive) return;
+                if (!isIntroActive || !isTabVisible) return;
                 onPointerMove(e.clientX, e.clientY);
             });
 
@@ -3131,7 +2970,7 @@
 
                 // 1. TÍNH TOÁN XUNG NĂNG LƯỢNG LÕI THỐNG NHẤT (Harmonic Core Energy Coupling)
                 // Nhịp thở năng lượng hữu cơ bất quy tắc & chu kỳ sóng xung kích tỏa tròn
-                const corePulse = 0.88 + 0.26 * Math.sin(elapsed * 1.45) + 0.14 * Math.sin(elapsed * 2.8 + 1.2) + 0.06 * Math.cos(elapsed * 0.75);
+                const corePulse = 0.90 + 0.12 * Math.sin(elapsed * 0.75) + 0.06 * Math.cos(elapsed * 0.42);
                 const shockwaveCycle = (elapsed * 0.24) % 1.0; // Sóng xung kích tỏa tròn mỗi ~4.1 giây
 
                 // Cập nhật shader thời gian, nhịp năng lượng và sóng xung kích cho quả cầu
@@ -4556,6 +4395,7 @@
     // Quản lý tạm dừng hoạt ảnh khi tab chuyển sang chạy nền (tiết kiệm pin & CPU)
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
+            isTabVisible = false;
             if (particleAnimId) {
                 cancelAnimationFrame(particleAnimId);
                 particleAnimId = null;
@@ -4565,6 +4405,7 @@
                 introAnimId = null;
             }
         } else {
+            isTabVisible = true;
             if (!particleAnimId && !isIntroActive) {
                 animateParticles();
             }
